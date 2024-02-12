@@ -5093,7 +5093,7 @@ ACMD(do_focus) {
             } else {
                 int duration = roll_aff_duration(GET_INT(ch), 2);
                 /* Str , Con, Int, Agl, Wis, Spd */
-                assign_affect(ch, AFF_ENLIGHTEN, SKILL_ENLIGHTEN, duration, 0, 0, 0, 0, 10, 0);
+                assign_affect(ch, AFF_ENLIGHTEN, SKILL_ENLIGHTEN, duration, 0, 0, 0, 0, ch->get(CharTrain::Intelligence) / 5, 0);
                 ch->decCurKI(ch->getMaxKI() / 20);
                 reveal_hiding(ch, 0);
                 act("You focus ki into your mind, awakening it to cosmic wisdom!", true, ch, nullptr, nullptr, TO_CHAR);

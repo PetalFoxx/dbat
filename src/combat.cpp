@@ -3691,16 +3691,13 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
     int attrChance = 3;
 
 	//If damage is greater than a tenth of the opponents health, there's a greater chance to proc the spar gains
-    if (dmg > GET_MAX_HIT(vict) / 10) {
+    if (dmg > GET_MAX_HIT(vict) / 3) {
         chance = rand_number(20, 100);
-        chance = rand_number(20, 100);
-    } else if (dmg <= GET_MAX_HIT(vict) / 10) {
-    } else if (dmg <= GET_MAX_HIT(vict) / 10) {
-        chance = rand_number(1, 75);
-        chance = rand_number(1, 75);
-    } else if (dmg <= GET_MAX_HIT(vict) / 3) {
-        chance = rand_number(1, 50);
         attrChance = 10;
+    } else if (dmg >= GET_MAX_HIT(vict) / 10) {
+        chance = rand_number(20, 100);
+    } else {
+        chance = rand_number(1, 50);
     }
 
 
