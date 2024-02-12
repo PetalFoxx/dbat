@@ -395,26 +395,23 @@ extern std::map<mob_vnum, struct index_data> mob_index;
 extern std::map<mob_vnum, struct char_data> mob_proto;
 
 extern struct char_data *character_list;
-extern std::unordered_map<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
+extern DebugMap<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
 int64_t nextCharID();
 
 extern VnumIndex<obj_data> objectVnumIndex;
 extern VnumIndex<char_data> characterVnumIndex;
-extern VnumIndex<trig_data> scriptVnumIndex;
+
 
 extern std::map<obj_vnum, struct index_data> obj_index;
 extern std::map<obj_vnum, struct obj_data> obj_proto;
 
 extern struct obj_data *object_list;
-extern std::unordered_map<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
+extern DebugMap<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
 int64_t nextObjID();
 
 extern struct social_messg *soc_mess_list;
 extern int top_of_socialt;
-extern std::map<trig_vnum, struct index_data> trig_index;
-
-extern struct trig_data *trigger_list;
-extern std::map<int64_t, std::pair<time_t, struct trig_data*>> uniqueScripts;
+extern std::map<trig_vnum, std::shared_ptr<trig_proto>> trig_index;
 
 extern int dg_owner_purged;
 

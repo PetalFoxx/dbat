@@ -536,8 +536,8 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'T':
                 write_to_output(d, "%sAttach trigger @c%s@y [@c%d@y] to %s, %% Chance %d",
                                 c.if_flag ? " then " : "",
-                                trig_index[c.arg2].proto->name,
-                                trig_index[c.arg2].vn,
+                                trig_index[c.arg2]->name,
+                                c.arg2,
                                 ((c.arg1 == MOB_TRIGGER) ? "mobile" :
                                  ((c.arg1 == OBJ_TRIGGER) ? "object" :
                                   ((c.arg1 == WLD_TRIGGER) ? "room" : "????"))), c.arg5);

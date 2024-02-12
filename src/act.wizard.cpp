@@ -1232,8 +1232,8 @@ void list_zone_commands_room(struct char_data *ch, room_vnum rvnum) {
                 case 'T':
                     send_to_char(ch, "%sAttach trigger @c%s@y [@c%d@y] to %s\r\n",
                                  ZOCMD.if_flag ? " then " : "",
-                                 trig_index[ZOCMD.arg2].proto->name,
-                                 trig_index[ZOCMD.arg2].vn,
+                                 trig_index[ZOCMD.arg2]->name,
+                                 trig_index[ZOCMD.arg2]->vn,
                                  ((ZOCMD.arg1 == MOB_TRIGGER) ? "mobile" :
                                   ((ZOCMD.arg1 == OBJ_TRIGGER) ? "object" :
                                    ((ZOCMD.arg1 == WLD_TRIGGER) ? "room" : "????"))));
@@ -1826,7 +1826,7 @@ ACMD(do_varstat) {
         return;
     } else {
         /* Display their global variables */
-        if (vict->script && vict->script->global_vars) {
+        if (!vict->script->vars.empty()) {
             struct trig_var_data *tv;
             char uname[MAX_INPUT_LENGTH];
             void find_uid_name(char *uid, char *name, size_t nlen);
@@ -1835,33 +1835,27 @@ ACMD(do_varstat) {
 
             /* currently, variable context for players is always 0, so it is */
             /* not displayed here. in the future, this might change */
-            for (tv = vict->script->global_vars; tv; tv = tv->next) {
-                if (tv->value && *(tv->value) == UID_CHAR) {
-                    std::optional<DgUID> result;
-                    result = resolveUID(tv->value);
-                    auto uidResult = result;
-                    if(uidResult) {
-                        auto idx = (*uidResult).index();
+            for (auto &[name, v] : vict->script->vars) {
+                if (auto result = resolveUID(v); result) {
+                    auto uid = result.value();
+                    auto idx = uid.index();
                         std::string n;
                         if(idx == 0) {
                             // Room.
-                            auto thing = std::get<0>(*uidResult);
+                            auto thing = std::get<0>(uid);
                             n = thing->name;
                         } else if(idx == 1) {
                             // object
-                            auto thing = std::get<1>(*uidResult);
+                            auto thing = std::get<1>(uid);
                             n = thing->name;
                         } else if(idx == 2) {
                             // character or player...
-                            auto thing = std::get<2>(*uidResult);
+                            auto thing = std::get<2>(uid);
                             n = thing->name;
                         }
-                        send_to_char(ch, "    %10s:  [UID]: %s\r\n", tv->name, n.c_str());
-                    } else {
-                        send_to_char(ch, "   -BAD UID: %s", tv->value);
-                    }
+                        send_to_char(ch, "    %10s:  [UID]: %s\r\n", name, n.c_str());
                 } else {
-                    send_to_char(ch, "    %10s:  %s\r\n", tv->name, tv->value);
+                    send_to_char(ch, "    %10s:  %s\r\n", name, v);
                 }
             }
         }
@@ -4956,9 +4950,9 @@ static void trg_checkload(struct char_data *ch, trig_vnum tvnum) {
     }
 
     send_to_char(ch, "Checking load info for the %s trigger [%d] '%s':\r\n",
-                 trg->second.proto->attach_type == MOB_TRIGGER ? "mobile" :
-                 (trg->second.proto->attach_type == OBJ_TRIGGER ? "object" : "room"),
-                 tvnum, trg->second.proto->name);
+                 trg->second->attach_type == MOB_TRIGGER ? "mobile" :
+                 (trg->second->attach_type == OBJ_TRIGGER ? "object" : "room"),
+                 tvnum, trg->second->name);
 
     for (auto &[zvn, z] : zone_table) {
         for (auto &c : z.cmd) {

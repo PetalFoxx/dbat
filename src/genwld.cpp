@@ -13,6 +13,7 @@
 #include "dbat/shop.h"
 #include "dbat/dg_olc.h"
 #include "dbat/constants.h"
+#include "dbat/dg_scripts.h"
 
 
 /*
@@ -265,13 +266,6 @@ room_direction_data::room_direction_data(const nlohmann::json &j) : room_directi
     if(j.contains("totalfailroom")) totalfailroom = j["totalfailroom"];
 }
 
-nlohmann::json room_data::serializeDgVars() {
-    if(script && script->global_vars)
-        return serializeVars(script->global_vars);
-    return nlohmann::json::array();
-}
-
-
 nlohmann::json room_data::serialize() {
     auto j = serializeUnit();
 
@@ -282,6 +276,10 @@ nlohmann::json room_data::serialize() {
             j["room_flags"].push_back(i);
         }
     }
+
+    if(timed) j["timed"] = timed;
+    if(dmg) j["dmg"] = dmg;
+    if(geffect) j["geffect"] = geffect;
 
     for(auto p :proto_script) {
         if(trig_index.contains(p)) j["proto_script"].push_back(p);
@@ -313,10 +311,9 @@ room_data::room_data(const nlohmann::json &j) {
         for(auto p : j["proto_script"]) proto_script.emplace_back(p.get<trig_vnum>());
     }
 
-    if(!proto_script.empty() || vn == 0) {
-        if(!script) script = new script_data(this);
-    }
-
+    if(j.contains("timed")) timed = j["timed"];
+    if(j.contains("dmg")) dmg = j["dmg"];
+    if(j.contains("geffect")) geffect = j["geffect"];
 
 }
 
@@ -473,7 +470,14 @@ static const std::map<std::string, int> _dirNames = {
 
 };
 
-std::optional<std::string> room_data::dgCallMember(const std::string& member, const std::string& arg) {
+const std::vector<std::string> sky_look = {
+                        "sunny",
+                        "cloudy",
+                        "rainy",
+                        "lightning"
+                };
+
+DgResults room_data::dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) {
     std::string lmember = member;
     boost::to_lower(lmember);
     boost::trim(lmember);
@@ -506,5 +510,57 @@ std::optional<std::string> room_data::dgCallMember(const std::string& member, co
             }
     }
 
-    return {};
+    if(lmember == "name") return name;
+    if(lmember == "sector") return sector_types[sector_type];
+    if(lmember == "gravity") return fmt::format("{}", (int64_t)getGravity());
+
+    if(lmember == "vnum") {
+        if(!arg.empty()) {
+            auto v = atoll(arg.c_str());
+            return vn == v ? "1":"0";
+        }
+        return fmt::format("{}", vn);
+    }
+
+    if(lmember == "contents") {
+        if(arg.empty()) {
+            if(contents) return contents;
+            return "";
+        }
+        obj_vnum v = atoll(arg.c_str());
+        if(auto found = findObjectVnum(v); found) return found;
+        return "";
+    }
+
+    if(lmember == "people") {
+        if(people) return people;
+        return "";
+    }
+
+    if(lmember == "id") return this;
+
+    if(lmember == "weather") return !room_flags.test(ROOM_INDOORS) ? sky_look[weather_info.sky] : "";
+
+    if(lmember == "fishing") return room_flags.test(ROOM_FISHING) ? "1" : "0";
+
+    if(lmember == "roomflag") {
+        if(arg.empty()) return "0";
+        int flag = get_flag_by_name(room_bits, (char*)arg.c_str());
+        if(flag == -1) return "0";
+        return room_flags.test(flag) ? "1" : "0";
+    }
+
+    if(lmember == "varexists") return script->hasVar(arg) ? "1" : "0";
+
+    if(lmember == "zonenumber") return fmt::format("{}", zone);
+    if(lmember == "zonename") return zone_table[zone].name;
+
+    if(script->hasVar(lmember)) {
+        return script->getVar(lmember);
+    } else {
+        script_log("Trigger: %s, VNum %d. unknown room field: '%s'",
+                               GET_TRIG_NAME(trig), GET_TRIG_VNUM(trig), lmember.c_str());
+    }
+
+    return "";
 }

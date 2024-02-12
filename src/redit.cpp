@@ -337,10 +337,10 @@ void redit_save_to_disk(zone_vnum zone_num) {
 void free_room(struct room_data *room) {
     /* Free the strings (Mythran). */
     free_room_strings(room);
+    
 
     if (SCRIPT(room))
-        extract_script(room, WLD_TRIGGER);
-    free_proto_script(room, WLD_TRIGGER);
+        room->script.reset();
 
     /* Free the room. */
     free(room);    /* XXX ? */

@@ -287,10 +287,6 @@ void cleanup_olc(struct descriptor_data *d, int8_t cleanup_type) {
      * a fresh copy of it in the trig index, or we lost connection.
      * Either way, we need to get rid of this.
      */
-    if (OLC_TRIG(d)) {
-        free_trigger(OLC_TRIG(d));
-        OLC_TRIG(d) = nullptr;
-    }
     /*
       * OLC_SCRIPT is always set as trig_proto of OLC_OBJ/MOB/ROOM.
       * Therefore it should not be free'd here.

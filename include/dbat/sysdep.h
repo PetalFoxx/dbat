@@ -39,6 +39,7 @@
 #include <memory>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
 #include <random>
 #include <chrono>
 #include <optional>
@@ -124,13 +125,13 @@ typedef int(*SpecialFunc)(struct char_data *ch, void *me, int cmd, char *argumen
 #define SPECIAL(name) int (name)(struct char_data *ch, void *me, int cmd, char *argument)
 
 template <typename Key, typename T>
-class DebugMap : public std::map<Key, T> {
+class DebugMap : public std::unordered_map<Key, T> {
 public:
     T& operator[](const Key& key) {
         if (key < 0) {
             throw std::runtime_error("Invalid key");
         }
-        return std::map<Key, T>::operator[](key);
+        return std::unordered_map<Key, T>::operator[](key);
     }
 };
 
@@ -216,3 +217,6 @@ std::list<T*> get_vnum_list(const VnumIndex<T>& index, vnum vn) {
 using UID = std::variant<struct room_data*, struct obj_data*, struct char_data*>;
 
 extern bool isMigrating;
+
+using DgResults = std::variant<std::string, unit_data*>;
+using DgHolder = std::variant<std::string, unit_data*, std::function<DgResults(struct trig_data*, const std::string& field, const std::string& args)>>;

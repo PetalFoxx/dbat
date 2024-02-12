@@ -473,7 +473,7 @@ ACMD(do_mload) {
         }
         char_to_room(mob, rnum);
         if (SCRIPT(ch)) { /* It _should_ have, but it might be detached. */
-            add_var(&(SCRIPT(ch)->global_vars), "lastloaded", mob->getUID().c_str(), 0);
+            ch->script->addVar("lastloaded", mob);
         }
         load_mtrigger(mob);
     } else if (is_abbrev(arg1, "obj")) {
@@ -482,7 +482,7 @@ ACMD(do_mload) {
             return;
         }
         if (SCRIPT(ch)) { /* It _should_ have, but it might be detached. */
-            add_var(&(SCRIPT(ch)->global_vars), "lastloaded", object->getUID().c_str(), 0);
+            ch->script->addVar("lastloaded", object);
         }
         randomize_eq(object);
         /* special handling to make objects able to load on a person/in a container/worn etc. */
@@ -590,8 +590,6 @@ ACMD(do_mpurge) {
         mob_log(ch, "mpurge: purging a PC");
         return;
     }
-
-    if (victim == ch) dg_owner_purged = 1;
 
     extract_char(victim);
 }

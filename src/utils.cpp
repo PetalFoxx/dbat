@@ -9,7 +9,7 @@
 ************************************************************************ */
 
 #include <unordered_set>
-
+#include <algorithm> 
 #include <exception>
 #include <iostream>
 #include "dbat/utils.h"

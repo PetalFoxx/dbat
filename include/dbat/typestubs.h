@@ -10,6 +10,7 @@ struct command_info;
 struct descriptor_data;
 struct account_data;
 struct player_data;
+struct trig_data;
 
 namespace race {
     class Race;

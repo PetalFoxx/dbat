@@ -77,32 +77,11 @@ static void dump_state_items(const std::filesystem::path &loc) {
     dump_to_file(loc, "items.json", j);
 }
 
-static void dump_state_dgscripts(const std::filesystem::path &loc) {
-    nlohmann::json j;
-
-    for(auto &[v, r] : uniqueScripts) {
-        if(v != r.second->id) r.second->id = v;
-        nlohmann::json j2;
-        j2["id"] = v;
-        j2["generation"] = static_cast<int32_t>(r.first);
-        j2["data"] = r.second->serializeInstance();
-        j2["location"] = r.second->serializeLocation();
-        j2["order"] = r.second->order;
-        j.push_back(j2);
-    }
-    dump_to_file(loc, "dgscripts.json", j);
-}
-
 void dump_state_globalData(const std::filesystem::path &loc) {
     nlohmann::json j;
 
     j["time"] = time_info.serialize();
     j["weather"] = weather_info.serialize();
-    if(auto gRoom = world.find(0); gRoom != world.end()) {
-        if(gRoom->second.script && gRoom->second.script->global_vars) {
-            j["dgGlobals"] = serializeVars(gRoom->second.script->global_vars);
-        }
-    }
 
     dump_to_file(loc, "globaldata.json", j);
 }
@@ -188,7 +167,7 @@ static void process_dirty_areas(const std::filesystem::path &loc) {
 static void process_dirty_dgscript_prototypes(const std::filesystem::path &loc) {
     nlohmann::json j;
     for(auto &[v, t] : trig_index) {
-        j.push_back(t.serializeProto());
+        j.push_back(t->serialize());
     }
     dump_to_file(loc, "dgScriptPrototypes.json", j);
 }
@@ -229,7 +208,7 @@ void runSave() {
     std::tm tm_now = *std::localtime(&time_t_now);
 
     auto tempPath = path / "temp";
-    std::filesystem::remove(tempPath);
+    std::filesystem::remove_all(tempPath);
     std::filesystem::create_directories(tempPath);
 
     auto newPath = path / fmt::format("dump-{:04}{:02}{:02}{:02}{:02}{:02}",
@@ -246,7 +225,7 @@ void runSave() {
         auto startTime = std::chrono::high_resolution_clock::now();
         std::vector<std::thread> threads;
         for(const auto func : {dump_state_accounts, dump_state_characters,
-              dump_state_players, dump_state_dgscripts,
+              dump_state_players,
                           dump_state_items, dump_state_globalData,
                           process_dirty_rooms, process_dirty_exits, process_dirty_item_prototypes,
                           process_dirty_npc_prototypes, process_dirty_shops,

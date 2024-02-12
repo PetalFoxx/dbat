@@ -154,6 +154,8 @@ std::string toDgUID(const DgUID& uid);
 
 #define SCRIPT_ERROR_CODE     (-9999999)   /* this shouldn't happen too often */
 
+
+
 /* one line of the trigger */
 struct cmdlist_element {
     char *cmd{};                /* one line of a trigger */
@@ -161,80 +163,22 @@ struct cmdlist_element {
     struct cmdlist_element *next{};
 };
 
-struct trig_var_data {
-    trig_var_data() = default;
-    explicit trig_var_data(const nlohmann::json& j);
-    nlohmann::json serialize();
-    char *name{};                /* name of variable  */
-    char *value{};                /* value of variable */
-    long context{};                /* 0: global context */
 
-    struct trig_var_data *next{};
-};
+class DgScriptException : public std::exception {
+private:
+    std::string message;
 
-/* structure for triggers */
-struct trig_data {
-    trig_data() = default;
-    explicit trig_data(const nlohmann::json& j);
-    nlohmann::json serializeProto();
-    nlohmann::json serializeInstance();
-    std::string serializeLocation();
-    trig_vnum vn{NOTHING};                    /* trigger's rnum                  */
-    int8_t attach_type{};            /* mob/obj/wld intentions          */
-    int8_t data_type{};                /* type of game_data for trig      */
-    char *name{};                    /* name of trigger                 */
-    long trigger_type{};            /* type of trigger (for bitvector) */
-    struct cmdlist_element *cmdlist{};    /* top of command list             */
-    struct cmdlist_element *curr_state{};    /* ptr to current line of trigger  */
-    int narg{};                /* numerical argument              */
-    char *arglist{};            /* argument list                   */
-    int depth{};                /* depth into nest ifs/whiles/etc  */
-    int loops{};                /* loop iteration counter          */
-    double waiting{0.0};    /* event to pause the trigger      */
-    bool purged{};            /* trigger is set to be purged     */
-    struct trig_var_data *var_list{};    /* list of local vars for trigger  */
-    DgUID owner{};
-    int order{0};
-    int countLine(struct cmdlist_element *c);
+public:
+    // Constructor taking a std::string parameter
+    explicit DgScriptException(const std::string& msg) : message(msg) {}
 
-    bool active{false};
-    void activate();
-    void deactivate();
-
-    int64_t id{};
-    time_t generation{};
-
-    struct trig_data *next{};
-    struct trig_data *next_in_world{};    /* next in the global trigger list */
-    void deserializeInstance(const nlohmann::json& j);
-    void deserializeLocation(const std::string& txt);
+    // Override the what() method to return the error message
+    const char* what() const noexcept override {
+        return message.c_str();
+    }
 };
 
 
-/* a complete script (composed of several triggers) */
-struct script_data {
-    script_data() = default;
-    explicit script_data(DgUID uid) : script_data() {
-        owner = uid;
-    };
-    long types{};                /* bitvector of trigger types */
-    struct trig_data *trig_list{};            /* list of triggers           */
-    struct trig_var_data *global_vars{};    /* list of global variables   */
-    bool purged{};                /* script is set to be purged */
-    long context{};                /* current context for statics */
-    DgUID owner{};
-
-    struct script_data *next{};        /* used for purged_scripts    */
-    void activate();
-    void deactivate();
-};
-
-/* The event data for the wait command */
-struct wait_event_data {
-    struct trig_data *trigger{};
-    void *go{};
-    int type{};
-};
 
 /* typedefs that the dg functions rely on */
 typedef struct index_data index_data;
@@ -395,8 +339,6 @@ extern void find_uid_name(char *uid, char *name, size_t nlen);
 
 extern void do_sstat(struct char_data *ch, struct unit_data *ud);
 
-extern void add_trigger(struct script_data *sc, trig_data *t, int loc);
-
 extern void script_vlog(const char *format, va_list args);
 
 extern void script_log(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
@@ -407,16 +349,9 @@ struct room_data *dg_room_of_obj(struct obj_data *obj);
 
 /* To maintain strict-aliasing we'll have to do this trick with a union */
 /* Thanks to Chris Gilbert for reminding me that there are other options. */
-extern int script_driver(void *go_adress, trig_data *trig, int type, int mode);
-
 extern trig_rnum real_trigger(trig_vnum vnum);
 
-extern void process_eval(void *go, struct script_data *sc, trig_data *trig,
-                         int type, char *cmd);
-
 extern void read_saved_vars(struct char_data *ch);
-
-extern void save_char_vars(struct char_data *ch);
 
 extern void add_to_lookup_table(long uid, void *c);
 
@@ -425,7 +360,7 @@ extern void remove_from_lookup_table(long uid);
 /* from dg_db_scripts.c */
 extern void parse_trigger(FILE *trig_f, trig_vnum nr);
 
-extern trig_data *read_trigger(int nr);
+extern std::shared_ptr<trig_data> read_trigger(int nr);
 
 extern void trig_data_copy(trig_data *this_data, const trig_data *trg);
 
@@ -437,34 +372,13 @@ extern void assign_triggers(struct unit_data *i, int type);
 
 
 /* From dg_variables.c */
-extern void add_var(struct trig_var_data **var_list, char *name, const char *value, long id);
-
 extern int item_in_list(char *item, obj_data *list);
 
 extern char *skill_percent(struct char_data *ch, char *skill);
 
 extern int char_has_item(char *item, struct char_data *ch);
 
-extern void var_subst(void *go, struct script_data *sc, trig_data *trig,
-                      int type, char *line, char *buf);
-
-extern int text_processed(char *field, char *subfield, struct trig_var_data *vd,
-                          char *str, size_t slen);
-
-extern void find_replacement(void *go, struct script_data *sc, trig_data *trig,
-                             int type, char *var, char *field, char *subfield, char *str, size_t slen);
-
-
 /* From dg_handler.c */
-extern void free_var_el(struct trig_var_data *var);
-
-extern void free_varlist(struct trig_var_data *vd);
-
-extern int remove_var(struct trig_var_data **var_list, char *name);
-
-extern void free_trigger(trig_data *trig);
-
-extern void extract_trigger(struct trig_data *trig);
 
 extern void extract_script(void *thing, int type);
 
@@ -505,16 +419,17 @@ extern room_rnum obj_room(obj_data *obj);
 /* Macros for scripts */
 
 #define UID_CHAR   '#'
-#define GET_TRIG_NAME(t)          ((t)->name)
-#define GET_TRIG_RNUM(t)          ((t)->vn)
-#define GET_TRIG_VNUM(t)      (trig_index[(t)->vn].vn)
-#define GET_TRIG_TYPE(t)          ((t)->trigger_type)
-#define GET_TRIG_NARG(t)          ((t)->narg)
-#define GET_TRIG_ARG(t)           ((t)->arglist)
-#define GET_TRIG_VARS(t)      ((t)->var_list)
+#define GET_TRIG_NAME(t)          ((t)->parent->name.c_str())
+#define GET_TRIG_RNUM(t)          ((t)->parent->vn)
+#define GET_TRIG_VNUM(t)          ((t)->parent->vn)
+#define GET_TRIG_TYPE(t)          ((t)->parent->trigger_type)
+#define GET_TRIG_NARG(t)          ((t)->parent->narg)
+#define GET_TRIG_ARG(t)           ((char*)(t)->parent->arglist.c_str())
+#define GET_TRIG_VARS(t)          ((t)->var_list)
 
 #define GET_TRIG_DEPTH(t)         ((t)->depth)
 #define GET_TRIG_LOOPS(t)         ((t)->loops)
+#define GET_TRIG_DORMANT(t)       ((t)->state == DgScriptState::DORMANT)
 
 /* player id's: 0 to MOB_ID_BASE - 1            */
 /* mob id's: MOB_ID_BASE to ROOM_ID_BASE - 1      */
@@ -535,11 +450,4 @@ extern room_rnum obj_room(obj_data *obj);
 
 #define SCRIPT_CHECK(go, type)   (SCRIPT(go) && \
                   IS_SET(SCRIPT_TYPES(SCRIPT(go)), type))
-#define TRIGGER_CHECK(t, type)   (IS_SET(GET_TRIG_TYPE(t), type) && \
-                  !GET_TRIG_DEPTH(t))
-
-extern void ADD_UID_VAR(char *buf, struct trig_data *trig, struct unit_data *thing, char *name, long context);
-
-extern nlohmann::json serializeVars(struct trig_var_data *vd);
-
-extern void deserializeVars(struct trig_var_data **vd, const nlohmann::json& j);
+#define TRIGGER_CHECK(t, type)   (IS_SET(GET_TRIG_TYPE(t), type) && GET_TRIG_DORMANT(t))

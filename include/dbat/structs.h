@@ -11,6 +11,8 @@
 
 #include "net.h"
 
+struct trig_data;
+
 /**********************************************************************
 * Structures                                                          *
 **********************************************************************/
@@ -133,6 +135,140 @@ struct room_ref {
     struct room_data* get(bool checkActive);
 };
 
+struct HasVars {
+    std::unordered_map<std::string, std::string> vars;
+    void addVar(const std::string &name, const std::string &value);
+    void addVar(const std::string &name, struct unit_data* u);
+    DgResults getVar(const std::string& name);
+    std::string getRaw(const std::string& name);
+    bool hasVar(const std::string& name);
+    bool delVar(const std::string& name);
+
+    nlohmann::json serializeVars();
+
+};
+
+struct trig_proto {
+    trig_proto() = default;
+    explicit trig_proto(const nlohmann::json& j);
+    trig_vnum vn{NOTHING};                    /* trigger's rnum                  */
+    int8_t attach_type{};            /* mob/obj/wld intentions          */
+    int8_t data_type{};                /* type of game_data for trig      */
+    std::string name;
+    long trigger_type{};            /* type of trigger (for bitvector) */
+    int narg{};                /* numerical argument              */
+    std::string arglist{};            /* argument list                   */
+    std::vector<std::string> lines;
+    nlohmann::json serialize();
+    void deserialize(const nlohmann::json& j);
+};
+
+/* a complete script (composed of several triggers) */
+struct script_data : public HasVars {
+    script_data() = default;
+    explicit script_data(struct unit_data *u) : script_data() {
+        owner = u;
+    };
+    long types{};                /* bitvector of trigger types */
+    std::list<std::shared_ptr<trig_data>> dgScripts;
+    bool purged{};                /* script is set to be purged */
+    struct unit_data* owner{};
+    void activate();
+    void deactivate();
+
+    void addTrigger(const std::shared_ptr<trig_data> t, int loc);
+    void removeAll();
+    void removeScript(const std::string &name);
+
+    void loadScript(const std::shared_ptr<trig_data> t);
+
+    nlohmann::json serialize();
+    void deserialize(const nlohmann::json &j);
+
+};
+
+enum class NestType : uint8_t {
+    IF = 0,
+    WHILE = 1,
+    SWITCH = 2
+};
+
+enum class DgScriptState : uint8_t {
+    DORMANT = 0,
+    RUNNING = 1,
+    WAITING = 2,
+    ERROR = 3,
+    DONE = 4,
+    PURGED = 5
+};
+
+struct trig_data : public HasVars, public std::enable_shared_from_this<trig_data> {
+    trig_data(std::shared_ptr<trig_proto> parent);
+    trig_data(struct script_data *sc, std::shared_ptr<trig_proto> parent);
+    ~trig_data();
+
+    nlohmann::json serialize();
+    std::string serializeLocation();
+
+    std::shared_ptr<trig_proto> parent;
+    struct script_data *sc;
+
+    std::vector<std::pair<NestType, std::size_t>> depth; /* depth into nest ifs/whiles/etc  */
+    std::size_t lineNumber{0};
+    int loops{};                /* loop iteration counter          */
+    int totalLoops{};
+    double waiting{0.0};    /* event to pause the trigger      */
+    bool purged{};            /* trigger is set to be purged     */
+
+    bool active{false};
+    DgScriptState state{DgScriptState::DORMANT};
+    void activate();
+    void deactivate();
+
+    void deserialize(const nlohmann::json& j);
+    void deserializeLocation(const std::string& txt);
+
+    void reset();
+    void setState(DgScriptState st);
+
+    int execute();
+    int executeBlock(std::size_t start, std::size_t end);
+    std::string getLine(std::size_t num);
+
+    bool processIf(const std::string &cond);
+
+    std::string evalExpr(const std::string& expr);
+    std::string varSubst(const std::string& expr);
+    std::string innerSubst(std::vector<DgHolder> &current, const std::string& expr);
+    void handleSubst(std::vector<DgHolder> &current, const std::string& field, const std::string& args);
+
+    std::optional<std::string> evalLhsOpRhs(const std::string& expr);
+
+    std::string evalOp(const std::string& op, const std::string& lhr, const std::string& rhr);
+
+    std::string evalNumericOp(const std::string& op, const std::string &lhs, const std::string &rhs);
+
+    bool truthy(const std::string& expr);
+
+    std::size_t findElseEnd(bool matchElseIf = true, bool matchElse = true);
+    std::size_t findEnd();
+    std::size_t findDone();
+    std::size_t findCase(const std::string& cond);
+
+    void processEval(const std::string& expr);
+    void extractValue(const std::string& expr);
+    void processContext(const std::string& expr);
+    void processGlobal(const std::string& cmd);
+    void processRemote(const std::string& cmd);
+    void processRdelete(const std::string& cmd);
+    void processSet(const std::string& cmd);
+    void processUnset(const std::string& cmd);
+    void processWait(const std::string& cmd);
+    void processAttach(const std::string& cmd);
+    void processDetach(const std::string& cmd);
+
+};
+
 struct unit_data {
     unit_data() = default;
     virtual ~unit_data() = default;
@@ -146,7 +282,7 @@ struct unit_data {
     struct extra_descr_data *ex_description{}; /* extra descriptions     */
 
     std::vector<trig_vnum> proto_script; /* list of default triggers  */
-    struct script_data *script{};  /* script info for the object */
+    std::shared_ptr<script_data> script{};  /* script info for the object */
 
     struct obj_data *contents{};     /* Contains objects  */
     weight_t getInventoryWeight();
@@ -165,17 +301,14 @@ struct unit_data {
     void deserializeUnit(const nlohmann::json& j);
     std::string scriptString();
 
-    virtual std::string getUID(bool active = true) = 0;
-    virtual bool isActive() = 0;
-    virtual void save() = 0;
-
-    nlohmann::json serializeScripts();
-    void deserializeScripts();
+    virtual std::string getUID(bool active = true);
+    virtual bool isActive();
+    virtual void save();
 
     struct obj_data* findObjectVnum(obj_vnum objVnum, bool working = true);
     virtual struct obj_data* findObject(const std::function<bool(struct obj_data*)> &func, bool working = true);
     virtual std::set<struct obj_data*> gatherObjects(const std::function<bool(struct obj_data*)> &func, bool working = true);
-
+    virtual DgResults dgCallMember(trig_data *trig, const std::string& member, const std::string& arg);
 };
 
 
@@ -204,6 +337,8 @@ struct obj_data : public unit_data {
     void deactivate();
 
     int getAffectModifier(int location, int specific = -1);
+    DgResults dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) override;
+
 
     std::string getUID(bool active = true) override;
     bool active{false};
@@ -216,7 +351,7 @@ struct obj_data : public unit_data {
     void clearLocation();
 
     obj_ref ref() { return obj_ref{id, generation}; }
-
+    
 
     room_rnum in_room{NOWHERE};        /* In what room -1 when conta/carr	*/
     room_vnum room_loaded{NOWHERE};    /* Room loaded in, for room_max checks	*/
@@ -352,9 +487,7 @@ struct room_data : public unit_data {
 
     MoonCheck checkMoon();
 
-    nlohmann::json serializeDgVars();
-
-    std::optional<std::string> dgCallMember(const std::string& member, const std::string& arg);
+    DgResults dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) override;
 
 };
 /* ====================================================================== */
@@ -550,7 +683,7 @@ struct char_data : public unit_data {
     void ageBy(double addedTime);
     void setAge(double newAge);
 
-    std::optional<std::string> dgCallMember(const std::string& member, const std::string& arg);
+    DgResults dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) override;
 
     struct room_data* getRoom();
 
@@ -1240,8 +1373,6 @@ struct index_data {
     SpecialFunc func;
 
     char *farg;         /* string argument for special function     */
-    struct trig_data *proto;     /* for triggers... the trigger     */
-    nlohmann::json serializeProto();
 };
 
 /* linked list for mob/object prototype trigger lists */

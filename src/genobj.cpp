@@ -14,6 +14,8 @@
 #include "dbat/handler.h"
 #include "dbat/dg_olc.h"
 #include "dbat/shop.h"
+#include "dbat/constants.h"
+#include "dbat/dg_scripts.h"
 
 static int copy_object_main(struct obj_data *to, struct obj_data *from, int free_object);
 
@@ -317,8 +319,8 @@ nlohmann::json obj_data::serializeInstance() {
 
     if(generation) j["generation"] = generation;
 
-    if(script && script->global_vars) {
-        j["dgvariables"] = serializeVars(script->global_vars);
+    if(!script->vars.empty()) {
+        j["dgvariables"] = script->vars;
     }
 
     if(world.contains(room_loaded)) j["room_loaded"] = room_loaded;
@@ -435,7 +437,7 @@ void obj_data::activate() {
     next = object_list;
     object_list = this;
 
-    if(script) script->activate();
+    script->activate();
 
     if(obj_proto.contains(vn)) {
         insert_vnum(objectVnumIndex, this);
@@ -454,14 +456,8 @@ void obj_data::deactivate() {
         erase_vnum(objectVnumIndex, this);
     }
 
-    if(script && script->trig_list) {
-        struct trig_data *next_trig;
-        for (auto trig = TRIGGERS(script); trig; trig = next_trig) {
-            next_trig = trig->next;
-            extract_trigger(trig);
-        }
-        TRIGGERS(script) = nullptr;
-    }
+    script->deactivate();
+
     if(contents) deactivateContents();
 }
 
@@ -473,8 +469,7 @@ void obj_data::deserializeInstance(const nlohmann::json &j, bool isActive) {
     add_unique_id(this);
 
     if(j.contains("dgvariables")) {
-        if(!script) script = new script_data(this);
-        deserializeVars(&script->global_vars, j["dgvariables"]);
+        script->vars = j["dgvariables"].get<std::unordered_map<std::string, std::string>>();
     }
 
     if(j.contains("room_loaded")) room_loaded = j["room_loaded"];
@@ -715,4 +710,180 @@ void obj_data::clearLocation() {
     else if(carried_by) obj_from_char(this);
     else if(worn_by) unequip_char(worn_by, worn_on);
     else if(world.contains(in_room)) obj_from_room(this);
+}
+
+static const std::map<std::string, int> _values = {
+    {"val0", 0},
+    {"val1", 1},
+    {"val2", 2},
+    {"val3", 3},
+    {"val4", 4},
+    {"val5", 5},
+    {"val6", 6},
+    {"val7", 7}
+};
+
+DgResults obj_data::dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) {
+    std::string lmember = member;
+    to_lower(lmember);
+    trim(lmember);
+    
+    if(lmember == "affects") {
+        if(arg.empty()) return "0";
+        int flag = get_flag_by_name(affected_bits, (char*)arg.c_str());
+        if(flag == -1) return "0";
+        return bitvector.test(flag) ? "1" : "0";
+    }
+
+    if(lmember == "cost") {
+        if(!arg.empty()) {
+            money_t addition = atoll(arg.c_str());
+            cost = std::max<money_t>(0, addition + cost);
+        }
+        return fmt::format("{}", cost);
+    }
+
+    if(lmember == "cost_per_day") {
+        if(!arg.empty()) {
+            money_t addition = atoll(arg.c_str());
+            cost_per_day = std::max<money_t>(0, addition + cost_per_day);
+        }
+        return fmt::format("{}", cost_per_day);
+    }
+
+    if(lmember == "count") {
+        if(GET_OBJ_TYPE(this) == ITEM_CONTAINER) return fmt::format("{}", item_in_list((char*)arg.c_str(), contents));
+        return "0";
+    }
+
+    if(lmember == "carried_by") return carried_by;
+
+    if(lmember == "contents") {
+        if(arg.empty()) return contents;
+        obj_vnum v = atoll(arg.c_str());
+        auto found = findObjectVnum(v);
+        if(found) return found;
+        return "";
+    }
+
+    if(lmember == "extra" || lmember == "itemflag") {
+        if(arg.empty()) return "0";
+        int flag = get_flag_by_name(extra_bits, (char*)arg.c_str());
+        if(flag == -1) return "0";
+        return extra_flags.test(flag) ? "1" : "0";
+    }
+
+    if(lmember == "has_in") {
+        if(GET_OBJ_TYPE(this) == ITEM_CONTAINER) return item_in_list((char*)arg.c_str(), contents) ? "1" : "0";
+        return "0";
+    }
+
+    if(lmember == "health") {
+        if(!arg.empty()) {
+            int addition = atof(arg.c_str());
+            value[VAL_ALL_HEALTH] = std::max<int>(1, addition + value[VAL_ALL_HEALTH]);
+            if (OBJ_FLAGGED(this, ITEM_BROKEN) && value[VAL_ALL_HEALTH] >= 100)
+                extra_flags.reset(ITEM_BROKEN);
+        }
+        return fmt::format("{}", value[VAL_ALL_HEALTH]);
+    }
+
+    if(lmember == "id") return this;
+
+    if(lmember == "in_room") {
+        if (auto roomFound = world.find(in_room); roomFound != world.end())
+            return &roomFound->second;
+        return "";
+    }
+
+    if(lmember == "is_pc") return "-1";
+
+    if(lmember == "level") return fmt::format("{}", GET_OBJ_LEVEL(this));
+
+    if(lmember == "name") {
+        if(!arg.empty()) {
+            name = strdup(arg.c_str());
+        }
+        return name;
+    }
+
+    if(lmember == "next_in_list") {
+        if(next_content) return next_content;
+        return "";
+    }
+
+    if(lmember == "room") {
+        auto r = getRoom();
+        if(r) return r;
+        return "";
+    }
+
+    if(lmember == "setaffects") {
+        if(arg.empty()) return "0";
+        int flag = get_flag_by_name(affected_bits, (char*)arg.c_str());
+        if(flag == -1) return "0";
+        bitvector.flip(flag);
+        return "1";
+    }
+
+    if(lmember == "setextra") {
+        if(arg.empty()) return "0";
+        int flag = get_flag_by_name(extra_bits, (char*)arg.c_str());
+        if(flag == -1) return "0";
+        extra_flags.flip(flag);
+        return "1";
+    }
+
+    if(lmember == "shortdesc") {
+        if(!arg.empty()) {
+            char blah[500];
+            sprintf(blah, "%s @wnicknamed @D(@C%s@D)@n", short_description, arg.c_str());
+            short_description = strdup(blah);
+        }
+        return short_description;
+    }
+
+    if(lmember == "size") {
+        if(!arg.empty()) {
+            auto ns = search_block((char*)arg.c_str(), size_names, false);
+            if(ns > -1) size = ns;
+        }
+        return size_names[size];
+    }
+
+    if(auto v = _values.find(lmember); v != _values.end()) return fmt::format("{}", value[v->second]);
+
+    if(lmember == "type") return item_types[type_flag];
+
+    if(lmember == "timer") return fmt::format("{}", GET_OBJ_TIMER(this));
+
+    if(lmember == "weight") {
+        if(!arg.empty()) {
+            auto addition = atof(arg.c_str());
+            weight = std::max<double>(0, weight + addition);
+        }
+        return fmt::format("{}", GET_OBJ_WEIGHT(this));
+    }
+
+    if(lmember == "worn_by") {
+        if(worn_by) return worn_by;
+        return "";
+    }
+
+    if(lmember == "vnum") {
+        if(!arg.empty()) {
+            auto v = atoll(arg.c_str());
+            return vn == v ? "1":"0";
+        }
+        return fmt::format("{}", vn);
+    }
+
+    if(script->hasVar(lmember)) {
+        return script->getVar(lmember);
+    } else {
+        script_log("Trigger: %s, VNum %d. unknown object field: '%s'",
+                               GET_TRIG_NAME(trig), GET_TRIG_VNUM(trig), lmember.c_str());
+    }
+    return "";
+
 }

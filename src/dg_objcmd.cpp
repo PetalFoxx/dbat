@@ -373,8 +373,6 @@ OCMD(do_opurge) {
     if (!ch) {
         o = get_obj_by_obj(obj, arg);
         if (o) {
-            if (o == obj)
-                dg_owner_purged = 1;
             extract_obj(o);
         } else
             obj_log(obj, "opurge: bad argument");
@@ -500,7 +498,7 @@ OCMD(do_dgoload) {
         char_to_room(mob, rnum);
 
         if (SCRIPT(obj)) { /* It _should_ have, but it might be detached. */
-            add_var(&(SCRIPT(obj)->global_vars), "lastloaded", mob->getUID(false).c_str(), 0);
+            obj->script->addVar("lastloaded", mob);
         }
 
         load_mtrigger(mob);
@@ -511,7 +509,7 @@ OCMD(do_dgoload) {
         }
 
         if (SCRIPT(obj)) { /* It _should_ have, but it might be detached. */
-            add_var(&(SCRIPT(obj)->global_vars), "lastloaded", object->getUID(false).c_str(), 0);
+            obj->script->addVar("lastloaded", object);
         }
 
         /* special handling to make objects able to load on a person/in a container/worn etc. */

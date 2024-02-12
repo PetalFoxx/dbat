@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "DBAT: (GDB) Server",
+            "name": "DBAT: (GDB) Migrate",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/circle",

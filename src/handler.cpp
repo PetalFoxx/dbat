@@ -970,6 +970,10 @@ void extract_char_final(struct char_data *ch) {
         ch->load_room = ch->normalizeLoadRoom(IN_ROOM(ch));
     }
 
+    if(ch->script) {
+        ch->script->purged = true;
+    }
+
     /*
      * We're booting the character of someone who has switched so first we
      * need to stuff them back into their own body.  This will set ch->desc

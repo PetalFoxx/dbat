@@ -31,6 +31,10 @@ nlohmann::json unit_data::serializeUnit() {
     if(id != NOTHING) j["id"] = id;
     if(zone != NOTHING) j["zone"] = zone;
 
+    if(script && (!script->dgScripts.empty() || !script->vars.empty())) {
+        j["dgScripts"] = script->serialize();
+    }
+
     return j;
 }
 
@@ -67,6 +71,11 @@ void unit_data::deserializeUnit(const nlohmann::json& j) {
 
     if(j.contains("id")) id = j["id"];
     if(j.contains("zone")) zone = j["zone"];
+
+    if(j.contains("dgScripts")) {
+        if(!script) script = std::make_shared<script_data>(this);
+        script->deserialize(j["dgScripts"]);
+    }
 
 }
 
@@ -132,4 +141,20 @@ std::set<struct obj_data*> unit_data::gatherObjects(const std::function<bool(str
         out.insert(contents.begin(), contents.end());
     }
     return out;
+}
+
+std::string unit_data::getUID(bool active) {
+    return "";
+}
+
+DgResults unit_data::dgCallMember(trig_data *trig, const std::string& member, const std::string& arg) {
+    return "";
+}
+
+bool unit_data::isActive() {
+    return false;
+}
+
+void unit_data::save() {
+
 }

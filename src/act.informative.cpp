@@ -3815,9 +3815,9 @@ void look_at_room(struct room_data *rm, struct char_data *ch, int ignore_brief) 
         }
 
         send_to_char(ch, "@wLocation: @G%-70s@w\r\n", rm->name);
-        if (SCRIPT(rm)) {
+        if (!rm->script->dgScripts.empty()) {
             send_to_char(ch, "@D[@GTriggers");
-            for (t = TRIGGERS(SCRIPT(rm)); t; t = t->next)
+            for (auto t : rm->script->dgScripts)
                 send_to_char(ch, " %d", GET_TRIG_VNUM(t));
             send_to_char(ch, "@D] ");
         }
@@ -6519,7 +6519,7 @@ static void perform_immort_where(struct char_data *ch, char *arg) {
                 found = 1;
                 send_to_char(ch, "M%3d. %-25s - [%5d] %-25s", ++num, GET_NAME(i),
                              GET_ROOM_VNUM(IN_ROOM(i)), i->getRoom()->name);
-                if (IS_NPC(i) && SCRIPT(i) && SCRIPT(i)->trig_list) {
+                if (IS_NPC(i) && !i->script->dgScripts.empty()) {
                     auto t = i->scriptString();
                     send_to_char(ch, "%s ", t.c_str());
                 }
