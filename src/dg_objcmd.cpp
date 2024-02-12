@@ -86,7 +86,7 @@ void obj_log(obj_data *obj, const char *format, ...) {
     va_list args;
     char output[MAX_STRING_LENGTH];
 
-    snprintf(output, sizeof(output), "Obj (%s [%d], VNum %d):: %s", obj->short_description, obj->id, GET_OBJ_VNUM(obj), format);
+    snprintf(output, sizeof(output), "Obj (%s [%d], VNum %d):: %s", obj->getShortDesc().c_str(), obj->id, GET_OBJ_VNUM(obj), format);
 
     va_start(args, format);
     script_vlog(output, args);

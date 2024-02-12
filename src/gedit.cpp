@@ -387,7 +387,7 @@ void gedit_disp_menu(struct descriptor_data *d) {
 
                     OLC_NUM(d),
                     G_TRAINER(guilddata) == NOBODY ? -1 : mob_index[G_TRAINER(guilddata)].vn,
-                    G_TRAINER(guilddata) == NOBODY ? "None" : mob_proto[G_TRAINER(guilddata)].short_description,
+                    G_TRAINER(guilddata) == NOBODY ? "None" : mob_proto[G_TRAINER(guilddata)].getShortDesc(),
                     G_NO_SKILL(guilddata).c_str(),
                     G_NO_GOLD(guilddata).c_str(),
                     G_OPEN(guilddata),

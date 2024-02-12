@@ -480,14 +480,14 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'M':
                 write_to_output(d, "%sLoad %s@y [@c%d@y], Max : %d, MaxR %d, Chance %d",
                                 c.if_flag ? " then " : "",
-                                mob_proto[c.arg1].short_description,
+                                mob_proto[c.arg1].getShortDesc(),
                                 mob_index[c.arg1].vn, c.arg2, c.arg4, c.arg5
                 );
                 break;
             case 'G':
                 write_to_output(d, "%sGive it %s@y [@c%d@y], Max : %d, Chance %d",
                                 c.if_flag ? " then " : "",
-                                obj_proto[c.arg1].short_description,
+                                obj_proto[c.arg1].getShortDesc(),
                                 obj_index[c.arg1].vn,
                                 c.arg2, c.arg5
                 );
@@ -495,7 +495,7 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'O':
                 write_to_output(d, "%sLoad %s@y [@c%d@y], Max : %d, MaxR %d, Chance %d",
                                 c.if_flag ? " then " : "",
-                                obj_proto[c.arg1].short_description,
+                                obj_proto[c.arg1].getShortDesc(),
                                 obj_index[c.arg1].vn,
                                 c.arg2, c.arg4, c.arg5
                 );
@@ -503,7 +503,7 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'E':
                 write_to_output(d, "%sEquip with %s@y [@c%d@n], %s, Max : %d, Chance %d",
                                 c.if_flag ? " then " : "",
-                                obj_proto[c.arg1].short_description,
+                                obj_proto[c.arg1].getShortDesc(),
                                 obj_index[c.arg1].vn,
                                 equipment_types[c.arg3],
                                 c.arg2, c.arg5
@@ -512,9 +512,9 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'P':
                 write_to_output(d, "%sPut %s@y [@c%d@n] in %s [@c%d@n], Max : %d, %% Chance %d",
                                 c.if_flag ? " then " : "",
-                                obj_proto[c.arg1].short_description,
+                                obj_proto[c.arg1].getShortDesc(),
                                 obj_index[c.arg1].vn,
-                                obj_proto[c.arg3].short_description,
+                                obj_proto[c.arg3].getShortDesc(),
                                 obj_index[c.arg3].vn,
                                 c.arg2, c.arg5
                 );
@@ -522,7 +522,7 @@ void zedit_disp_menu(struct descriptor_data *d) {
             case 'R':
                 write_to_output(d, "%sRemove %s@y [@c%d@n] from room.",
                                 c.if_flag ? " then " : "",
-                                obj_proto[c.arg2].short_description,
+                                obj_proto[c.arg2].getShortDesc(),
                                 obj_index[c.arg2].vn
                 );
                 break;

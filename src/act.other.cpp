@@ -135,7 +135,7 @@ void log_custom(struct descriptor_data *d, struct obj_data *obj) {
     }
 
     fprintf(fl, "@D[@cUser@W: @R%-20s @cName@W: @C%-20s @cCustom@W: @Y%s@D]\n", GET_USER(d->character),
-            GET_NAME(d->character), obj->short_description);
+            GET_NAME(d->character), obj->getShortDesc());
     fclose(fl);
 }
 
@@ -480,7 +480,7 @@ ACMD(do_rpp) {
                 *thelong = '\0';
 
                 sprintf(thename, "%s", obj->name);
-                sprintf(theshort, "%s", obj->short_description);
+                sprintf(theshort, "%s", obj->getShortDesc());
                 sprintf(thelong, "%s", obj->room_description);
 
                 ch->desc->obj_name = strdup(thename);
@@ -1944,10 +1944,10 @@ ACMD(do_candy) {
 
     send_to_char(ch, "You grab the candy as it falls.\r\n");
     obj = read_object(*randomCandy, VIRTUAL);
-    auto sh = obj->short_description;
+    auto sh = obj->getShortDesc();
     char newsh[MAX_STRING_LENGTH];
-    snprintf(newsh, MAX_STRING_LENGTH, "%s@n (of %s@n)", obj->short_description, vict->short_description);
-    obj->short_description = strdup(newsh);
+    snprintf(newsh, MAX_STRING_LENGTH, "%s@n (of %s@n)", obj->getShortDesc(), vict->getShortDesc());
+    obj->setShortDesc(newsh);
     obj_to_char(obj, ch);
     obj->value[VAL_FOOD_CANDY_PL] = vict->get(CharStat::PowerLevel);
     obj->value[VAL_FOOD_CANDY_KI] = vict->get(CharStat::Ki);
@@ -6128,13 +6128,13 @@ ACMD(do_forgery) {
     }
 
     if (OBJ_FLAGGED(obj2, ITEM_FORGED)) {
-        send_to_char(ch, "%s is forgery, there is no reason to make a fake of a fake!\r\n", obj2->short_description);
+        send_to_char(ch, "%s is forgery, there is no reason to make a fake of a fake!\r\n", obj2->getShortDesc());
         WAIT_STATE(ch, PULSE_2SEC);
         return;
     }
 
     if (OBJ_FLAGGED(obj2, ITEM_BROKEN)) {
-        send_to_char(ch, "%s is broken, there is no reason to make a fake of this mess!\r\n", obj2->short_description);
+        send_to_char(ch, "%s is broken, there is no reason to make a fake of this mess!\r\n", obj2->getShortDesc());
         WAIT_STATE(ch, PULSE_2SEC);
         return;
     }
@@ -6168,13 +6168,13 @@ ACMD(do_forgery) {
         if (rand_number(1, 10) >= 9) { /* Uh oh */
             send_to_char(ch,
                          "In the middle of creating a forgery of %s you screw up. The fabrication unit built into the forgery kit melts and bonds with the original. You clumsy mistake with the Estex Titanium drill has broken both.\r\n",
-                         obj2->short_description);
+                         obj2->getShortDesc());
             extract_obj(obj4);
             extract_obj(obj2);
             return;
         }
         send_to_char(ch, "You start to make a forgery of %s but screw up and waste your forgery kit..\r\n",
-                     obj2->short_description);
+                     obj2->getShortDesc());
         act("@c$n@w tried to duplicate $p but screws up somehow.@n", true, ch, obj2, nullptr, TO_ROOM);
         obj_from_char(obj4);
         extract_obj(obj4);
@@ -6193,7 +6193,7 @@ ACMD(do_forgery) {
 
     obj_from_char(obj4);
     extract_obj(obj4);
-    send_to_char(ch, "You make an excellent forgery of %s@n!\r\n", obj2->short_description);
+    send_to_char(ch, "You make an excellent forgery of %s@n!\r\n", obj2->getShortDesc());
     act("@c$n@w makes a perfect forgery of $p.@n", true, ch, obj2, nullptr, TO_ROOM);
     WAIT_STATE(ch, PULSE_2SEC);
 }
@@ -6228,21 +6228,21 @@ ACMD(do_appraise) {
     act("@c$n@w looks at $p, turning it over in $s hands.@n", true, ch, obj, nullptr, TO_ROOM);
     improve_skill(ch, SKILL_APPRAISE, 1);
     if (GET_SKILL(ch, SKILL_APPRAISE) < axion_dice(-10)) {
-        send_to_char(ch, "You fail to perceive the worth of %s..\r\n", obj->short_description);
+        send_to_char(ch, "You fail to perceive the worth of %s..\r\n", obj->getShortDesc());
         act("@c$n@w looks stumped about $p.@n", true, ch, obj, nullptr, TO_ROOM);
         WAIT_STATE(ch, PULSE_2SEC);
         return;
     }
 
     if (OBJ_FLAGGED(obj, ITEM_BROKEN)) {
-        send_to_char(ch, "%s is broken!\r\n", obj->short_description);
+        send_to_char(ch, "%s is broken!\r\n", obj->getShortDesc());
         act("@c$n@w looks at $p and frowns.@n", true, ch, obj, nullptr, TO_ROOM);
         WAIT_STATE(ch, PULSE_2SEC);
         return;
     }
 
     if (OBJ_FLAGGED(obj, ITEM_FORGED)) {
-        send_to_char(ch, "%s is fake and worthless!\r\n", obj->short_description);
+        send_to_char(ch, "%s is fake and worthless!\r\n", obj->getShortDesc());
         act("@c$n@w looks at $p with an angry face.@n", true, ch, obj, nullptr, TO_ROOM);
         WAIT_STATE(ch, PULSE_2SEC);
         return;
@@ -6253,7 +6253,7 @@ ACMD(do_appraise) {
     if (GET_OBJ_TYPE(obj) == ITEM_WEAPON && OBJ_FLAGGED(obj, ITEM_CUSTOM))
         displevel = 20;
 
-    send_to_char(ch, "%s is worth: %s\r\nMin Lvl: %d\r\n", obj->short_description, add_commas(GET_OBJ_COST(obj)).c_str(),
+    send_to_char(ch, "%s is worth: %s\r\nMin Lvl: %d\r\n", obj->getShortDesc(), add_commas(GET_OBJ_COST(obj)).c_str(),
                  displevel);
     if (GET_OBJ_TYPE(obj) == ITEM_WEAPON) {
         if (OBJ_FLAGGED(obj, ITEM_WEAPLVL1)) {
@@ -9348,7 +9348,7 @@ ACMD(do_steal) {
                     if (!IS_NPC(vict)) {
                         vict->playerFlags.set(PLR_STOLEN);
                         mudlog(NRM, MAX(ADMLVL_GRGOD, GET_INVIS_LEV(ch)), true, "THEFT: %s has stolen %s@n from %s",
-                               GET_NAME(ch), obj->short_description, GET_NAME(vict));
+                               GET_NAME(ch), obj->getShortDesc(), GET_NAME(vict));
                     }
                     if (axion_dice(0) > prob) {
                         reveal_hiding(ch, 0);
@@ -10616,7 +10616,7 @@ ACMD(do_break) {
     }
 
     /* Ok, break it! */
-    send_to_char(ch, "You ruin %s.\r\n", obj->short_description);
+    send_to_char(ch, "You ruin %s.\r\n", obj->getShortDesc());
     act("$n ruins $p.", false, ch, obj, nullptr, TO_ROOM);
     GET_OBJ_VAL(obj, VAL_ALL_HEALTH) = 0;
     obj->extra_flags.set(ITEM_BROKEN);
@@ -10705,12 +10705,12 @@ ACMD(do_fix) {
 
 
         if (GET_OBJ_VAL(obj, VAL_ALL_HEALTH) + GET_SKILL(ch, SKILL_REPAIR) < 100) {
-            send_to_char(ch, "You repair %s a bit.\r\n", obj->short_description);
+            send_to_char(ch, "You repair %s a bit.\r\n", obj->getShortDesc());
             act("$n repairs $p a bit.", false, ch, obj, nullptr, TO_ROOM);
             GET_OBJ_VAL(obj, VAL_ALL_HEALTH) += GET_SKILL(ch, SKILL_REPAIR);
             obj->extra_flags.reset(ITEM_BROKEN);
         } else {
-            send_to_char(ch, "You repair %s completely.\r\n", obj->short_description);
+            send_to_char(ch, "You repair %s completely.\r\n", obj->getShortDesc());
             act("$n repairs $p completely.", false, ch, obj, nullptr, TO_ROOM);
             GET_OBJ_VAL(obj, VAL_ALL_HEALTH) = 100;
             obj->extra_flags.reset(ITEM_BROKEN);

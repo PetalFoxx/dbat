@@ -70,34 +70,27 @@ ACMD(do_spiritcontrol) {
 
 ACMD(do_tailhide) {
 
-    if (IS_NPC(ch))
-        return;
-
-    if (!(IS_SAIYAN(ch)) && !(IS_HALFBREED(ch))) {
+    if (!(IS_SAIYAN(ch) || IS_HALFBREED(ch))) {
         send_to_char(ch, "You have no need to hide your tail!\r\n");
+        return;
     }
-    if ((IS_SAIYAN(ch) || IS_HALFBREED(ch)) && !(PLR_FLAGGED(ch, PLR_TAILHIDE))) {
-        ch->playerFlags.set(PLR_TAILHIDE);
+    if (ch->playerFlags.flip(PLR_TAILHIDE).test(PLR_TAILHIDE)) {
         send_to_char(ch, "You have decided to hide your tail!\r\n");
-    } else if ((IS_SAIYAN(ch) || IS_HALFBREED(ch)) && PLR_FLAGGED(ch, PLR_TAILHIDE)) {
-        ch->playerFlags.reset(PLR_TAILHIDE);
+    } else {
         send_to_char(ch, "You have decided to display your tail for all to see!\r\n");
     }
 }
 
 ACMD(do_nogrow) {
 
-    if (IS_NPC(ch))
+    if (!(IS_SAIYAN(ch) || IS_HALFBREED(ch))) {
+        send_to_char(ch, "What do you mean!\r\n");
         return;
+    } 
 
-    if (!(IS_SAIYAN(ch)) && !(IS_HALFBREED(ch))) {
-        send_to_char(ch, "What do you mean?\r\n");
-    }
-    if ((IS_SAIYAN(ch) || IS_HALFBREED(ch)) && !(PLR_FLAGGED(ch, PLR_NOGROW))) {
-        ch->playerFlags.set(PLR_NOGROW);
+    if (ch->playerFlags.flip(PLR_NOGROW).test(PLR_NOGROW)) {
         send_to_char(ch, "You have decided to halt your tail growth!\r\n");
-    } else if ((IS_SAIYAN(ch) || IS_HALFBREED(ch)) && PLR_FLAGGED(ch, PLR_NOGROW)) {
-        ch->playerFlags.reset(PLR_NOGROW);
+    } else {
         send_to_char(ch, "You have decided to regrow your tail!\r\n");
     }
 }
@@ -132,7 +125,7 @@ ACMD(do_restring) {
             *thelong = '\0';
 
             sprintf(thename, "%s", obj->name);
-            sprintf(theshort, "%s", obj->short_description);
+            sprintf(theshort, "%s", obj->getShortDesc());
             sprintf(thelong, "%s", obj->room_description);
 
             ch->desc->obj_name = strdup(thename);
@@ -244,14 +237,13 @@ static void generate_multiform(struct char_data *ch, int count) {
     auto clone_ldesc = fmt::format("{}'s @CClone@w is standing here.@n\n", ch->name);
 
     for (int i = 0; i < count; i++) {
-        char_data *clone = nullptr;
-        clone = read_mobile(r_num, REAL);
+        auto clone = read_mobile(r_num, REAL);
 
-        clone->name = strdup(clone_name.c_str());
-        clone->short_description = strdup(clone_sdesc.c_str());
-        clone->room_description = strdup(clone_ldesc.c_str());
-        if (ch->look_description)
-            clone->look_description = strdup(ch->look_description);
+        clone->setName(clone_name);
+        clone->setShortDesc(clone_sdesc);
+        clone->setRoomDesc(clone_ldesc);
+        if (auto ld = ch->getLookDesc(); !ld.empty())
+            clone->setLookDesc(ld);
         clone->race = ch->race;
         clone->chclass = ch->chclass;
         clone->stats = ch->stats;
@@ -436,6 +428,14 @@ static void resolve_song(struct char_data *ch) {
                         assign_affect(target, AFF_SHADOWSTITCH, 0, -1, 0, 0, 0, 0, 0, -2);
                     }
                 };
+                auto msgShadow = [](struct char_data *ch, struct char_data* vict) {
+                    act("@CYour forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
+                        true, ch, nullptr, vict, TO_CHAR);
+                    act("@c$n's@C forboding music has caused YOUR shadows to stitch into YOUR body, slow YOUR actions down!@n",
+                        true, ch, nullptr, vict, TO_VICT);
+                    act("@c$n's@C forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
+                        true, ch, nullptr, vict, TO_NOTVICT);
+                };
                 if (ch->master && vict->master) {
                     if (AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
                         if (ch == vict->master || ch->master == vict || ch->master == vict->master) {
@@ -443,30 +443,15 @@ static void resolve_song(struct char_data *ch) {
                         }
 
                         if (skill > diceroll + 10) {
-                            act("@CYour forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                                true, ch, nullptr, vict, TO_CHAR);
-                            act("@c$n's@C forboding music has caused YOUR shadows to stitch into YOUR body, slow YOUR actions down!@n",
-                                true, ch, nullptr, vict, TO_VICT);
-                            act("@c$n's@C forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                                true, ch, nullptr, vict, TO_NOTVICT);
+                            msgShadow(ch, vict);
                             applyShadow(ch, vict);
                         }
                     } else if (skill > diceroll + 10) {
-                        act("@CYour forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                            true, ch, nullptr, vict, TO_CHAR);
-                        act("@c$n's@C forboding music has caused YOUR shadows to stitch into YOUR body, slow YOUR actions down!@n",
-                            true, ch, nullptr, vict, TO_VICT);
-                        act("@c$n's@C forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                            true, ch, nullptr, vict, TO_NOTVICT);
+                        msgShadow(ch, vict);
                         applyShadow(ch, vict);
                     }
                 } else if (skill > diceroll + 10) {
-                    act("@CYour forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                        true, ch, nullptr, vict, TO_CHAR);
-                    act("@c$n's@C forboding music has caused YOUR shadows to stitch into YOUR body, slow YOUR actions down!@n",
-                        true, ch, nullptr, vict, TO_VICT);
-                    act("@c$n's@C forboding music has caused @c$N's@C shadows to stitch into $S body, slowing $S actions!@n",
-                        true, ch, nullptr, vict, TO_NOTVICT);
+                    msgShadow(ch, vict);
                     applyShadow(ch, vict);
                 }
                 if ((ch->getCurKI()) <= 0) {
@@ -656,65 +641,25 @@ static void resolve_song(struct char_data *ch) {
         }
     }
 
+    static const std::unordered_map<int, std::pair<room_vnum, std::string>> song_destinations = {
+        {SONG_TELEPORT_EARTH, {300, "Earth"}},
+        {SONG_TELEPORT_VEGETA, {2234, "Vegeta"}},
+        {SONG_TELEPORT_FRIGID, {4047, "Frigid"}},
+        {SONG_TELEPORT_NAMEK, {10182, "Namek"}},
+        {SONG_TELEPORT_KANASSA, {14910, "Kanassa"}},
+        {SONG_TELEPORT_AETHER, {12025, "Aether"}},
+        {SONG_TELEPORT_ARLIA, {16087, "Arlia"}},
+        {SONG_TELEPORT_KONACK, {8003, "Konack"}}
+    };
 
     if (GET_SONG(ch) >= 4 && skill > diceroll) {
-        switch ((int)GET_SONG(ch)) {
-            case SONG_TELEPORT_EARTH:
-                char_from_room(ch);
-                char_to_room(ch, real_room(300));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Earth and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_VEGETA:
-                char_from_room(ch);
-                char_to_room(ch, real_room(2234));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Vegeta and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_FRIGID:
-                char_from_room(ch);
-                char_to_room(ch, real_room(4047));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Frigid and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_NAMEK:
-                char_from_room(ch);
-                char_to_room(ch, real_room(10182));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Namek and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_KANASSA:
-                char_from_room(ch);
-                char_to_room(ch, real_room(14910));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Kanassa and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_AETHER:
-                char_from_room(ch);
-                char_to_room(ch, real_room(12025));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Aether and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_ARLIA:
-                char_from_room(ch);
-                char_to_room(ch, real_room(16087));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Arlia and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
-            case SONG_TELEPORT_KONACK:
-                char_from_room(ch);
-                char_to_room(ch, real_room(8003));
-                ch->set(CharNum::MysticMelody, 0);
-                act("@CFinally as the last of your comrades has been teleported you teleport yourself to Konack and stop your song.@n",
-                    true, ch, nullptr, nullptr, TO_CHAR);
-                break;
+        if(auto foundsong = song_destinations.find((int)GET_SONG(ch)); foundsong != song_destinations.end()) {
+            auto [room, name] = foundsong->second;
+            act(fmt::format("@CYour Teleportation Melody has transported you to @c{}@C!@n", name).c_str(), true, ch, nullptr, nullptr, TO_CHAR);
+            act(fmt::format("@c$n's@C Teleportation Melody has transported $m to @c{}@C!@n",name).c_str(), true, ch, nullptr, nullptr, TO_ROOM);
+            char_from_room(ch);
+            char_to_room(ch, real_room(room));
+            ch->set(CharNum::MysticMelody, 0);
         }
     }
 }
@@ -5706,9 +5651,9 @@ ACMD(do_spoil) {
     snprintf(buf2, sizeof(buf2), "@wThe bloody head of %s@w is lying here@n", part);
     snprintf(buf3, sizeof(buf3), "@wThe bloody head of %s@w@n", part);
 
-    body_part->name = strdup(buf);
-    body_part->room_description = strdup(buf2);
-    body_part->short_description = strdup(buf3);
+    body_part->setName(buf);
+    body_part->setRoomDesc(buf2);
+    body_part->setShortDesc(buf3);
 
     GET_OBJ_TYPE(body_part) = ITEM_OTHER;
     body_part->wear_flags.set(ITEM_WEAR_TAKE);

@@ -549,7 +549,7 @@ void equip_char(struct char_data *ch, struct obj_data *obj, int pos) {
 
     if (GET_EQ(ch, pos)) {
         basic_mud_log("SYSERR: Char is already equipped: %s, %s", GET_NAME(ch),
-            obj->short_description);
+            obj->getShortDesc());
         return;
     }
     if (obj->carried_by) {
@@ -674,7 +674,7 @@ void obj_to_room(struct obj_data *object, struct room_data *room) {
         if (GET_OBJ_TYPE(object) != ITEM_PLANT) {
             send_to_room(room,
                          "%s @wDisappears in a puff of smoke! It seems the room was designed to vaporize anything not plant related. Strange...@n\r\n",
-                         object->short_description);
+                         object->getShortDesc());
             extract_obj(object);
             return;
         }
@@ -715,24 +715,22 @@ void obj_to_room(struct obj_data *object, struct room_data *room) {
                         basic_mud_log("SYSERR: Vehicle %d not found for hatch %d", GET_OBJ_VAL(object, 0), GET_OBJ_VNUM(object));
                     }
                     obj_to_room(vehicle, real_room(GET_OBJ_VAL(object, 3)));
-                    if (object->look_description) {
-                        if (strlen(object->look_description)) {
-                            char nick[MAX_INPUT_LENGTH], nick2[MAX_INPUT_LENGTH], nick3[MAX_INPUT_LENGTH];
+                    if (auto ld = object->getLookDesc(); !ld.empty()) {
+                        char nick[MAX_INPUT_LENGTH], nick2[MAX_INPUT_LENGTH], nick3[MAX_INPUT_LENGTH];
                             if (GET_OBJ_VNUM(vehicle) <= 46099 && GET_OBJ_VNUM(vehicle) >= 46000) {
-                                sprintf(nick, "Saiyan Pod %s", object->look_description);
+                                sprintf(nick, "Saiyan Pod %s", ld.c_str());
                                 sprintf(nick2, "@wA @Ys@ya@Yi@yy@Ya@yn @Dp@Wo@Dd@w named @D(@C%s@D)@w",
-                                        object->look_description);
+                                        ld.c_str());
                             } else if (GET_OBJ_VNUM(vehicle) >= 46100 && GET_OBJ_VNUM(vehicle) <= 46199) {
-                                sprintf(nick, "EDI Xenofighter MK. II %s", object->look_description);
+                                sprintf(nick, "EDI Xenofighter MK. II %s", ld.c_str());
                                 sprintf(nick2,
                                         "@wAn @YE@yD@YI @CX@ce@Wn@Do@Cf@ci@Wg@Dh@Wt@ce@Cr @RMK. II @wnamed @D(@C%s@D)@w",
-                                        object->look_description);
+                                        ld.c_str());
                             }
                             sprintf(nick3, "%s is resting here@w", nick2);
-                            vehicle->name = strdup(nick);
-                            vehicle->short_description = strdup(nick2);
-                            vehicle->room_description = strdup(nick3);
-                        }
+                            vehicle->setName(nick);
+                            vehicle->setShortDesc(nick2);
+                            vehicle->setRoomDesc(nick3);
                     }
                     SET_BIT(GET_OBJ_VAL(object, VAL_CONTAINER_FLAGS), CONT_CLOSED);
                     SET_BIT(GET_OBJ_VAL(object, VAL_CONTAINER_FLAGS), CONT_LOCKED);
@@ -789,11 +787,11 @@ void obj_from_room(struct obj_data *object) {
     if (GET_OBJ_POSTED(object) && object->in_obj == nullptr) {
         struct obj_data *obj = GET_OBJ_POSTED(object);
         if (GET_OBJ_POSTTYPE(object) <= 0) {
-            send_to_room(IN_ROOM(obj), "%s@W shakes loose from %s@W.@n\r\n", obj->short_description,
-                         object->short_description);
+            send_to_room(IN_ROOM(obj), "%s@W shakes loose from %s@W.@n\r\n", obj->getShortDesc(),
+                         object->getShortDesc());
         } else {
-            send_to_room(IN_ROOM(obj), "%s@W comes loose from %s@W.@n\r\n", object->short_description,
-                         obj->short_description);
+            send_to_room(IN_ROOM(obj), "%s@W comes loose from %s@W.@n\r\n", object->getShortDesc(),
+                         obj->getShortDesc());
         }
         GET_OBJ_POSTED(obj) = nullptr;
         GET_OBJ_POSTTYPE(obj) = 0;
@@ -1532,16 +1530,16 @@ struct obj_data *create_money(int amount) {
     CREATE(new_descr, struct extra_descr_data, 1);
 
     if (amount == 1) {
-        obj->name = strdup("zenni money");
-        obj->short_description = strdup("a single zenni");
-        obj->room_description = strdup("One miserable zenni is lying here");
+        obj->setName("zenni money");
+        obj->setShortDesc("a single zenni");
+        obj->setRoomDesc("One miserable zenni is lying here");
         new_descr->keyword = strdup("zenni money");
         new_descr->description = strdup("It's just one miserable little zenni.");
     } else {
-        obj->name = strdup("zenni money");
-        obj->short_description = strdup(money_desc(amount));
+        obj->setName("zenni money");
+        obj->setShortDesc(money_desc(amount));
         snprintf(buf, sizeof(buf), "%s is lying here", money_desc(amount));
-        obj->room_description = strdup(CAP(buf));
+        obj->setRoomDesc(CAP(buf));
 
         new_descr->keyword = strdup("zenni money");
         if (amount < 10)

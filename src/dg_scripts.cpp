@@ -1333,9 +1333,8 @@ ACMD(do_attach) {
 
         send_to_char(ch, "Trigger %d (%s) attached to %s [%d].\r\n",
                      tn, GET_TRIG_NAME(trig),
-                     (object->short_description ?
-                      object->short_description : object->name),
-                     GET_OBJ_VNUM(object));
+                     (withPlaceholder(object->getShortDesc(), object->name),
+                     GET_OBJ_VNUM(object)));
     } else if (is_abbrev(arg, "room") || is_abbrev(arg, "wtr")) {
         if (strchr(targ_name, '.'))
             rnum = IN_ROOM(ch);

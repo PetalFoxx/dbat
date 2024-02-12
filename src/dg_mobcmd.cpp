@@ -993,17 +993,13 @@ ACMD(do_mtransform) {
 
         /* Thanks to Russell Ryan for this fix. RRfon we need to copy the
            the strings so we don't end up free'ing the prototypes later */
-        if (m->name)
-            tmpmob.name = strdup(m->name);
+        if(auto n = m->getName(); !n.empty()) tmpmob.setName(n);
         if (m->title)
             tmpmob.title = strdup(m->title);
-        if (m->short_description)
-            tmpmob.short_description = strdup(m->short_description);
-        if (m->room_description)
-            tmpmob.room_description = strdup(m->room_description);
-        if (m->look_description)
-            tmpmob.look_description = strdup(m->look_description);
-
+        
+        if (auto sh = m->getShortDesc(); !sh.empty()) tmpmob.setShortDesc(sh);
+        if (auto ld = m->getLookDesc(); !ld.empty()) tmpmob.setLookDesc(ld);
+        if (auto d = m->getRoomDesc(); !d.empty()) tmpmob.setRoomDesc(d);
 
         tmpmob.id = ch->id;
         tmpmob.affected = ch->affected;

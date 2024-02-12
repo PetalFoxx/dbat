@@ -28,8 +28,6 @@ extern int find_eq_pos(struct char_data *ch, struct obj_data *obj, char *arg);
 
 extern void perform_remove(struct char_data *ch, int pos);
 
-extern int64_t max_carry_weight(struct char_data *ch);
-
 extern void stop_auction(int type, struct char_data *ch);
 
 extern void check_auction(uint64_t heartPulse, double deltaTime);

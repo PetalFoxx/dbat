@@ -153,7 +153,7 @@ void assedit_disp_menu(struct descriptor_data *d) {
                  "Assembly Type  : @y%s@n\r\n"
                  "Components:\r\n",
                  OLC_ASSEDIT(d)->lVnum,
-                 obj_proto[real_object(OLC_ASSEDIT(d)->lVnum)].short_description,
+                 obj_proto[real_object(OLC_ASSEDIT(d)->lVnum)].getShortDesc(),
                  szAssmType
     );
 
@@ -167,7 +167,7 @@ void assedit_disp_menu(struct descriptor_data *d) {
                 send_to_char(d->character,
                              "@g%2d@n) [@c%5ld@n] %-20.20s  In room: @c%-3.3s@n    Extract: @y%-3.3s@n\r\n",
                              i + 1, OLC_ASSEDIT(d)->pComponents[i].lVnum,
-                             obj_proto[lRnum].short_description,
+                             obj_proto[lRnum].getShortDesc(),
                              (OLC_ASSEDIT(d)->pComponents[i].bInRoom ? "Yes" : "No"),
                              (OLC_ASSEDIT(d)->pComponents[i].bExtract ? "Yes" : "No"));
             }

@@ -245,8 +245,6 @@ struct obj_data *read_object(obj_vnum nr, int type, bool activate = true);
 
 extern int vnum_object(char *searchname, struct char_data *ch);
 
-extern int my_obj_save_to_disk(FILE *fp, struct obj_data *obj, int locate);
-
 extern void add_unique_id(struct obj_data *obj);
 
 extern void check_unique_id(struct obj_data *obj);

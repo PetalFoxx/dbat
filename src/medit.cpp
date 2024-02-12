@@ -601,9 +601,9 @@ void medit_parse(struct descriptor_data *d, char *arg) {
                     OLC_MODE(d) = MEDIT_D_DESC;
                     send_editor_help(d);
                     write_to_output(d, "Enter mob description:\r\n\r\n");
-                    if (OLC_MOB(d)->look_description) {
-                        write_to_output(d, "%s", OLC_MOB(d)->look_description);
-                        oldtext = strdup(OLC_MOB(d)->look_description);
+                    if (auto ld = OLC_MOB(d)->getLookDesc(); !ld.empty()) {
+                        write_to_output(d, "%s", ld);
+                        oldtext = strdup(ld.c_str());
                     }
                     string_write(d, &OLC_MOB(d)->look_description, MAX_MOB_DESC, 0, oldtext);
                     OLC_VAL(d) = 1;

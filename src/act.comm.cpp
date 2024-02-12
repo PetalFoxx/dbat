@@ -1301,20 +1301,21 @@ ACMD(do_write) {
     else if (GET_OBJ_TYPE(paper) != ITEM_NOTE)
         act("You can't write on $p.", false, ch, paper, nullptr, TO_CHAR);
     else {
-        char *backstr = nullptr;
+
+        std::string backstr;
 
         /* Something on it, display it as that's in input buffer. */
-        if (paper->look_description) {
-            backstr = strdup(paper->look_description);
+        if (auto ld = paper->getLookDesc(); !ld.empty()) {
+            backstr = ld;
             send_to_char(ch, "There's something written on it already:\r\n");
-            send_to_char(ch, "%s", paper->look_description);
+            send_to_char(ch, "%s", ld);
         }
 
         /* we can write - hooray! */
         act("$n begins to jot down a note.", true, ch, nullptr, nullptr, TO_ROOM);
         paper->extra_flags.set(ITEM_UNIQUE_SAVE);
         send_editor_help(ch->desc);
-        string_write(ch->desc, &paper->look_description, MAX_NOTE_LENGTH, 0, backstr);
+        string_write(ch->desc, &paper->look_description, MAX_NOTE_LENGTH, 0, (char*)backstr.c_str());
     }
 }
 

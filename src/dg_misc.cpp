@@ -130,10 +130,9 @@ void do_dg_cast(void *go, struct script_data *sc, trig_data *trig,
         }
         /* set the caster's name to that of the object, or the gods.... */
         if (type == OBJ_TRIGGER)
-            caster->short_description =
-                    strdup(((struct obj_data *) go)->short_description);
+            caster->setShortDesc(static_cast<unit_data*>(go)->getShortDesc());
         else if (type == WLD_TRIGGER)
-            caster->short_description = strdup("The gods");
+            caster->setShortDesc("The gods");
         caster->next_in_room = caster_room->people;
         caster_room->people = caster;
         IN_ROOM(caster) = real_room(caster_room->vn);
