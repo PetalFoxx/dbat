@@ -26,7 +26,7 @@
 /* Local variables */
 int spell_sort_info[SKILL_TABLE_SIZE + 1];
 guild_vnum top_guild = NOTHING;
-std::map<guild_vnum, struct guild_data> guild_index;
+std::unordered_map<guild_vnum, struct guild_data> guild_index;
 
 char *guild_customer_string(int guild_nr, int detailed);
 

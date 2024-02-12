@@ -52,7 +52,7 @@
 
 /* local globals */
 struct descriptor_data *descriptor_list = nullptr;        /* master desc list */
-std::map<int64_t, struct descriptor_data*> sessions;
+std::unordered_map<int64_t, struct descriptor_data*> sessions;
 struct txt_block *bufpool = nullptr;    /* pool of large output buffers */
 int buf_largecount = 0;        /* # of large buffers which exist */
 int buf_overflows = 0;        /* # of overflows of output */

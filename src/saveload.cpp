@@ -27,7 +27,7 @@ static void dump_state_accounts(const std::filesystem::path &loc) {
     nlohmann::json j;
 
     for(auto &[v, r] : accounts) {
-        j.push_back(r.serialize());
+        j.push_back(r->serialize());
     }
 
     dump_to_file(loc, "accounts.json", j);
@@ -38,7 +38,7 @@ static void dump_state_players(const std::filesystem::path &loc) {
     nlohmann::json j;
 
     for(auto &[v, r] : players) {
-        j.push_back(r.serialize());
+        j.push_back(r->serialize());
     }
     dump_to_file(loc, "players.json", j);
 }

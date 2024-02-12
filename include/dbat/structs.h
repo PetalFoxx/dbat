@@ -16,6 +16,74 @@ struct trig_data;
 /**********************************************************************
 * Structures                                                          *
 **********************************************************************/
+/* structure for the reset commands */
+struct reset_com {
+    reset_com() = default;
+    explicit reset_com(const nlohmann::json& j);
+    char command{};   /* current command                      */
+
+    bool if_flag{};    /* if TRUE: exe only if preceding exe'd */
+    int arg1{};        /*                                      */
+    int arg2{};        /* Arguments to the command             */
+    int arg3{};        /*                                      */
+    int arg4{};        /* room_max  default 0			*/
+    int arg5{};           /* percentages variable                 */
+    int line{};        /* line number this command appears on  */
+    std::string sarg1;        /* string argument                      */
+    std::string sarg2;        /* string argument                      */
+
+    nlohmann::json serialize();
+
+    /*
+     *  Commands:              *
+     *  'M': Read a mobile     *
+     *  'O': Read an object    *
+     *  'G': Give obj to mob   *
+     *  'P': Put obj in obj    *
+     *  'G': Obj to char       *
+     *  'E': Obj to char equip *
+     *  'D': Set state of door *
+     *  'T': Trigger command   *
+         *  'V': Assign a variable *
+    */
+};
+
+struct zone_data {
+    zone_data() = default;
+    explicit zone_data(const nlohmann::json& j);
+    ~zone_data();
+    char *name{};            /* name of this zone                  */
+    char *builders{};          /* namelist of builders allowed to    */
+    /* modify this zone.		  */
+    int lifespan{};           /* how long between resets (minutes)  */
+    double age{};                /* current age of this zone (minutes) */
+    vnum bot{};           /* starting room number for this zone */
+    vnum top{};           /* upper limit for rooms in this zone */
+
+    int reset_mode{};         /* conditions for reset (see below)   */
+    zone_vnum number{};        /* virtual number of this zone	  */
+    std::vector<struct reset_com> cmd;   /* command table for reset	          */
+    int min_level{};           /* Minimum level to enter zone        */
+    int max_level{};           /* Max Mortal level to enter zone     */
+    bitvector_t zone_flags[ZF_ARRAY_MAX]{};          /* Flags for the zone.                */
+
+    nlohmann::json serialize();
+
+    /*
+     * Reset mode:
+     *   0: Don't reset, and don't update age.
+     *   1: Reset if no PC's are located in zone.
+     *   2: Just reset.
+     */
+    std::set<room_vnum> rooms;
+    std::set<mob_vnum> mobiles;
+    std::set<obj_vnum> objects;
+    std::set<shop_vnum> shops;
+    std::set<trig_vnum> triggers;
+    std::set<guild_vnum> guilds;
+
+};
+
 struct account_data {
     account_data() = default;
     explicit account_data(const nlohmann::json& j);
@@ -55,7 +123,7 @@ struct player_data {
     explicit player_data(const nlohmann::json& j);
     int64_t id{NOTHING};
     std::string name;
-    struct account_data *account{};
+    std::shared_ptr<account_data> account{};
     struct char_data* character{};
     std::vector<struct alias_data> aliases;    /* Character's aliases                  */
     std::set<int64_t> sensePlayer;
@@ -1293,7 +1361,7 @@ struct descriptor_data {
     struct descriptor_data *snoop_by{}; /* And who is snooping this char	*/
     struct descriptor_data *next{}; /* link to next descriptor		*/
     struct oasis_olc_data *olc{};   /* OLC info                            */
-    struct account_data *account{}; /* Account info                        */
+    std::shared_ptr<account_data> account{}; /* Account info                        */
     int level{};
     char *newsbuf{};
     /*---------------Player Level Object Editing Variables-------------------*/

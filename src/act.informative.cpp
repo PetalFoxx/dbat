@@ -889,15 +889,15 @@ int readIntro(struct char_data *ch, struct char_data *vict) {
         return 1;
     }
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
-    return p.dubNames.contains(vict->id);
+    return p->dubNames.contains(vict->id);
 }
 
 void introWrite(struct char_data *ch, struct char_data *vict, char *name) {
     std::string n(name);
-    auto &p = players[ch->id];
-    p.dubNames[vict->id] = n;
+    auto p = players[ch->id];
+    p->dubNames[vict->id] = n;
 }
 
 ACMD(do_intro) {
@@ -7125,7 +7125,7 @@ ACMD(do_history) {
     one_argument(argument, arg);
     if(IS_NPC(ch)) return;
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
     type = search_block(arg, history_types, false);
     if (!*arg || type < 0) {
@@ -7147,9 +7147,9 @@ ACMD(do_history) {
         return;
     }
 
-    if (p.comm_hist[type] && p.comm_hist[type]->text && *p.comm_hist[type]->text) {
+    if (p->comm_hist[type] && p->comm_hist[type]->text && *p->comm_hist[type]->text) {
         struct txt_block *tmp;
-        for (tmp = p.comm_hist[type]; tmp; tmp = tmp->next)
+        for (tmp = p->comm_hist[type]; tmp; tmp = tmp->next)
             send_to_char(ch, "%s", tmp->text);
 /* Make this a 1 if you want history to cear after viewing */
 #if 0
@@ -7168,28 +7168,28 @@ void add_history(struct char_data *ch, char *str, int type) {
     if (IS_NPC(ch))
         return;
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
-    tmp = p.comm_hist[type];
+    tmp = p->comm_hist[type];
     ct = time(nullptr);
     strftime(time_str, sizeof(time_str), "%H:%M ", localtime(&ct));
 
     sprintf(buf, "%s%s", time_str, str);
 
     if (!tmp) {
-        CREATE(p.comm_hist[type], struct txt_block, 1);
-        p.comm_hist[type]->text = strdup(buf);
+        CREATE(p->comm_hist[type], struct txt_block, 1);
+        p->comm_hist[type]->text = strdup(buf);
     } else {
         while (tmp->next)
             tmp = tmp->next;
         CREATE(tmp->next, struct txt_block, 1);
         tmp->next->text = strdup(buf);
 
-        for (tmp = p.comm_hist[type]; tmp; tmp = tmp->next, i++);
+        for (tmp = p->comm_hist[type]; tmp; tmp = tmp->next, i++);
 
-        for (; i > HIST_LENGTH && p.comm_hist[type]; i--) {
-            tmp = p.comm_hist[type];
-            p.comm_hist[type] = tmp->next;
+        for (; i > HIST_LENGTH && p->comm_hist[type]; i--) {
+            tmp = p->comm_hist[type];
+            p->comm_hist[type] = tmp->next;
             if (tmp->text)
                 free(tmp->text);
             free(tmp);

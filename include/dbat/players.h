@@ -3,7 +3,7 @@
 #include "structs.h"
 
 // global variables
-extern std::map<int64_t, player_data> players;
+extern std::unordered_map<int64_t, std::shared_ptr<player_data>> players;
 
 struct char_data *findPlayer(const std::string& name);
 

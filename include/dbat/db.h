@@ -268,80 +268,13 @@ extern void migrate_db();
 #define REAL 0
 #define VIRTUAL 1
 
-/* structure for the reset commands */
-struct reset_com {
-    reset_com() = default;
-    explicit reset_com(const nlohmann::json& j);
-    char command{};   /* current command                      */
-
-    bool if_flag{};    /* if TRUE: exe only if preceding exe'd */
-    int arg1{};        /*                                      */
-    int arg2{};        /* Arguments to the command             */
-    int arg3{};        /*                                      */
-    int arg4{};        /* room_max  default 0			*/
-    int arg5{};           /* percentages variable                 */
-    int line{};        /* line number this command appears on  */
-    std::string sarg1;        /* string argument                      */
-    std::string sarg2;        /* string argument                      */
-
-    nlohmann::json serialize();
-
-    /*
-     *  Commands:              *
-     *  'M': Read a mobile     *
-     *  'O': Read an object    *
-     *  'G': Give obj to mob   *
-     *  'P': Put obj in obj    *
-     *  'G': Obj to char       *
-     *  'E': Obj to char equip *
-     *  'D': Set state of door *
-     *  'T': Trigger command   *
-         *  'V': Assign a variable *
-    */
-};
-
 
 
 /* zone definition structure. for the 'zone-table'   */
 #define CUR_WORLD_VERSION 1
 #define CUR_ZONE_VERSION  2
 
-struct zone_data {
-    zone_data() = default;
-    explicit zone_data(const nlohmann::json& j);
-    ~zone_data();
-    char *name{};            /* name of this zone                  */
-    char *builders{};          /* namelist of builders allowed to    */
-    /* modify this zone.		  */
-    int lifespan{};           /* how long between resets (minutes)  */
-    double age{};                /* current age of this zone (minutes) */
-    vnum bot{};           /* starting room number for this zone */
-    vnum top{};           /* upper limit for rooms in this zone */
 
-    int reset_mode{};         /* conditions for reset (see below)   */
-    zone_vnum number{};        /* virtual number of this zone	  */
-    std::vector<struct reset_com> cmd;   /* command table for reset	          */
-    int min_level{};           /* Minimum level to enter zone        */
-    int max_level{};           /* Max Mortal level to enter zone     */
-    bitvector_t zone_flags[ZF_ARRAY_MAX]{};          /* Flags for the zone.                */
-
-    nlohmann::json serialize();
-
-    /*
-     * Reset mode:
-     *   0: Don't reset, and don't update age.
-     *   1: Reset if no PC's are located in zone.
-     *   2: Just reset.
-     */
-    std::set<room_vnum> rooms;
-    std::set<mob_vnum> mobiles;
-    std::set<obj_vnum> objects;
-    std::set<shop_vnum> shops;
-    std::set<trig_vnum> triggers;
-    std::set<guild_vnum> guilds;
-
-
-};
 
 
 struct help_index_element {
@@ -380,38 +313,38 @@ extern struct config_data config_info;
 extern std::vector<obj_vnum> dbVnums;
 
 // world data...
-extern std::map<room_vnum, room_data> world;
-extern std::map<zone_vnum, struct zone_data> zone_table;
+extern std::unordered_map<room_vnum, room_data> world;
+extern std::unordered_map<zone_vnum, struct zone_data> zone_table;
 
-extern std::map<vnum, area_data> areas;
+extern std::unordered_map<vnum, area_data> areas;
 
 extern struct descriptor_data *descriptor_list;
-extern std::map<int64_t, struct descriptor_data*> sessions;
+extern std::unordered_map<int64_t, struct descriptor_data*> sessions;
 
 extern struct char_data *affect_list;
 extern struct char_data *affectv_list;
 
-extern std::map<mob_vnum, struct index_data> mob_index;
-extern std::map<mob_vnum, struct char_data> mob_proto;
+extern std::unordered_map<mob_vnum, struct index_data> mob_index;
+extern std::unordered_map<mob_vnum, struct char_data> mob_proto;
 
 extern struct char_data *character_list;
-extern DebugMap<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
+extern std::unordered_map<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
 int64_t nextCharID();
 
 extern VnumIndex<obj_data> objectVnumIndex;
 extern VnumIndex<char_data> characterVnumIndex;
 
 
-extern std::map<obj_vnum, struct index_data> obj_index;
-extern std::map<obj_vnum, struct obj_data> obj_proto;
+extern std::unordered_map<obj_vnum, struct index_data> obj_index;
+extern std::unordered_map<obj_vnum, struct obj_data> obj_proto;
 
 extern struct obj_data *object_list;
-extern DebugMap<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
+extern std::unordered_map<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
 int64_t nextObjID();
 
 extern struct social_messg *soc_mess_list;
 extern int top_of_socialt;
-extern std::map<trig_vnum, std::shared_ptr<trig_proto>> trig_index;
+extern std::unordered_map<trig_vnum, std::shared_ptr<trig_proto>> trig_index;
 
 extern int dg_owner_purged;
 

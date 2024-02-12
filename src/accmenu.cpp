@@ -37,7 +37,7 @@ namespace net {
         for(auto cid : a->characters) {
             auto p = players.find(cid);
             if(p == players.end()) continue;
-            auto c = p->second.character;
+            auto c = p->second->character;
             std::string line = fmt::format("                @B(@W{}@B) @C{}@n", ++counter, c->name);
             if(c->desc) {
                 line += fmt::format(" @D[@y{} Connections@D]@n\r\n", c->desc->conns.size());
@@ -89,7 +89,7 @@ namespace net {
                 return;
             }
 
-            conn->setParser(new CharacterMenu(conn, p->second.character));
+            conn->setParser(new CharacterMenu(conn, p->second->character));
             return;
         }
 

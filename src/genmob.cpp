@@ -887,8 +887,7 @@ player_data::player_data(const nlohmann::json &j) {
     name = j["name"].get<std::string>();
     if(j.contains("account")) {
         auto accID = j["account"].get<vnum>();
-        auto accFind = accounts.find(accID);
-        if(accFind != accounts.end()) account = &accFind->second;
+        if(auto accFind = accounts.find(accID); accFind != accounts.end()) account = accFind->second;
     }
 
     if(j.contains("aliases")) {

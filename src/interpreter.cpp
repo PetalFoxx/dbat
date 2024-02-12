@@ -215,14 +215,14 @@ ACMD(do_alias) {
     if (IS_NPC(ch))
         return;
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
     repl = any_one_arg(argument, arg);
 
     if (!*arg) {            /* no argument specified -- list currently defined aliases */
         send_to_char(ch, "Currently defined aliases:\r\n");
         int count = 0;
-        for(auto &a : p.aliases) {
+        for(auto &a : p->aliases) {
             count++;
             send_to_char(ch, "%-15s %s\r\n", a.name.c_str(), a.replacement.c_str());
         }
@@ -233,7 +233,7 @@ ACMD(do_alias) {
     }
     /* otherwise, add or remove aliases */
     /* is this an alias we've already defined? */
-    auto &aliases = p.aliases;
+    auto &aliases = p->aliases;
     auto find = std::find_if(aliases.begin(), aliases.end(), [&](const auto &a) {
         return boost::iequals(a.name, arg);
     });
@@ -354,8 +354,8 @@ void perform_alias(struct descriptor_data *d, char *orig) {
         d->input_queue.emplace_back(orig);
         return;
     }
-    auto &p = players[d->character->id];
-    auto &aliases = p.aliases;
+    auto p = players[d->character->id];
+    auto &aliases = p->aliases;
 
     /* bail out immediately if the guy doesn't have any aliases */
     if (aliases.empty()) {
@@ -1492,8 +1492,7 @@ char *rIntro(struct char_data *ch, char *arg) {
         return "NOTHING";
 }
 
-
-void fingerUser(struct char_data *ch, struct account_data *account) {
+void fingerUser(struct char_data *ch, std::shared_ptr<account_data> account) {
     send_to_char(ch, "@D[@gUsername   @D: @w%-30s@D]@n\r\n", account->name.c_str());
     send_to_char(ch, "@D[@gEmail      @D: @w%-30s@D]@n\r\n", account->email.c_str());
     send_to_char(ch, "@D[@gTotal Slots@D: @w%-30d@D]@n\r\n", account->slots);
@@ -1504,7 +1503,7 @@ void fingerUser(struct char_data *ch, struct account_data *account) {
         for(auto c : account->characters) {
             auto p = players.find(c);
             if(p == players.end()) continue;
-            send_to_char(ch, "@D[@gCh. Slot %d @D: @w%-30s@D]@n\r\n", ++counter, p->second.character->name);
+            send_to_char(ch, "@D[@gCh. Slot %d @D: @w%-30s@D]@n\r\n", ++counter, p->second->character->name);
         }
         send_to_char(ch, "\n");
     }

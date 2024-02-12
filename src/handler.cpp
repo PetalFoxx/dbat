@@ -66,10 +66,10 @@ const char *get_i_name(struct char_data *ch, struct char_data *vict) {
         return (RACE(vict));
     }
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
-    auto found = p.dubNames.find(vict->id);
-    if(found == p.dubNames.end()) return RACE(vict);
+    auto found = p->dubNames.find(vict->id);
+    if(found == p->dubNames.end()) return RACE(vict);
 
     // print *found to name and return buf pointer.
     sprintf(name, "%s", found->second.c_str());

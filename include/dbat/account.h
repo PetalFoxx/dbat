@@ -1,8 +1,8 @@
 #pragma once
 #include "structs.h"
 
-extern std::map<vnum, account_data> accounts;
+extern std::unordered_map<vnum, std::shared_ptr<account_data>> accounts;
 
-struct account_data *findAccount(const std::string &name);
+std::shared_ptr<account_data> findAccount(const std::string &name);
 
-struct account_data *createAccount(const std::string &name, const std::string &password);
+std::shared_ptr<account_data> createAccount(const std::string &name, const std::string &password);

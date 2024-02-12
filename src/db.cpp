@@ -53,29 +53,29 @@ std::shared_ptr<spdlog::logger> logger;
 
 struct config_data config_info; /* Game configuration list.    */
 
-std::map<room_vnum, room_data> world;    /* array of rooms		 */
-std::map<vnum, area_data> areas;    /* area information		 */
+std::unordered_map<room_vnum, room_data> world;    /* array of rooms		 */
+std::unordered_map<vnum, area_data> areas;    /* area information		 */
 
 struct char_data *character_list = nullptr; /* global linked list of chars	 */
 struct char_data *affect_list = nullptr; /* global linked list of chars with affects */
 struct char_data *affectv_list = nullptr; /* global linked list of chars with round-based affects */
-std::map<mob_vnum, struct index_data> mob_index;    /* index table for mobile file	 */
-std::map<mob_vnum, struct char_data> mob_proto;    /* prototypes for mobs		 */
+std::unordered_map<mob_vnum, struct index_data> mob_index;    /* index table for mobile file	 */
+std::unordered_map<mob_vnum, struct char_data> mob_proto;    /* prototypes for mobs		 */
 
 VnumIndex<obj_data> objectVnumIndex;
 VnumIndex<char_data> characterVnumIndex;
 
 struct obj_data *object_list = nullptr;    /* global linked list of objs	 */
-std::map<obj_vnum, struct index_data> obj_index;    /* index table for object file	 */
-std::map<obj_vnum, struct obj_data> obj_proto;    /* prototypes for objs		 */
+std::unordered_map<obj_vnum, struct index_data> obj_index;    /* index table for object file	 */
+std::unordered_map<obj_vnum, struct obj_data> obj_proto;    /* prototypes for objs		 */
 
-DebugMap<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
+std::unordered_map<int64_t, std::pair<time_t, struct char_data*>> uniqueCharacters;
 /* hash tree for fast obj lookup */
-DebugMap<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
+std::unordered_map<int64_t, std::pair<time_t, struct obj_data*>> uniqueObjects;
 
-std::map<zone_vnum, struct zone_data> zone_table;    /* zone table			 */
+std::unordered_map<zone_vnum, struct zone_data> zone_table;    /* zone table			 */
 
-std::map<trig_vnum, std::shared_ptr<trig_proto>> trig_index; /* index table for triggers      */
+std::unordered_map<trig_vnum, std::shared_ptr<trig_proto>> trig_index; /* index table for triggers      */
 
 int no_mail = 0;        /* mail disabled?		 */
 int mini_mud = 0;        /* mini-mud mode?		 */
@@ -237,22 +237,30 @@ static nlohmann::json load_from_file(const std::filesystem::path& loc, const std
 }
 
 static void db_load_accounts(const std::filesystem::path& loc) {
-    for(auto acc : load_from_file(loc, "accounts.json")) {
+    auto data = load_from_file(loc, "accounts.json");
+    accounts.reserve(data.size());
+    for(auto acc : data) {
         auto vn = acc["vn"].get<int64_t>();
-        accounts.emplace(vn, acc);
+        auto a = std::make_shared<account_data>(acc);
+        accounts[vn] = a;
     }
 
 }
 
 static void db_load_players(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "players.json")) {
+    auto data = load_from_file(loc, "players.json");
+    players.reserve(data.size());
+    for(auto j : data) {
         auto id = j["id"].get<int64_t>();
-        players.emplace(id, j);
+        auto p = std::make_shared<player_data>(j);
+        players[id] = p;
     }
 }
 
 static void db_load_characters_initial(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "characters.json")) {
+    auto data = load_from_file(loc, "characters.json");
+    uniqueCharacters.reserve(data.size());
+    for(auto j : data) {
         auto id = j["id"].get<int64_t>();
         auto generation = j["generation"].get<int>();
         auto data = j["data"];
@@ -260,7 +268,7 @@ static void db_load_characters_initial(const std::filesystem::path& loc) {
         c->script = std::make_shared<script_data>(c);
         if(auto isPlayer = players.find(id); isPlayer != players.end()) {
             c->deserializePlayer(data, false);
-            isPlayer->second.character = c;
+            isPlayer->second->character = c;
         } else {
             c->deserializeInstance(data, true);
         }
@@ -282,7 +290,9 @@ static void db_load_characters_finish(const std::filesystem::path& loc) {
 }
 
 static void db_load_items_initial(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "items.json")) {
+    auto data = load_from_file(loc, "items.json");
+    uniqueObjects.reserve(data.size());
+    for(auto j : data) {
         auto id = j["id"].get<int64_t>();
         auto generation = j["generation"].get<int>();
         auto data = j["data"];
@@ -333,13 +343,17 @@ static void db_load_globaldata(const std::filesystem::path& loc) {
 
 
 static void db_load_zones(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "zones.json")) {
+    auto data = load_from_file(loc, "zones.json");
+    zone_table.reserve(data.size());
+    for(auto j : data) {
         auto id = j["number"].get<int64_t>();
         zone_table.emplace(id, j);
     }
 }
 
 static void db_load_dgscript_prototypes(const std::filesystem::path& loc) {
+    auto data = load_from_file(loc, "dgScriptPrototypes.json");
+    trig_index.reserve(data.size());
     for(auto j : load_from_file(loc, "dgScriptPrototypes.json")) {
         auto id = j["vn"].get<int64_t>();
         auto proto = std::make_shared<trig_proto>(j);
@@ -348,7 +362,9 @@ static void db_load_dgscript_prototypes(const std::filesystem::path& loc) {
 }
 
 static void db_load_rooms(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "rooms.json")) {
+    auto data = load_from_file(loc, "rooms.json");
+    world.reserve(data.size());
+    for(auto j : data) {
         auto id = j["vn"].get<int64_t>();
         auto r = world.emplace(id, j);
         r.first->second.script = std::make_shared<script_data>(&r.first->second);
@@ -366,21 +382,28 @@ static void db_load_exits(const std::filesystem::path& loc) {
 }
 
 static void db_load_shops(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "shops.json")) {
+    auto data = load_from_file(loc, "shops.json");
+    shop_index.reserve(data.size());
+    for(auto j : data) {
         auto id = j["vnum"].get<int64_t>();
         shop_index.emplace(id, j);
     }
 }
 
 static void db_load_guilds(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "guilds.json")) {
+    auto data = load_from_file(loc, "guilds.json");
+    guild_index.reserve(data.size());
+    for(auto j : data) {
         auto id = j["vnum"].get<int64_t>();
         guild_index.emplace(id, j);
     }
 }
 
 static void db_load_item_prototypes(const std::filesystem::path& loc) {
-    for(auto j : load_from_file(loc, "itemPrototypes.json")) {
+    auto data = load_from_file(loc, "itemPrototypes.json");
+    obj_proto.reserve(data.size());
+    obj_index.reserve(data.size());
+    for(auto j : data) {
         auto id = j["vn"].get<int64_t>();
         auto p = obj_proto.emplace(id, j);
         p.first->second.zone = real_zone_by_thing(id);
@@ -390,6 +413,9 @@ static void db_load_item_prototypes(const std::filesystem::path& loc) {
 }
 
 static void db_load_npc_prototypes(const std::filesystem::path& loc) {
+    auto data = load_from_file(loc, "npcPrototypes.json");
+    mob_proto.reserve(data.size());
+    mob_index.reserve(data.size());
     for(auto j : load_from_file(loc, "npcPrototypes.json")) {
         auto id = j["vn"].get<int64_t>();
         auto p = mob_proto.emplace(id, j);

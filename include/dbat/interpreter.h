@@ -30,7 +30,7 @@ extern int special(struct char_data *ch, int cmd, char *arg);
 
 void payout(int num);
 int lockRead(char *name);
-extern void fingerUser(struct char_data *ch, struct account_data *acc);
+extern void fingerUser(struct char_data *ch, std::shared_ptr<account_data> acc);
 
 extern int readUserIndex(char *name);
 

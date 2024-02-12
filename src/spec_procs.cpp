@@ -1086,8 +1086,8 @@ SPECIAL(bank) {
                 return (true);
             }
             auto id = vict->id;
-            auto &p = players[id];
-            auto &c = p.account->characters;
+            auto p = players[id];
+            auto &c = p->account->characters;
             auto found = std::find_if(c.begin(), c.end(), [&](auto i) {return i == id;});
             if(found != c.end()) {
                 send_to_char(ch, "You can not transfer money to your own offline characters...");

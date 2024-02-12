@@ -33,7 +33,7 @@
 static void sort_keeper_objs(struct char_data *keeper, vnum shop_nr);
 
 /* Local variables */
-std::map<shop_vnum, struct shop_data> shop_index;
+std::unordered_map<shop_vnum, struct shop_data> shop_index;
 shop_vnum top_shop = NOTHING;
 int cmd_say, cmd_tell, cmd_emote, cmd_slap, cmd_puke;
 

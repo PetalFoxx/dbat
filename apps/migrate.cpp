@@ -4568,31 +4568,32 @@ void migrate_accounts() {
         auto id = account_data::getNextID();
 
         // Now let's get a new account_data...
-        auto &a = accounts[id];
+        auto a = std::make_shared<account_data>();
+        accounts[id] = a;
 
         // Moving forward, we assume that every account file is using the above structure and is valid.
         // Don't second-guess it, just process.
 
         // Line 1: Name (string)
-        std::getline(file, a.name);
+        std::getline(file, a->name);
 
         // Line 2: Email Address (string)
-        std::getline(file, a.email);
+        std::getline(file, a->email);
 
         // Line 3: password (clear text, will hash...)
         std::string pass;
         std::getline(file, pass);
-        if(!a.setPassword(pass)) basic_mud_log("Error hashing %s's password: %s", a.name.c_str(), pass.c_str());
+        if(!a->setPassword(pass)) basic_mud_log("Error hashing %s's password: %s", a->name.c_str(), pass.c_str());
 
         // Line 4: slots (int)
         std::string slots;
         std::getline(file, slots);
-        a.slots = std::stoi(slots);
+        a->slots = std::stoi(slots);
 
         // Line 5: current RPP (int)
         std::string rpp;
         std::getline(file, rpp);
-        a.rpp = std::stoi(rpp);
+        a->rpp = std::stoi(rpp);
 
         // Now for the Character lines, they either contain a name, or they contain "Empty".
         // "Empty" is not a character. It's a placeholder for an empty slot.
@@ -4610,7 +4611,7 @@ void migrate_accounts() {
         // Line 11: adminLevel (int)
         std::string adminLevel;
         std::getline(file, adminLevel);
-        a.adminLevel = std::stoi(adminLevel);
+        a->adminLevel = std::stoi(adminLevel);
 
         // Line 12: customFile present (bool)
         std::string customFile;
@@ -4626,7 +4627,7 @@ void migrate_accounts() {
             std::string line;
             std::getline(customFile, line); // skip the first line
             while(std::getline(customFile, line)) {
-                a.customs.emplace_back(line);
+                a->customs.emplace_back(line);
             }
             customFile.close();
         }
@@ -4636,7 +4637,7 @@ void migrate_accounts() {
         std::getline(file, rppBank);
         auto bank = std::stoi(rppBank);
         file.close();
-        a.vn = id;
+        a->vn = id;
 
     }
 }
@@ -4657,15 +4658,18 @@ void migrate_characters() {
             continue;
         }
         auto id = ch->id;
-        auto &p = players[id];
-        p.id = id;
+        auto p = std::make_shared<player_data>();
+        p->id = id;
+        players[id] = p;
+        p->id = id;
         if(!ch->generation) ch->generation = time(nullptr);
-        p.character = ch;
-        p.name = ch->name;
-        auto &a = accounts[accID];
-        p.account = &a;
-        a.adminLevel = std::max(a.adminLevel, GET_ADMLEVEL(ch));
-        a.characters.emplace_back(id);
+        p->character = ch;
+        p->name = ch->name;
+        auto a = accounts[accID];
+        accounts[accID] = a;
+        p->account = a;
+        a->adminLevel = std::max(a->adminLevel, GET_ADMLEVEL(ch));
+        a->characters.emplace_back(id);
         ch->in_room = ch->load_room;
         ch->was_in_room = ch->load_room;
         uniqueCharacters[id] = std::make_pair(ch->generation, ch);
@@ -4688,7 +4692,7 @@ void migrate_characters() {
             basic_mud_log("Error loading %s for sense migration.", name.c_str());
             continue;
         }
-        auto &pa = players[ch->id];
+        auto pa = players[ch->id];
         // The file contains a sequence of lines, with each line containing a number.
 		// The number is the vnum of a mobile the player's sensed.
         // We will read each line and insert the vnum into the player's sensed list.
@@ -4697,7 +4701,7 @@ void migrate_characters() {
         while(std::getline(file, line)) {
             try {
                 auto vnum = std::stoi(line);
-                if(mob_proto.contains(vnum)) pa.senseMemory.insert(vnum);
+                if(mob_proto.contains(vnum)) pa->senseMemory.insert(vnum);
             } catch(...) {
                 basic_mud_log("Error parsing %s for sense migration.", line.c_str());
             }
@@ -4722,7 +4726,7 @@ void migrate_characters() {
             continue;
         }
 
-        auto &pa = players[ch->id];
+        auto pa = players[ch->id];
 
 		// The file contains a series of lines.
         // Each line looks like: <name> <dub>
@@ -4739,7 +4743,7 @@ void migrate_characters() {
             if(name == "Gibbles") continue;
             auto pc = findPlayer(name);
             if(!pc) continue;
-            pa.dubNames[pc->id] = dub;
+            pa->dubNames[pc->id] = dub;
         }
     }
 
@@ -4814,7 +4818,7 @@ void migrate_characters() {
         // replacement string length  (size_t), replacement string, alias type (a bool)
 
         while(std::getline(file, line)) {
-            auto &a = pa->second.aliases.emplace_back();
+            auto &a = pa->second->aliases.emplace_back();
             std::getline(file, a.name);
             std::getline(file, line);
             std::getline(file, a.replacement);

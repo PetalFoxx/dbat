@@ -666,12 +666,12 @@ int read_sense_memory(struct char_data *ch, struct char_data *vict) {
 
     if(IS_NPC(ch)) return 0;
 
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
     if(IS_NPC(vict)) {
-        return p.senseMemory.contains(vict->vn);
+        return p->senseMemory.contains(vict->vn);
     } else {
-        return p.sensePlayer.contains(vict->id);
+        return p->sensePlayer.contains(vict->id);
     }
 }
 
@@ -682,12 +682,12 @@ void sense_memory_write(struct char_data *ch, struct char_data *vict) {
     }
 
     if(IS_NPC(ch)) return;
-    auto &p = players[ch->id];
+    auto p = players[ch->id];
 
     if(IS_NPC(vict)) {
-        p.senseMemory.insert(vict->vn);
+        p->senseMemory.insert(vict->vn);
     } else {
-        p.sensePlayer.insert(vict->id);
+        p->sensePlayer.insert(vict->id);
     }
 }
 

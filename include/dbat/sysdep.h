@@ -124,17 +124,6 @@ typedef int(*SpecialFunc)(struct char_data *ch, void *me, int cmd, char *argumen
 #define ACMD(name) void (name)(struct char_data *ch, char *argument, int cmd, int subcmd)
 #define SPECIAL(name) int (name)(struct char_data *ch, void *me, int cmd, char *argument)
 
-template <typename Key, typename T>
-class DebugMap : public std::unordered_map<Key, T> {
-public:
-    T& operator[](const Key& key) {
-        if (key < 0) {
-            throw std::runtime_error("Invalid key");
-        }
-        return std::unordered_map<Key, T>::operator[](key);
-    }
-};
-
 template<typename T = bool>
 using OpResult = std::pair<T, std::optional<std::string>>;
 extern std::shared_ptr<spdlog::logger> logger;

@@ -2270,17 +2270,19 @@ namespace net {
         ch->generation = time(nullptr);
         check_unique_id(ch);
         add_unique_id(ch);
-        auto &p = players[ch->id];
-        p.name = ch->name;
-        p.id = ch->id;
-        p.account = conn->account;
-        conn->account->characters.push_back(p.id);
-        p.character = ch;
+        auto p = std::make_shared<player_data>();
+        p->id = ch->id;
+        players[p->id] = p;
+        p->name = ch->name;
+        p->id = ch->id;
+        p->account = conn->account;
+        conn->account->characters.push_back(p->id);
+        p->character = ch;
         init_char(ch);
         ch->save();
         // set state to -1 to prevent accidental freeing of ch...
         state = -1;
-        send_to_imm("New Character '%s' created by Account: %s", ch->name, p.account->name.c_str());
+        send_to_imm("New Character '%s' created by Account: %s", ch->name, p->account->name.c_str());
         conn->setParser(new CharacterMenu(conn, ch));
     }
 }

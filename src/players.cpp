@@ -17,7 +17,7 @@
 #include "dbat/ban.h"
 
 
-std::map<int64_t, player_data> players;
+std::unordered_map<int64_t, std::shared_ptr<player_data>> players;
 
 
 long get_id_by_name(const char *name) {
@@ -31,7 +31,7 @@ char *get_name_by_id(long id) {
     static char buf[128];
     auto find = players.find(id);
     if(find == players.end()) return nullptr;
-    sprintf(buf, "%s", find->second.name.c_str());
+    sprintf(buf, "%s", find->second->name.c_str());
     return buf;
 }
 
