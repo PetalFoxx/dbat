@@ -1937,7 +1937,7 @@ char *sprintuniques(int low, int high) {
 /* create an object, and add it to the object list */
 struct obj_data *create_obj(bool activate) {
     auto obj = new obj_data();
-    
+    obj->script = std::make_shared<script_data>(obj);
     if(activate) {
         obj->id = nextObjID();
         obj->generation = time(nullptr);
