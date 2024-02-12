@@ -27,5 +27,6 @@ void event_process(uint64_t heart_pulse, double deltaTime) {
             if(!trig->active) return true;
             if(trig->waiting <= 0) return true;
         }
+        return false;
     });
 }
