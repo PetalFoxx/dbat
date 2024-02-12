@@ -2324,7 +2324,7 @@ std::string trig_data::serializeLocation() {
 // not individually.
 void trig_data::activate() {
     if(active) {
-        basic_mud_log("SYSERR: Attempt to activate already-active trigger %s/%ld", sc->owner->getUID(), parent->vn);
+        basic_mud_log("SYSERR: Attempt to activate already-active trigger %s / %ld", sc->owner->getUID(), parent->vn);
         return;
     }
     active = true;
@@ -2333,7 +2333,7 @@ void trig_data::activate() {
 
 void trig_data::deactivate() {
     if(!active) {
-        basic_mud_log("SYSERR: Attempt to deactivate already-inactive trigger %s/%ld", sc->owner->getUID(), parent->vn);
+        basic_mud_log("SYSERR: Attempt to deactivate already-inactive trigger %s / %ld", sc->owner->getUID(), parent->vn);
         return;
     }
     active = false;
@@ -2418,6 +2418,7 @@ trig_data::trig_data(std::shared_ptr<trig_proto> parent) : parent(parent) {
 
 void script_data::loadScript(std::shared_ptr<trig_data> t) {
     dgScripts.push_back(t);
+    t->sc = this;
     types |= GET_TRIG_TYPE(t);
     t->activate();
 }
