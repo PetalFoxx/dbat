@@ -2703,6 +2703,7 @@ ACMD(do_sleep) {
                 send_to_char(ch, "You stop floating around, and lie down to sleep.\r\n");
                 act("$n stops floating around, and lie down to sleep.",
                     true, ch, nullptr, nullptr, TO_ROOM);
+                ch->removeLimitBreak();
                 GET_POS(ch) = POS_SLEEPING;
                 ch->removeLimitBreak();
                 break;

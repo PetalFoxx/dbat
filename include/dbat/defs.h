@@ -2214,6 +2214,11 @@ input */
 
 
 
+#define MASTERY_THRESHOLD       5000
+#define LIMIT_THRESHOLD         100000
+#define LIMITBREAK_THRESHOLD    5000000
+
+
 // The IDs in this enum are designed to correlate with the APPLY_<STAT> defines.
 // Each ID is APPLY_<STAT> - 1
 using attribute_t = uint8_t;
