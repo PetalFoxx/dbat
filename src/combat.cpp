@@ -3704,6 +3704,7 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
     }
 
 
+
 	//The chance is reduced if you keep farming in one area via Relaxcount
     if (GET_RELAXCOUNT(ch) >= 464) {
         chance = 0;
