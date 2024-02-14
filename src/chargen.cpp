@@ -2266,6 +2266,7 @@ namespace net {
     void ChargenParser::finish() {
         // CREATE PLAYER ENTRY
         ch->id = nextCharID();
+        ch->script = std::shared_ptr<script_data>(ch);
         ch->pref.set(PRF_COLOR);
         ch->generation = time(nullptr);
         check_unique_id(ch);
