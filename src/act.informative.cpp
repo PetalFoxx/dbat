@@ -4664,12 +4664,6 @@ ACMD(do_look) {
 
     auto room = ch->getRoom();
 
-    if(IS_DARK(room->vn) && !CAN_SEE_IN_DARK(ch)) {
-        send_to_char(ch, "It is pitch black...\r\n");
-        list_char_to_char(room->people, ch);    /* glowing red eyes */
-        return;
-    }
-
     char arg[MAX_INPUT_LENGTH], arg2[200];
 
     if (subcmd == SCMD_READ) {
