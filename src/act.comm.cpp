@@ -850,16 +850,16 @@ static int is_tell_ok(struct char_data *ch, struct char_data *vict) {
 
     if (ch == vict)
         send_to_char(ch, "You try to tell yourself something.\r\n");
-    else if (!IS_NPC(ch) && GET_LEVEL(ch) < 3 && GET_ADMLEVEL(vict) < 1)
-        send_to_char(ch, "You need to be level 3 or higher to send or receive tells");
+    else if (!IS_NPC(ch) && GET_MAX_HIT(ch) < 5000 && GET_MAX_HIT(vict) < 5000)
+        send_to_char(ch, "You need to be 5000 PL or higher to send or receive tells");
     else if (!IS_NPC(ch) && PRF_FLAGGED(ch, PRF_AFK) && GET_ADMLEVEL(ch) < 1)
         send_to_char(ch, "You can't send tells when AFK.\r\n");
     else if (!IS_NPC(ch) && PRF_FLAGGED(vict, PRF_AFK) && GET_ADMLEVEL(ch) < 1)
         send_to_char(ch, "They are AFK right now, try later.\r\n");
     else if (!IS_NPC(ch) && PRF_FLAGGED(vict, PRF_AFK) && GET_ADMLEVEL(ch) >= 1)
         return (true);
-    else if (!IS_NPC(vict) && GET_LEVEL(vict) < 3 && GET_ADMLEVEL(ch) < 1)
-        send_to_char(ch, "They need to be level 3 or higher to send or receive tells");
+    else if (!IS_NPC(vict) && GET_MAX_HIT(ch) < 5000 && GET_MAX_HIT(vict) < 5000)
+        send_to_char(ch, "They need to be 5000 PL or higher to send or receive tells");
     else if (!IS_NPC(ch) && PRF_FLAGGED(ch, PRF_NOTELL) && GET_ADMLEVEL(vict) < 1)
         send_to_char(ch, "You can't tell other people while you have notell on.\r\n");
     else if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_SOUNDPROOF) && GET_ADMLEVEL(vict) < 1)
@@ -1451,7 +1451,7 @@ ACMD(do_gen_comm) {
     }
 
     /* level_can_shout defined in config.c */
-    if (GET_LEVEL(ch) < CONFIG_LEVEL_CAN_SHOUT) {
+    if (GET_MAX_HIT(ch) < CONFIG_LEVEL_CAN_SHOUT) {
         send_to_char(ch, "You must be at least level %d before you can %s.\r\n", CONFIG_LEVEL_CAN_SHOUT,
                      com_msgs[subcmd][1]);
         return;

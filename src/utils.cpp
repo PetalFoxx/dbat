@@ -567,7 +567,7 @@ int sec_roll_check(struct char_data *ch) {
 
     int figure = 0, chance = 0, outcome = 0;
 
-    figure = 10 + (GET_LEVEL(ch) * 1.6);
+    figure = 10 + (GET_CHA(ch) * 1.6);
 
     chance = axion_dice(0) + axion_dice(0) + rand_number(0, 20);
 
@@ -1696,16 +1696,16 @@ void handle_evolution(struct char_data *ch, int64_t dmg) {
     int64_t moltgain = 0;
 
     moltgain = dmg * 0.5;
-    if (GET_LEVEL(ch) == 100)
+    if (GET_CON(ch) == 100)
         moltgain += 100000;
-    else if (GET_LEVEL(ch) >= 90)
-        moltgain += GET_LEVEL(ch) * 1000;
-    else if (GET_LEVEL(ch) >= 75)
-        moltgain += GET_LEVEL(ch) * 500;
-    else if (GET_LEVEL(ch) >= 50)
-        moltgain += GET_LEVEL(ch) * 250;
-    else if (GET_LEVEL(ch) >= 10)
-        moltgain += GET_LEVEL(ch) * 50;
+    else if (GET_CON(ch) >= 90)
+        moltgain += GET_CON(ch) * 1000;
+    else if (GET_CON(ch) >= 75)
+        moltgain += GET_CON(ch) * 500;
+    else if (GET_CON(ch) >= 50)
+        moltgain += GET_CON(ch) * 250;
+    else if (GET_CON(ch) >= 10)
+        moltgain += GET_CON(ch) * 50;
 
     GET_MOLT_EXP(ch) += moltgain;
 
@@ -1716,7 +1716,7 @@ void handle_evolution(struct char_data *ch, int64_t dmg) {
     }
 
     if (GET_MOLT_EXP(ch) > molt_threshold(ch)) {
-        if (GET_MOLT_LEVEL(ch) <= GET_LEVEL(ch) * 2 || GET_LEVEL(ch) >= 100) {
+        if (GET_MOLT_LEVEL(ch) <= GET_CON(ch) * 2 || GET_CON(ch) >= 100) {
             GET_MOLT_EXP(ch) = 0;
             GET_MOLT_LEVEL(ch) += 1;
             double rand1 = 0.02;
@@ -2324,8 +2324,8 @@ void improve_skill(struct char_data *ch, int skill, int num) {
             if (IS_KONATSU(ch) && skill == SKILL_PARRY) {
                 SET_SKILL(ch, skill, GET_SKILL_BASE(ch, skill) + 5);
             }
-            if (GET_LEVEL(ch) < 100) {
-                ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) / 20);
+            if (GET_INT(ch) < 100) {
+                ch->modExperience(level_exp(ch, GET_INT(ch) + 1) / 20);
             } else {
                 ch->modExperience(5000000);
             }

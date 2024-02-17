@@ -1074,8 +1074,8 @@ ACMD(do_rescue) {
         act("@g$n@G leaps in front of you! You are rescued!@n", true, ch, nullptr, helpee, TO_VICT);
         act("@g$n@G leaps in front of @g$N@G and rescues $M!@n", true, ch, nullptr, helpee, TO_NOTVICT);
         stop_fighting(opponent);
-        hurt(0, 0, ch, opponent, nullptr, rand_number(1, GET_LEVEL(ch)), 1);
-        hurt(0, 0, opponent, ch, nullptr, rand_number(1, GET_LEVEL(ch)), 1);
+        hurt(0, 0, ch, opponent, nullptr, rand_number(1, GET_STR(ch)), 1);
+        hurt(0, 0, opponent, ch, nullptr, rand_number(1, GET_STR(ch)), 1);
         return;
     }
 }

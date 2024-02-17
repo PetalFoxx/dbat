@@ -4147,7 +4147,7 @@ void perform_wear(struct char_data *ch, struct obj_data *obj, int where) {
         return;
 
     if (GET_OBJ_TYPE(obj) == ITEM_WEAPON && OBJ_FLAGGED(obj, ITEM_CUSTOM)) {
-        if (GET_LEVEL(ch) < 20) {
+        if (GET_STR(ch) < 20) {
             send_to_char(ch, "You are not experienced enough to hold that.\r\n");
             return;
         }
@@ -4245,7 +4245,7 @@ ACMD(do_wear) {
         for (obj = ch->contents; obj; obj = next_obj) {
             next_obj = obj->next_content;
             if (CAN_SEE_OBJ(ch, obj) && (where = find_eq_pos(ch, obj, nullptr)) >= 0) {
-                if (GET_LEVEL(ch) < GET_OBJ_LEVEL(obj)) {
+                if (GET_WIS(ch) < GET_OBJ_LEVEL(obj)) {
                     act("$p: you are not experienced enough to use that.",
                         false, ch, obj, nullptr, TO_CHAR);
                     send_to_char(ch, "You need to be at least %d level to use it.\r\n", GET_OBJ_LEVEL(obj));
@@ -4272,7 +4272,7 @@ ACMD(do_wear) {
         }
         if (!(obj = get_obj_in_list_vis(ch, arg1, nullptr, ch->contents)))
             send_to_char(ch, "You don't seem to have any %ss.\r\n", arg1);
-        else if (GET_LEVEL(ch) < GET_OBJ_LEVEL(obj))
+        else if (GET_WIS(ch) < GET_OBJ_LEVEL(obj))
             send_to_char(ch, "You are not experienced enough to use that.\r\n");
         else
             while (obj) {
@@ -4294,7 +4294,7 @@ ACMD(do_wear) {
             send_to_char(ch, "But it seems to be broken!\r\n");
         else if (OBJ_FLAGGED(obj, ITEM_FORGED))
             send_to_char(ch, "But it seems to be fake!\r\n");
-        else if (GET_LEVEL(ch) < GET_OBJ_LEVEL(obj))
+        else if (GET_WIS(ch) < GET_OBJ_LEVEL(obj))
             send_to_char(ch, "You are not experienced enough to use that.\r\n");
         else {
             if ((where = find_eq_pos(ch, obj, arg2)) >= 0) {
@@ -4328,7 +4328,7 @@ ACMD(do_wield) {
             send_to_char(ch, "But it seems to be broken!\r\n");
         else if (OBJ_FLAGGED(obj, ITEM_FORGED))
             send_to_char(ch, "But it seems to be fake!\r\n");
-        else if (GET_LEVEL(ch) < GET_OBJ_LEVEL(obj))
+        else if (GET_WIS(ch) < GET_OBJ_LEVEL(obj))
             send_to_char(ch, "You are not experienced enough to use that.\r\n");
         else if (PLR_FLAGGED(ch, PLR_THANDW))
             send_to_char(ch, "You are holding a weapon with two hands right now!\r\n");
@@ -4352,7 +4352,7 @@ ACMD(do_grab) {
         send_to_char(ch, "Hold what?\r\n");
     else if (!(obj = get_obj_in_list_vis(ch, arg, nullptr, ch->contents)))
         send_to_char(ch, "You don't seem to have %s %s.\r\n", AN(arg), arg);
-    else if (GET_LEVEL(ch) < GET_OBJ_LEVEL(obj))
+    else if (GET_WIS(ch) < GET_OBJ_LEVEL(obj))
         send_to_char(ch, "You are not experienced enough to use that.\r\n");
     else if (PLR_FLAGGED(ch, PLR_THANDW))
         send_to_char(ch, "You are wielding a weapon with both hands currently.\r\n");

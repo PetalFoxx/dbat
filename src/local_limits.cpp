@@ -762,6 +762,8 @@ void set_title(struct char_data *ch, char *title) {
 }
 
 void gain_level(struct char_data *ch) {
+    send_to_char(ch, "Levelling no longer exists!\r\n");
+    /*
     if (GET_LEVEL(ch) < 100 && GET_EXP(ch) >= level_exp(ch, GET_LEVEL(ch) + 1)) {
         ch->mod(CharNum::Level, 1);
         advance_level(ch);
@@ -769,7 +771,7 @@ void gain_level(struct char_data *ch) {
                GET_NAME(ch), GET_LEVEL(ch));
         send_to_char(ch, "You rise a level!\r\n");
         ch->modExperience(-level_exp(ch, GET_LEVEL(ch)));
-    }
+    }*/
 }
 
 void run_autowiz() {

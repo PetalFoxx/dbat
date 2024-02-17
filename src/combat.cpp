@@ -775,7 +775,7 @@ int64_t gun_dam(struct char_data *ch, int wlvl) {
 
     int64_t dmg_prior = 0;
 
-    dmg_prior = (dmg * GET_DEX(ch)) * ((GET_LEVEL(ch) / 5) + 1);
+    dmg_prior = (dmg * GET_DEX(ch)) * ((GET_CHA(ch) / 5) + 1);
 
     if (dmg_prior <= GET_MAX_HIT(ch) * 0.4)
         dmg = dmg_prior;
@@ -1100,7 +1100,7 @@ int64_t advanced_energy(struct char_data *ch, int64_t dmg) {
     }
 
     double rate = 0.00;
-    int count = GET_LEVEL(ch);
+    int count = GET_WIS(ch);
     int64_t add = 0;
 
     if (GET_BONUS(ch, BONUS_LEECH)) {
@@ -3184,93 +3184,95 @@ int64_t damtype(struct char_data *ch, int type, int skill, double percent) {
             case 52:
             case 56: /* TAILWHIP */
                 dam = large_rand(cou1, cou2);
-                dam += GET_LEVEL(ch) * 100;
+                dam += GET_STR(ch) * 100;
                 dam += GET_STR(ch) * (dam * 0.005);
                 break;
             default: // all ki abilities.
                 dam = GET_MAX_MANA(ch) * percent;
                 ki = true;
         }
-
+        int mod;
         // ki type move pre-processing
         switch (type) {
             case 11: /* Tsuihidan */
             case 12: /* Renzo */
             case 23: /* Rogafufuken */
             case 25: /* Kienzan */
-                dam += GET_LEVEL(ch) * 500;
+                mod = 500;
                 break;
             case 13: /* Kamehameha */
             case 16: /* Galik Gun */
             case 26: /* Tribeam */
             case 50: /* Seishou Enko */
-                dam += GET_LEVEL(ch) * 800;
+                mod = 800;
                 break;
             case 14: /* Masenko */
             case 30: /* Darkness Dragon Slash */
             case 44: /* Spiral Comet 1 */
             case 45: /* Spiral Comet 2 */
             case 43: /* Water Spikes */
-                dam += GET_LEVEL(ch) * 1000;
+                mod = 1000;
                 break;
             case 15: /* Dodonpa */
             case 17: /* Deathbeam */
             case 19: /* Twin Slash */
-                dam += GET_LEVEL(ch) * 650;
+                mod = 650;
                 break;
             case 18: /* Eraser Cannon */
             case 33: /* Hell Spear Blast */
             case 54: /* Zen Blade */
             case 55: /* Sundering Force */
-                dam += GET_LEVEL(ch) * 700;
+                mod = 700;
                 break;
             case 20: /* Psychic Blast */
             case 27: /* Special Beam Cannon */
             case 29: /* Crusher Ball */
             case 37: /* Phoenix Slash */
-                dam += GET_LEVEL(ch) * 1200;
+                mod = 1200;
                 break;
             case 21: /* Honoo */
             case 39: /* Spirit ball */
             case 47: /* Water Razor */
             case 48: /* Koteiru Bakuha */
             case 49: /* Hell Spiral */
-                dam += GET_LEVEL(ch) * 900;
+                mod = 900;
                 break;
             case 22: /* Dual Beam */
             case 24: /* Bakuhatsuha */
-                dam += GET_LEVEL(ch) * 600;
+                mod = 600;
                 break;
             case 28: /* Final Flash */
-                dam += GET_LEVEL(ch) * 1500;
+                mod = 1500;
             case 31: /* Psychic Barrage */
             case 36: /* Big Bang */
-                dam += GET_LEVEL(ch) * 1100;
+                mod = 1100;
                 break;
             case 32: /* Hell Flash */
             case 46: /* Star Breaker */
-                dam += GET_LEVEL(ch) * 1400;
+                mod = 1400;
                 break;
             case 34: /* Kakusanha */
-                dam += GET_LEVEL(ch) * 1050;
+                mod = 1050;
                 break;
             case 35: /* Scatter Shot */
             case 53: /* Star Nova */
-                dam += GET_LEVEL(ch) * 1600;
+                mod = 1600;
                 break;
             case 38: /* Deathball */
-                dam += GET_LEVEL(ch) * 1700;
+                mod = 1700;
                 break;
             case 40: /* Genki Dama */
             case 41: /* Genocide */
-                dam += GET_LEVEL(ch) * 2000;
+                mod = 2000;
                 break;
             case 42: /* Kousengan */
-                dam += GET_LEVEL(ch) * 550;
+                mod = 550;
                 break;
             case 57: /* Light Grenade */
-                dam += GET_LEVEL(ch) * 1700;
+                mod = 1700;
                 break;
+
+            dam += GET_INT(ch) * mod;
         }
 
         if (ki) dam *= 1.25;
@@ -3686,7 +3688,8 @@ void saiyan_gain(struct char_data *ch, struct char_data *vict) {
 
 
 static void spar_helper(struct char_data *ch, struct char_data *vict, int type, int64_t dmg) {
-    int chance = 0, gmult, gravity, bonus = 1, pscost = 2, difference = 0;
+    int chance = 0, gmult, gravity, bonus = 1, pscost = 2;
+    double difference = 0.0;
     int64_t gain = 0, pl = 0, ki = 0, st = 0, gaincalc = 0;
     int attrChance = 3;
 
@@ -3745,32 +3748,32 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
 	//Logic for earning xp through sparring, based on the character's level, the curve is roughly exponential
     if (chance >= rand_number(60, 75)) {
         int64_t num = 0, maxnum = 500000;
-        if (GET_LEVEL(ch) >= 70) {
-            num += GET_LEVEL(ch) * 2250;
-        } else if (GET_LEVEL(ch) >= 60) {
-            num += GET_LEVEL(ch) * 2000;
-        } else if (GET_LEVEL(ch) >= 50) {
-            num += GET_LEVEL(ch) * 1750;
-        } else if (GET_LEVEL(ch) >= 45) {
-            num += GET_LEVEL(ch) * 1500;
-        } else if (GET_LEVEL(ch) >= 40) {
-            num += GET_LEVEL(ch) * 1250;
-        } else if (GET_LEVEL(ch) >= 35) {
-            num += GET_LEVEL(ch) * 1000;
-        } else if (GET_LEVEL(ch) >= 30) {
-            num += GET_LEVEL(ch) * 750;
-        } else if (GET_LEVEL(ch) >= 25) {
-            num += GET_LEVEL(ch) * 550;
-        } else if (GET_LEVEL(ch) >= 20) {
-            num += GET_LEVEL(ch) * 400;
-        } else if (GET_LEVEL(ch) >= 15) {
-            num += GET_LEVEL(ch) * 250;
-        } else if (GET_LEVEL(ch) >= 10) {
-            num += GET_LEVEL(ch) * 120;
-        } else if (GET_LEVEL(ch) >= 5) {
-            num += GET_LEVEL(ch) * 70;
+        if (GET_CON(ch) >= 70) {
+            num += GET_CON(ch) * 2250;
+        } else if (GET_CON(ch) >= 60) {
+            num += GET_CON(ch) * 2000;
+        } else if (GET_CON(ch) >= 50) {
+            num += GET_CON(ch) * 1750;
+        } else if (GET_CON(ch) >= 45) {
+            num += GET_CON(ch) * 1500;
+        } else if (GET_CON(ch) >= 40) {
+            num += GET_CON(ch) * 1250;
+        } else if (GET_CON(ch) >= 35) {
+            num += GET_CON(ch) * 1000;
+        } else if (GET_CON(ch) >= 30) {
+            num += GET_CON(ch) * 750;
+        } else if (GET_CON(ch) >= 25) {
+            num += GET_CON(ch) * 550;
+        } else if (GET_CON(ch) >= 20) {
+            num += GET_CON(ch) * 400;
+        } else if (GET_CON(ch) >= 15) {
+            num += GET_CON(ch) * 250;
+        } else if (GET_CON(ch) >= 10) {
+            num += GET_CON(ch) * 120;
+        } else if (GET_CON(ch) >= 5) {
+            num += GET_CON(ch) * 70;
         } else {
-            num += GET_LEVEL(ch) * 30;
+            num += GET_CON(ch) * 30;
         }
         if (num > maxnum) {
             num = maxnum;
@@ -3815,10 +3818,10 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
 
             gaincalc = large_rand(num * deadlyBonus, 1.4 * num * deadlyBonus);
             gaincalc = gear_exp(ch, gaincalc);
-            if (GET_LEVEL(ch) > GET_LEVEL(vict))
-                difference = GET_LEVEL(ch) - GET_LEVEL(vict);
-            else if (GET_LEVEL(ch) < GET_LEVEL(vict))
-                difference = GET_LEVEL(vict) - GET_LEVEL(ch);
+            if (GET_MAX_HIT(ch) > GET_MAX_HIT(vict))
+                difference = GET_MAX_HIT(ch) / GET_MAX_HIT(vict);
+            else if (GET_MAX_HIT(ch) < GET_MAX_HIT(vict))
+                difference = GET_MAX_HIT(vict) / GET_MAX_HIT(ch);
         } else {
             gaincalc = 0;
         }
@@ -3827,13 +3830,13 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
             if (difference >= 51) {
                 send_to_char(ch, "The difference in your levels is too great for you to gain anything.\r\n");
                 return;
-            } else if (difference >= 40) {
+            } else if (difference >= 0.40) {
                 gaincalc = gaincalc * 0.05;
-            } else if (difference >= 30) {
+            } else if (difference >= 0.30) {
                 gaincalc = gaincalc * 0.10;
-            } else if (difference >= 20) {
+            } else if (difference >= 0.20) {
                 gaincalc = gaincalc * 0.25;
-            } else if (difference >= 10) {
+            } else if (difference >= 0.10) {
                 gaincalc = gaincalc * 0.50;
             }
             if (!IS_NPC(vict) && !IS_NPC(ch)) {
@@ -4023,11 +4026,11 @@ int can_kill(struct char_data *ch, struct char_data *vict, struct obj_data *obj,
                    (!is_sparring(ch) || !is_sparring(vict)) && num != 2) {
             send_to_char(ch, "You can not fight other players in AL/Hell.\r\n");
             return 0;
-        } else if (GET_LEVEL(vict) <= 8 && !IS_NPC(ch) && !IS_NPC(vict) && (!is_sparring(ch) || !is_sparring(vict))) {
+        } else if (GET_MAX_HIT(vict) <= 10000 && !IS_NPC(ch) && !IS_NPC(vict) && (!is_sparring(ch) || !is_sparring(vict))) {
             send_to_char(ch, "Newbie Shield Protects them!\r\n");
             return 0;
-        } else if (GET_LEVEL(ch) <= 8 && !IS_NPC(ch) && !IS_NPC(vict) && (!is_sparring(ch) || !is_sparring(vict))) {
-            send_to_char(ch, "Newbie Shield Protects you until level 8.\r\n");
+        } else if (GET_MAX_HIT(ch) <= 10000 && !IS_NPC(ch) && !IS_NPC(vict) && (!is_sparring(ch) || !is_sparring(vict))) {
+            send_to_char(ch, "Newbie Shield Protects you until PL 10,000.\r\n");
             return 0;
         } else if (PLR_FLAGGED(vict, PLR_SPIRAL) && num != 3) {
             send_to_char(ch,
@@ -4209,7 +4212,7 @@ void pcost(struct char_data *ch, double ki, int64_t st) {
     }
 
     int before = 0;
-    if (GET_LEVEL(ch) > 1 && !IS_NPC(ch)) {
+    if (!IS_NPC(ch)) {
         if (ki == 0) {
             before = (ch->getCurST());
         }
@@ -4377,9 +4380,8 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                         send_to_char(ch, "@RYou have cut your combo short because you missed your last hit!@n\r\n");
                     } else if (COMBHITS(ch) < physical_mastery(ch)) {
                         dmg += combo_damage(ch, dmg, 0);
-                        if ((COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) &&
-                            (level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 || GET_LEVEL(ch) == 100)) {
-                            int64_t gain = GET_LEVEL(ch) * 1000;
+                        if (COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) {
+                            int64_t gain = GET_INT(ch) * 1000;
                             if (GET_SKILL(ch, SKILL_STYLE) >= 100) {
                                 gain += gain * 2;
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 80) {
@@ -4396,9 +4398,8 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                         }
                     } else {
                         dmg += combo_damage(ch, dmg, 1);
-                        if ((COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) &&
-                            (level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 || GET_LEVEL(ch) == 100)) {
-                            int64_t gain = GET_LEVEL(ch) * 1000;
+                        if (COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) {
+                            int64_t gain = GET_INT(ch) * 1000;
                             if (GET_SKILL(ch, SKILL_STYLE) >= 100) {
                                 gain += gain * 2;
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 80) {
@@ -4505,20 +4506,20 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
         index += armor_calc(vict, dmg, type);
 
         if (AFF_FLAGGED(vict, AFF_STONESKIN)) {
-            if (GET_LEVEL(vict) < 20) {
-                index += GET_LEVEL(vict) * 250;
-            } else if (GET_LEVEL(vict) < 30) {
-                index += GET_LEVEL(vict) * 500;
-            } else if (GET_LEVEL(vict) < 50) {
-                index += GET_LEVEL(vict) * 1000;
-            } else if (GET_LEVEL(vict) < 60) {
-                index += GET_LEVEL(vict) * 2000;
-            } else if (GET_LEVEL(vict) < 70) {
-                index += GET_LEVEL(vict) * 5000;
-            } else if (GET_LEVEL(vict) < 90) {
-                index += GET_LEVEL(vict) * 10000;
-            } else if (GET_LEVEL(vict) <= 100) {
-                index += GET_LEVEL(vict) * 25000;
+            if (GET_CON(vict) < 20) {
+                index += GET_CON(vict) * 250;
+            } else if (GET_CON(vict) < 30) {
+                index += GET_CON(vict) * 500;
+            } else if (GET_CON(vict) < 50) {
+                index += GET_CON(vict) * 1000;
+            } else if (GET_CON(vict) < 60) {
+                index += GET_CON(vict) * 2000;
+            } else if (GET_CON(vict) < 70) {
+                index += GET_CON(vict) * 5000;
+            } else if (GET_CON(vict) < 90) {
+                index += GET_CON(vict) * 10000;
+            } else if (GET_CON(vict) <= 100) {
+                index += GET_CON(vict) * 25000;
             }
         }
 
@@ -4873,7 +4874,7 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                         vict->incCurHealth((vict->getMaxLF()) * .05);
                         vict->decCurLFPercent(.05);
                     } else {
-                        vict->incCurHealth(GET_LEVEL(vict) * 100);
+                        vict->incCurHealth(GET_CON(vict) * 100);
                     }
                     vict->attemptLimitBreak();
                     return;

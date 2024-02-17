@@ -709,16 +709,12 @@ ACMD(do_willpower) {
         send_to_char(ch, "You are not majinized and have no need to reclaim full control of your own will.\r\n");
         return;
     } else {
-        if (GET_PRACTICES(ch) < 100 && GET_LEVEL(ch) < 100) {
+        if (GET_PRACTICES(ch) < 100 && GET_WIS(ch) < 100) {
             send_to_char(ch, "You do not have enough PS to focus your attempt to break free.\r\n");
             fail = true;
         }
-        if (GET_PRACTICES(ch) < 200 && GET_LEVEL(ch) >= 100) {
+        if (GET_PRACTICES(ch) < 200 && GET_WIS(ch) >= 100) {
             send_to_char(ch, "You do not have enough PS to focus your attempt to break free.\r\n");
-            fail = true;
-        }
-        if (GET_EXP(ch) < level_exp(ch, GET_LEVEL(ch) + 1) && GET_LEVEL(ch) < 100) {
-            send_to_char(ch, "You need a full level's worth of experience stored up to try and break free.\r\n");
             fail = true;
         }
         if (fail == true) {
@@ -1035,7 +1031,7 @@ ACMD(do_trip) {
     int perc = init_skill(ch, SKILL_TRIP), prob = rand_number(1, 114);
 
     if (perc == 0) {
-        perc = GET_LEVEL(ch) + rand_number(1, 10);
+        perc = GET_DEX(ch) + rand_number(1, 10);
     }
 
     vict = nullptr;
@@ -1217,7 +1213,7 @@ ACMD(do_train) {
 
     /* Figure up the weight bonus */
     auto ratio = ch->getBurdenRatio();
-    total = GET_LEVEL(ch) * 6;
+    total = GET_CON(ch) * 6;
     total += total * ratio;
 
     if (GET_ROOM_VNUM(IN_ROOM(ch)) >= 6100 && GET_ROOM_VNUM(IN_ROOM(ch)) <= 6135) {
@@ -1234,15 +1230,15 @@ ACMD(do_train) {
             return;
         }
         total += total * 0.85;
-        if (GET_LEVEL(ch) >= 100)
+        if (GET_CON(ch) >= 100)
             total *= 15000;
-        else if (GET_LEVEL(ch) >= 80)
+        else if (GET_CON(ch) >= 80)
             total *= 1500;
-        else if (GET_LEVEL(ch) >= 40)
+        else if (GET_CON(ch) >= 40)
             total *= 600;
-        else if (GET_LEVEL(ch) >= 20)
+        else if (GET_CON(ch) >= 20)
             total *= 300;
-        else if (GET_LEVEL(ch) >= 10)
+        else if (GET_CON(ch) >= 10)
             total *= 150;
         send_to_char(ch, "@G%s begins to instruct you in training technique.@n\r\n", sensei::getName(sensei).c_str());
     }
@@ -1346,11 +1342,11 @@ ACMD(do_train) {
     }
 
     auto stat_cap = 20;
-    if (GET_LEVEL(ch) >= 61)
+    if (GET_CON(ch) + GET_WIS(ch) >= 61)
         stat_cap = 80;
-    else if (GET_LEVEL(ch) > 40)
+    else if (GET_CON(ch) + GET_WIS(ch) > 40)
         stat_cap = 60;
-    else if (GET_LEVEL(ch) > 20)
+    else if (GET_CON(ch) + GET_WIS(ch) > 20)
         stat_cap = 40;
 
     if (stat_val >= stat_cap) {
@@ -2975,15 +2971,15 @@ ACMD(do_majinize) {
         vict->loseBasePL(GET_MAJINIZED(vict));
         return;
     } else if (GET_BOOSTS(ch) == 0) {
-        send_to_char(ch, "You are incapable of majinizing%s.\r\n", GET_LEVEL(ch) < 100 ? " right now" : " anymore");
-        if (GET_LEVEL(ch) < 25) {
-            send_to_char(ch, "Your next available majinize will be at level 25\r\n");
-        } else if (GET_LEVEL(ch) < 50) {
-            send_to_char(ch, "Your next available majinize will be at level 50\r\n");
-        } else if (GET_LEVEL(ch) < 75) {
-            send_to_char(ch, "Your next available majinize will be at level 75\r\n");
-        } else if (GET_LEVEL(ch) < 100) {
-            send_to_char(ch, "Your next available majinize will be at level 100\r\n");
+        send_to_char(ch, "You are incapable of majinizing%s.\r\n", GET_INT(ch) < 100 ? " right now" : " anymore");
+        if (GET_INT(ch) < 25) {
+            send_to_char(ch, "Your next available majinize will be at int level 25\r\n");
+        } else if (GET_INT(ch) < 50) {
+            send_to_char(ch, "Your next available majinize will be at int level 50\r\n");
+        } else if (GET_INT(ch) < 75) {
+            send_to_char(ch, "Your next available majinize will be at int level 75\r\n");
+        } else if (GET_INT(ch) < 100) {
+            send_to_char(ch, "Your next available majinize will be at int level 100\r\n");
         }
         return;
     } else {
@@ -3104,21 +3100,21 @@ static void boost_obj(struct obj_data *obj, struct char_data *ch, int type) {
 
     int boost = 0;
 
-    if (GET_LEVEL(ch) >= 100) {
+    if (GET_WIS(ch) >= 100) {
         boost = 100;
-    } else if (GET_LEVEL(ch) >= 90) {
+    } else if (GET_WIS(ch) >= 90) {
         boost = 90;
-    } else if (GET_LEVEL(ch) >= 80) {
+    } else if (GET_WIS(ch) >= 80) {
         boost = 80;
-    } else if (GET_LEVEL(ch) >= 70) {
+    } else if (GET_WIS(ch) >= 70) {
         boost = 70;
-    } else if (GET_LEVEL(ch) >= 60) {
+    } else if (GET_WIS(ch) >= 60) {
         boost = 60;
-    } else if (GET_LEVEL(ch) >= 50) {
+    } else if (GET_WIS(ch) >= 50) {
         boost = 50;
-    } else if (GET_LEVEL(ch) >= 40) {
+    } else if (GET_WIS(ch) >= 40) {
         boost = 40;
-    } else if (GET_LEVEL(ch) >= 30) {
+    } else if (GET_WIS(ch) >= 30) {
         boost = 30;
     }
 
@@ -3127,7 +3123,7 @@ static void boost_obj(struct obj_data *obj, struct char_data *ch, int type) {
             if (boost != 0) { /* Change it if it qualifies */
                 GET_OBJ_LEVEL(obj) = boost;
                 obj->affected[0].location = 17;
-                obj->affected[0].modifier += (boost * GET_LEVEL(ch));
+                obj->affected[0].modifier += (boost * GET_DEX(ch));
                 if (GET_OBJ_VNUM(obj) == 91) {
                     obj->affected[1].location = 1;
                     obj->affected[1].modifier = (boost / 20);
@@ -3931,15 +3927,15 @@ ACMD(do_upgrade) {
     if (!strcasecmp("augment", arg)) {
         struct obj_data *obj = nullptr;
         int64_t gain = 0;
-        if (GET_LEVEL(ch) < 80) {
-            send_to_char(ch, "You need to be at least level 80 to use these kits.\r\n");
+        if (GET_WIS(ch) < 80) {
+            send_to_char(ch, "You need to be at least wisdom 80 to use these kits.\r\n");
             return;
         }
         if (!(obj = get_obj_in_list_vis(ch, "Augmentation", nullptr, ch->contents))) {
             send_to_char(ch, "You don't have a Circuit Augmentation Kit.\r\n");
             return;
         } else {
-            switch (GET_LEVEL(ch)) { /* R: Original was GET_LEVEL(ch) */
+            switch (GET_WIS(ch)) { /* R: Original was GET_LEVEL(ch) */
                 case 80:
                     gain = GET_MAX_HIT(ch) * 0.005;
                     break;
@@ -4035,22 +4031,22 @@ ACMD(do_upgrade) {
     if (!strcasecmp("powerlevel", arg)) {
         count = atoi(arg2);
         while (count > 0) {
-            if (GET_LEVEL(ch) >= 90) {
-                bonus += GET_LEVEL(ch) * 5000;
-            } else if (GET_LEVEL(ch) >= 80) {
-                bonus += GET_LEVEL(ch) * 2500;
-            } else if (GET_LEVEL(ch) >= 70) {
-                bonus += GET_LEVEL(ch) * 2000;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1300;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1200;
-            } else if (GET_LEVEL(ch) >= 50) {
-                bonus += GET_LEVEL(ch) * 500;
-            } else if (GET_LEVEL(ch) >= 25) {
-                bonus += GET_LEVEL(ch) * 250;
+            if (GET_CON(ch) >= 90) {
+                bonus += GET_CON(ch) * 5000;
+            } else if (GET_CON(ch) >= 80) {
+                bonus += GET_CON(ch) * 2500;
+            } else if (GET_CON(ch) >= 70) {
+                bonus += GET_CON(ch) * 2000;
+            } else if (GET_CON(ch) >= 60) {
+                bonus += GET_CON(ch) * 1300;
+            } else if (GET_CON(ch) >= 60) {
+                bonus += GET_CON(ch) * 1200;
+            } else if (GET_CON(ch) >= 50) {
+                bonus += GET_CON(ch) * 500;
+            } else if (GET_CON(ch) >= 25) {
+                bonus += GET_CON(ch) * 250;
             } else {
-                bonus += GET_LEVEL(ch) * 150;
+                bonus += GET_CON(ch) * 150;
             }
             cost += 75;
             count--;
@@ -4070,22 +4066,22 @@ ACMD(do_upgrade) {
     } else if (!strcasecmp("ki", arg)) {
         count = atoi(arg2);
         while (count > 0) {
-            if (GET_LEVEL(ch) >= 90) {
-                bonus += GET_LEVEL(ch) * 3650;
-            } else if (GET_LEVEL(ch) >= 80) {
-                bonus += GET_LEVEL(ch) * 2450;
-            } else if (GET_LEVEL(ch) >= 70) {
-                bonus += GET_LEVEL(ch) * 1800;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1250;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1150;
-            } else if (GET_LEVEL(ch) >= 50) {
-                bonus += GET_LEVEL(ch) * 400;
-            } else if (GET_LEVEL(ch) >= 25) {
-                bonus += GET_LEVEL(ch) * 200;
+            if (GET_WIS(ch) >= 90) {
+                bonus += GET_WIS(ch) * 3650;
+            } else if (GET_WIS(ch) >= 80) {
+                bonus += GET_WIS(ch) * 2450;
+            } else if (GET_WIS(ch) >= 70) {
+                bonus += GET_WIS(ch) * 1800;
+            } else if (GET_WIS(ch) >= 60) {
+                bonus += GET_WIS(ch) * 1250;
+            } else if (GET_WIS(ch) >= 60) {
+                bonus += GET_WIS(ch) * 1150;
+            } else if (GET_WIS(ch) >= 50) {
+                bonus += GET_WIS(ch) * 400;
+            } else if (GET_WIS(ch) >= 25) {
+                bonus += GET_WIS(ch) * 200;
             } else {
-                bonus += GET_LEVEL(ch) * 120;
+                bonus += GET_WIS(ch) * 120;
             }
             cost += 40;
             count--;
@@ -4105,22 +4101,22 @@ ACMD(do_upgrade) {
     } else if (!strcasecmp("stamina", arg)) {
         count = atoi(arg2);
         while (count > 0) {
-            if (GET_LEVEL(ch) >= 90) {
-                bonus += GET_LEVEL(ch) * 3650;
-            } else if (GET_LEVEL(ch) >= 80) {
-                bonus += GET_LEVEL(ch) * 2450;
-            } else if (GET_LEVEL(ch) >= 70) {
-                bonus += GET_LEVEL(ch) * 1800;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1250;
-            } else if (GET_LEVEL(ch) >= 60) {
-                bonus += GET_LEVEL(ch) * 1150;
-            } else if (GET_LEVEL(ch) >= 50) {
-                bonus += GET_LEVEL(ch) * 500;
-            } else if (GET_LEVEL(ch) >= 25) {
-                bonus += GET_LEVEL(ch) * 200;
+            if (GET_CON(ch) >= 90) {
+                bonus += GET_CON(ch) * 3650;
+            } else if (GET_CON(ch) >= 80) {
+                bonus += GET_CON(ch) * 2450;
+            } else if (GET_CON(ch) >= 70) {
+                bonus += GET_CON(ch) * 1800;
+            } else if (GET_CON(ch) >= 60) {
+                bonus += GET_CON(ch) * 1250;
+            } else if (GET_CON(ch) >= 60) {
+                bonus += GET_CON(ch) * 1150;
+            } else if (GET_CON(ch) >= 50) {
+                bonus += GET_CON(ch) * 500;
+            } else if (GET_CON(ch) >= 25) {
+                bonus += GET_CON(ch) * 200;
             } else {
-                bonus += GET_LEVEL(ch) * 120;
+                bonus += GET_CON(ch) * 120;
             }
             cost += 50;
             count--;
@@ -4172,19 +4168,19 @@ ACMD(do_ingest) {
             send_to_char(ch, "You already have already ingested 4 people.\r\n");
             return;
         }
-        if (GET_LEVEL(ch) < 25) {
+        if (GET_CON(ch) < 25) {
             send_to_char(ch, "You can't ingest yet.\r\n");
             return;
         }
-        if (GET_LEVEL(ch) < 100 && GET_LEVEL(ch) >= 75 && GET_ABSORBS(ch) == 3) {
+        if (GET_CON(ch) < 100 && GET_CON(ch) >= 75 && GET_ABSORBS(ch) == 3) {
             send_to_char(ch, "You already have ingested as much as you can. You'll have to get more experienced.\r\n");
             return;
         }
-        if (GET_LEVEL(ch) < 75 && GET_LEVEL(ch) >= 50 && GET_ABSORBS(ch) == 2) {
+        if (GET_CON(ch) < 75 && GET_CON(ch) >= 50 && GET_ABSORBS(ch) == 2) {
             send_to_char(ch, "You already have ingested as much as you can. You'll have to get more experienced.\r\n");
             return;
         }
-        if (GET_LEVEL(ch) < 50 && GET_LEVEL(ch) >= 25 && GET_ABSORBS(ch) == 1) {
+        if (GET_CON(ch) < 50 && GET_CON(ch) >= 25 && GET_ABSORBS(ch) == 1) {
             send_to_char(ch, "You already have ingested as much as you can. You'll have to get more experienced.\r\n");
             return;
         }
@@ -4479,8 +4475,8 @@ ACMD(do_absorb) {
     } // End of bio absorb
     else if (IS_BIO(ch) && !(strcmp(arg, "extract"))) {
         int failthresh = rand_number(1, 125);
-        if (GET_LEVEL(vict) > 99) {
-            failthresh += (GET_LEVEL(vict) - 95) * 2;
+        if (GET_CON(vict) > 99) {
+            failthresh += (GET_CON(vict) - 95) * 2;
         }
         if (ABSORBBY(vict)) {
             send_to_char(ch, "%s is already absorbing from them!", GET_NAME(ABSORBBY(vict)));
@@ -4530,9 +4526,9 @@ ACMD(do_absorb) {
             int64_t stam = (vict->getBaseST()) / 2000;
             int64_t ki = (vict->getBaseKI()) / 2000;
             int64_t pl = (vict->getBasePL()) / 2000;
-            stam += rand_number(GET_LEVEL(ch), GET_LEVEL(ch) * 2);
-            pl += rand_number(GET_LEVEL(ch), GET_LEVEL(ch) * 2);
-            ki += rand_number(GET_LEVEL(ch), GET_LEVEL(ch) * 2);
+            stam += rand_number(GET_CON(ch), GET_CON(ch) * 2);
+            pl += rand_number(GET_CON(ch), GET_CON(ch) * 2);
+            ki += rand_number(GET_WIS(ch), GET_WIS(ch) * 2);
             stam = std::min<int64_t>(stam, 1500000L);
             ki = std::min<int64_t>(ki, 1500000L);
             pl = std::min<int64_t>(pl, 1500000L);
@@ -5098,22 +5094,22 @@ ACMD(do_focus) {
                 reveal_hiding(ch, 0);
                 act("You focus ki into your mind, awakening it to cosmic wisdom!", true, ch, nullptr, nullptr, TO_CHAR);
                 act("$n focuses ki into $s mind, awakening it to cosmic wisdom!", true, ch, nullptr, nullptr, TO_ROOM);
-                if (IS_JINTO(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 &&
+                if (IS_JINTO(ch) && level_exp(ch, GET_WIS(ch) + 1) - GET_EXP(ch) > 0 &&
                     GET_PRACTICES(ch) >= 15 && rand_number(1, 4) >= 3) {
                     int64_t gain = 0;
                     ch->modPractices(-15);
                     if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 100) {
-                        gain = level_exp(ch, GET_LEVEL(ch) + 1) * 0.15;
+                        gain = level_exp(ch, GET_WIS(ch) + 1) * 0.15;
                         auto gained = ch->modExperience(gain);
                         send_to_char(ch, "@GYou gain @g%s@G experience due to your excellence with this skill.@n\r\n",
                                      add_commas(gained).c_str());
                     } else if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 60) {
-                        gain = level_exp(ch, GET_LEVEL(ch) + 1) * 0.10;
+                        gain = level_exp(ch, GET_WIS(ch) + 1) * 0.10;
                         auto gained = ch->modExperience(gain);
                         send_to_char(ch, "@GYou gain @g%s@G experience due to your excellence with this skill.@n\r\n",
                                      add_commas(gained).c_str());
                     } else if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 40) {
-                        gain = level_exp(ch, GET_LEVEL(ch) + 1) * 0.05;
+                        gain = level_exp(ch, GET_WIS(ch) + 1) * 0.05;
                         auto gained = ch->modExperience(gain);
                         send_to_char(ch, "@GYou gain @g%s@G experience due to your excellence with this skill.@n\r\n",
                                      add_commas(gained).c_str());
@@ -5169,24 +5165,24 @@ ACMD(do_focus) {
                         TO_VICT);
                     act("$n focuses ki into $N's mind, awakening it to cosmic wisdom!", true, ch, nullptr, vict,
                         TO_NOTVICT);
-                    if (IS_JINTO(ch) && level_exp(vict, GET_LEVEL(vict) + 1) - GET_EXP(vict) > 0 &&
+                    if (IS_JINTO(ch) && level_exp(vict, GET_INT(vict) + 1) - GET_EXP(vict) > 0 &&
                         GET_PRACTICES(ch) >= 15 && rand_number(1, 4) >= 3) {
                         int64_t gain = 0;
                         ch->modPractices(-15);
                         if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 100) {
-                            gain = level_exp(vict, GET_LEVEL(vict) + 1) * 0.15;
+                            gain = level_exp(vict, GET_INT(vict) + 1) * 0.15;
                             auto gained = vict->modExperience(gain);
                             send_to_char(vict,
                                          "@GYou gain @g%s@G experience due to the level of enlightenment you have received!@n\r\n",
                                          add_commas(gained).c_str());
                         } else if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 60) {
-                            gain = level_exp(vict, GET_LEVEL(vict) + 1) * 0.10;
+                            gain = level_exp(vict, GET_INT(vict) + 1) * 0.10;
                             auto gained = vict->modExperience(gain);
                             send_to_char(vict,
                                          "@GYou gain @g%s@G experience due to the level of enlightenment you have received!@n\r\n",
                                          add_commas(gained).c_str());
                         } else if (GET_SKILL(ch, SKILL_ENLIGHTEN) >= 40) {
-                            gain = level_exp(vict, GET_LEVEL(vict) + 1) * 0.05;
+                            gain = level_exp(vict, GET_INT(vict) + 1) * 0.05;
                             auto gained = vict->modExperience(gain);
                             send_to_char(vict,
                                          "@GYou gain @g%s@G experience due to the level of enlightenment you have received!@n\r\n",
@@ -5279,9 +5275,9 @@ ACMD(do_focus) {
                     act("$n focuses ki into $N's mind, making it work faster!", true, ch, nullptr, vict, TO_NOTVICT);
                     if ((vict->master == ch || ch->master == vict || ch->master == vict->master) &&
                         AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
-                        if (IS_KAI(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 &&
+                        if (IS_KAI(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 &&
                             rand_number(1, 3) == 3) {
-                            ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) * 0.05);
+                            ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.05);
                         }
                     }
                     return;
@@ -5371,9 +5367,9 @@ ACMD(do_focus) {
                         TO_NOTVICT);
                     if ((vict->master == ch || ch->master == vict || ch->master == vict->master) &&
                         AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
-                        if (IS_KAI(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 &&
+                        if (IS_KAI(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 &&
                             rand_number(1, 3) == 3) {
-                            ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) * 0.05);
+                            ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.05);
                         }
                     }
                     return;
@@ -5475,9 +5471,9 @@ ACMD(do_focus) {
                         true, ch, nullptr, vict, TO_NOTVICT);
                     if ((vict->master == ch || ch->master == vict || ch->master == vict->master) &&
                         AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
-                        if (IS_KAI(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 &&
+                        if (IS_KAI(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 &&
                             rand_number(1, 3) == 3) {
-                            ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) * 0.05);
+                            ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.05);
                         }
                     }
                     if (AFF_FLAGGED(vict, AFF_CURSE)) {
@@ -6732,11 +6728,11 @@ ACMD(do_heal) {
         }
         improve_skill(ch, SKILL_HEAL, 0);
         if (vict->master == ch || ch->master == vict || ch->master == vict->master) {
-            if (IS_NAIL(ch) && IS_NAMEK(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0 && GET_HIT(vict) <=
+            if (IS_NAIL(ch) && IS_NAMEK(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 && GET_HIT(vict) <=
                                                                                                      (vict->getEffMaxPL()) *
                                                                                                      0.85 &&
                 rand_number(1, 3) == 3) {
-                ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) * 0.005);
+                ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.005);
             }
         }
 
@@ -7614,10 +7610,10 @@ ACMD(do_situp) {
         act("@g$n does a situp, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
+    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBaseST();
-    double start_bonus = (base * 0.01 * level_impact) * Random::get<double>(0.8, 1.2);
+    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7812,10 +7808,10 @@ ACMD(do_meditate) {
         act("@g$n meditates calmly, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
+    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBaseKI();
-    double start_bonus = (base * 0.01 * level_impact) * Random::get<double>(0.8, 1.2);
+    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7861,7 +7857,7 @@ ACMD(do_meditate) {
         ch->gainBasePL(bonus / 2);
     }
 
-    bonus += GET_LEVEL(ch) / 20;
+    bonus += GET_WIS(ch) / 20;
     if (IS_NAMEK(ch)) {
         bonus += bonus / 2;
     }
@@ -7962,10 +7958,10 @@ ACMD(do_pushup) {
         act("@g$n does a pushup, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
+    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBasePL();
-    double start_bonus = (base * 0.01 * level_impact) * Random::get<double>(0.8, 1.2);
+    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7994,7 +7990,7 @@ ACMD(do_pushup) {
         if(bonus <= 12) bonus = 12;
     }
 
-    bonus += GET_LEVEL(ch) / 20;
+    bonus += GET_CON(ch) / 20;
     if (IS_NAMEK(ch)) {
         bonus -= bonus / 4;
     }
@@ -8391,19 +8387,19 @@ void base_update(uint64_t heartPulse, double deltaTime) {
                 auto leader = d->character->master ? d->character->master : d->character;
                 if (sum) {
                     if (rand_number(1, 8) >= 6) {
-                        int gain = rand_number(GET_LEVEL(d->character) / 2, GET_LEVEL(d->character) * 3) +
-                                   (GET_LEVEL(d->character) * 18);
-                        if (GET_LEVEL(d->character) > 30) {
-                            gain += rand_number(GET_LEVEL(d->character) * 2, GET_LEVEL(d->character) * 4) +
-                                    (GET_LEVEL(d->character) * 50);
+                        int gain = rand_number(GET_CON(d->character) / 2, GET_CON(d->character) * 3) +
+                                   (GET_CON(d->character) * 18);
+                        if (GET_CON(d->character) > 30) {
+                            gain += rand_number(GET_CON(d->character) * 2, GET_CON(d->character) * 4) +
+                                    (GET_CON(d->character) * 50);
                         }
-                        if (GET_LEVEL(d->character) > 60) {
+                        if (GET_CON(d->character) > 60) {
                             gain *= 2;
                         }
-                        if (GET_LEVEL(d->character) > 80) {
+                        if (GET_CON(d->character) > 80) {
                             gain *= 3;
                         }
-                        if (GET_LEVEL(d->character) > 90) {
+                        if (GET_CON(d->character) > 90) {
                             gain *= 4;
                         }
                         send_to_char(d->character, "@gYou gain +@G%d@g permanent powerlevel!@n\r\n", gain);
@@ -8421,19 +8417,19 @@ void base_update(uint64_t heartPulse, double deltaTime) {
                 }
                 if (mum) {
                     if (rand_number(1, 8) >= 6) {
-                        int gain = rand_number(GET_LEVEL(d->character) / 2, GET_LEVEL(d->character) * 3) +
-                                   (GET_LEVEL(d->character) * 18);
-                        if (GET_LEVEL(d->character) > 30) {
-                            gain += rand_number(GET_LEVEL(d->character) * 2, GET_LEVEL(d->character) * 4) +
-                                    (GET_LEVEL(d->character) * 50);
+                        int gain = rand_number(GET_CON(d->character) / 2, GET_CON(d->character) * 3) +
+                                   (GET_CON(d->character) * 18);
+                        if (GET_CON(d->character) > 30) {
+                            gain += rand_number(GET_CON(d->character) * 2, GET_CON(d->character) * 4) +
+                                    (GET_CON(d->character) * 50);
                         }
-                        if (GET_LEVEL(d->character) > 60) {
+                        if (GET_CON(d->character) > 60) {
                             gain *= 2;
                         }
-                        if (GET_LEVEL(d->character) > 80) {
+                        if (GET_CON(d->character) > 80) {
                             gain *= 3;
                         }
-                        if (GET_LEVEL(d->character) > 90) {
+                        if (GET_CON(d->character) > 90) {
                             gain *= 4;
                         }
                         send_to_char(d->character, "@gYou gain +@G%d@g permanent stamina!@n\r\n", gain);
@@ -8451,19 +8447,19 @@ void base_update(uint64_t heartPulse, double deltaTime) {
                 }
                 if (ium) {
                     if (rand_number(1, 8) >= 6) {
-                        int gain = rand_number(GET_LEVEL(d->character) / 2, GET_LEVEL(d->character) * 3) +
-                                   (GET_LEVEL(d->character) * 18);
-                        if (GET_LEVEL(d->character) > 30) {
-                            gain += rand_number(GET_LEVEL(d->character) * 2, GET_LEVEL(d->character) * 4) +
-                                    (GET_LEVEL(d->character) * 50);
+                        int gain = rand_number(GET_WIS(d->character) / 2, GET_WIS(d->character) * 3) +
+                                   (GET_WIS(d->character) * 18);
+                        if (GET_WIS(d->character) > 30) {
+                            gain += rand_number(GET_WIS(d->character) * 2, GET_WIS(d->character) * 4) +
+                                    (GET_WIS(d->character) * 50);
                         }
-                        if (GET_LEVEL(d->character) > 60) {
+                        if (GET_WIS(d->character) > 60) {
                             gain *= 2;
                         }
-                        if (GET_LEVEL(d->character) > 80) {
+                        if (GET_WIS(d->character) > 80) {
                             gain *= 3;
                         }
-                        if (GET_LEVEL(d->character) > 90) {
+                        if (GET_WIS(d->character) > 90) {
                             gain *= 4;
                         }
                         send_to_char(d->character, "@gYou gain +@G%d@g permanent ki!@n\r\n", gain);
@@ -9148,9 +9144,9 @@ ACMD(do_steal) {
         return;
     } else if (!can_kill(ch, vict, nullptr, 0)) {
         return;
-    } else if (GET_LEVEL(ch) <= 8) {
+    } else if (GET_MAX_HIT(ch) <= 10000) {
         send_to_char(ch,
-                     "You are trapped inside the newbie shield until level 9 and can't piss off those bigger and better than you. Awww...\r\n");
+                     "You are trapped inside the newbie shield until PL 10000.\r\n");
         return;
     } else if (MOB_FLAGGED(vict, MOB_NOKILL) && GET_ADMLEVEL(ch) == ADMLVL_NONE) {
         send_to_char(ch, "That isn't such a good idea...\r\n");

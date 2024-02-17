@@ -385,15 +385,15 @@ ACMD(do_throw) {
             }
 
             if (wlvl == 5) {
-                damage *= 250 * GET_LEVEL(ch);
+                damage *= 250 * GET_DEX(ch);
             } else if (wlvl == 4) {
-                damage *= 160 * GET_LEVEL(ch);
+                damage *= 160 * GET_DEX(ch);
             } else if (wlvl == 3) {
-                damage *= 100 * GET_LEVEL(ch);
+                damage *= 100 * GET_DEX(ch);
             } else if (wlvl == 2) {
-                damage *= 50 * GET_LEVEL(ch);
+                damage *= 50 * GET_DEX(ch);
             } else if (wlvl == 1) {
-                damage *= 10 * GET_LEVEL(ch);
+                damage *= 10 * GET_DEX(ch);
             }
 
             int hot = false;
@@ -729,7 +729,7 @@ ACMD(do_selfd) {
         return;
     }
 
-    if (GET_LEVEL(ch) < 9) {
+    if (GET_MAX_HIT(ch) <= 10000) {
         send_to_char(ch, "You can't self destruct while protected by the newbie shield!\r\n");
         return;
     }

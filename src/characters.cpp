@@ -188,7 +188,7 @@ bool char_data::in_past() {
 }
 
 bool char_data::is_newbie() {
-    return GET_LEVEL(this) < 9;
+    return GET_MAX_HIT(this) <= 10000;
 }
 
 bool char_data::in_northran() {
@@ -212,9 +212,10 @@ static std::map<int, uint16_t> grav_threshold = {
 };
 
 int64_t char_data::calc_soft_cap() {
-    auto level = get(CharNum::Level);
-    if(level >= 100) return 5e9;
-    return race::getSoftCap(race, level);
+    //auto level = get(CharNum::Level);
+    //if(level >= 100) 
+    return 5e9;
+    //return race::getSoftCap(race, level);
 }
 
 bool char_data::is_soft_cap(int64_t type) {
@@ -224,6 +225,8 @@ bool char_data::is_soft_cap(int64_t type) {
 bool char_data::is_soft_cap(int64_t type, long double mult) {
     if (IS_NPC(this))
         return true;
+
+    return false;
 
     // Level 100 characters are never softcapped.
     if (get(CharNum::Level) >= 100) {
@@ -1022,7 +1025,7 @@ void char_data::login() {
     struct descriptor_data *k;
 
     for (k = descriptor_list; k; k = k->next) {
-        if (!IS_NPC(k->character) && GET_LEVEL(k->character) > 3) {
+        if (!IS_NPC(k->character) && GET_MAX_HIT(k->character) > 5000) {
             count += 1;
         }
 
@@ -1475,9 +1478,9 @@ int64_t char_data::modExperience(int64_t value, bool applyBonuses) {
     gain = std::max<int64_t>(gain, 0);
 
     if (MINDLINK(this) && gain > 0 && LINKER(this) == 0) {
-        if (GET_LEVEL(this) + 20 < GET_LEVEL(MINDLINK(this)) || GET_LEVEL(this) - 20 > GET_LEVEL(MINDLINK(this))) {
+        if (GET_INT(this) + 20 < GET_INT(MINDLINK(this)) || GET_INT(this) - 20 > GET_INT(MINDLINK(this))) {
             send_to_char(MINDLINK(this),
-                         "The level difference between the two of you is too great to gain from mind read.\r\n");
+                         "The intelligence difference between the two of you is too great to gain from mind read.\r\n");
         } else {
             act("@GYou've absorbed some new experiences from @W$n@G!@n", false, this, nullptr, MINDLINK(this),
                 TO_VICT);
