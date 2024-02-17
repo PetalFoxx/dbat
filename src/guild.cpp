@@ -449,7 +449,7 @@ int is_guild_ok_char(struct char_data *keeper, struct char_data *ch, int guild_n
     }
 
 
-    if (GET_LEVEL(ch) < GM_MINLVL(guild_nr)) {
+    if (GET_INT(ch) < GM_MINLVL(guild_nr)) {
         snprintf(buf, sizeof(buf), "%s %s",
                  GET_NAME(ch), MSG_TRAINER_MINLVL);
         do_tell(keeper, buf, cmd_tell, 0);
@@ -587,7 +587,7 @@ void what_does_guild_know(int guild_nr, struct char_data *ch) {
     for (sortpos = 0; sortpos < SKILL_TABLE_SIZE; sortpos++) {
         i = sortpos; /* spell_sort_info[sortpos]; */
         if (does_guild_know(guild_nr, i) && skill_type(i) == SKTYPE_SKILL) {
-            canknow = highest_skill_value(GET_LEVEL(ch), k);
+            canknow = highest_skill_value(GET_INT(ch), k);
             count++;
             cost = calculate_skill_cost(ch, i);
             if (k == SKLEARN_CLASS) {
@@ -641,7 +641,7 @@ void what_does_guild_know(int guild_nr, struct char_data *ch) {
                 for (canknow = 0, j = 0; j < NUM_CLASSES; j++)
                     if (spell_info[i].can_learn_skill[j] > canknow)
                         canknow = spell_info[i].can_learn_skill[j];
-                canknow = highest_skill_value(GET_LEVEL(ch), canknow);
+                canknow = highest_skill_value(GET_INT(ch), canknow);
                 if (GET_SKILL_BASE(ch, i) < canknow) {
                     nlen = snprintf(buf2 + len, sizeof(buf2) - len, "%-20s %s\r\n", spell_info[i].name,
                                     GET_SKILL_BASE(ch, i) ? "known" : "unknown");
@@ -915,7 +915,7 @@ void handle_practice(struct char_data *keeper, int guild_nr, struct char_data *c
                 return;
             case SKLEARN_CROSSCLASS:
             case SKLEARN_CLASS:
-                highest = highest_skill_value(GET_LEVEL(ch), learntype);
+                highest = highest_skill_value(GET_INT(ch), learntype);
                 break;
             default:
                 basic_mud_log("Unknown SKLEARN type for skill %d in practice", skill_num);
@@ -1019,7 +1019,7 @@ void handle_practice(struct char_data *keeper, int guild_nr, struct char_data *c
                         if (IS_KONATSU(ch) && skill_num == SKILL_PARRY) {
                             SET_SKILL(ch, skill_num, GET_SKILL_BASE(ch, skill_num) + 5);
                         }
-                        int64_t gain = level_exp(ch, GET_LEVEL(ch) + 1) / 20;
+                        int64_t gain = level_exp(ch, GET_INT(ch) + 1) / 20;
                         ch->modExperience(gain);
                     }
                     if (GET_FORGETING(ch) != 0) {
@@ -1052,6 +1052,7 @@ void handle_train(struct char_data *keeper, int guild_nr, struct char_data *ch, 
 
 
 void handle_gain(struct char_data *keeper, int guild_nr, struct char_data *ch, char *argument) {
+    /*
     skip_spaces(&argument);
     auto rpp_cost = rpp_to_level(ch);
 
@@ -1065,9 +1066,9 @@ void handle_gain(struct char_data *keeper, int guild_nr, struct char_data *ch, c
         } else {
             gain_level(ch);
         }
-    } else {
+    } else {*/
         send_to_char(ch, "You are not yet ready for further advancement.\r\n");
-    }
+    //}
 }
 
 int rpp_to_level(struct char_data *ch) {

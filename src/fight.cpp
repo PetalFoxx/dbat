@@ -1342,7 +1342,7 @@ void fight_stack(uint64_t heartPulse, double deltaTime) {
                     }
                     if (GET_CHARGE(ch) >= GET_CHARGETO(ch)) {
                         GET_CHARGE(ch) = GET_CHARGETO(ch);
-                        GET_CHARGE(ch) += GET_LEVEL(ch);
+                        GET_CHARGE(ch) += GET_INT(ch);
                         send_to_char(ch, "You have finished charging!\r\n");
                         act("$n@w's aura burns brightly and then evens out.@n", true, ch, nullptr, nullptr, TO_ROOM);
                         ch->playerFlags.reset(PLR_CHARGE);
@@ -2170,7 +2170,7 @@ void die(struct char_data *ch, struct char_data *killer) {
         }
         for(auto f : {PLR_KILLER, PLR_THIEF}) ch->playerFlags.reset(f);
         for(auto f : {AFF_KNOCKED, AFF_SLEEP, AFF_PARALYZE}) ch->affected_by.reset(f);
-        if (!AFF_FLAGGED(ch, AFF_SPIRIT) && !ROOM_FLAGGED(IN_ROOM(ch), ROOM_PAST) && GET_LEVEL(ch) > 8) {
+        if (!AFF_FLAGGED(ch, AFF_SPIRIT) && !ROOM_FLAGGED(IN_ROOM(ch), ROOM_PAST) && GET_MAX_HIT(ch) > 10000) {
             if (GET_ROOM_VNUM(IN_ROOM(ch)) >= 2002 && GET_ROOM_VNUM(IN_ROOM(ch)) <= 2011) {
                 GET_DTIME(ch) = time(nullptr);
             } else if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_AL) || ROOM_FLAGGED(IN_ROOM(ch), ROOM_HELL)) {
@@ -2237,9 +2237,9 @@ static void perform_group_gain(struct char_data *ch, int base, struct char_data 
     auto leader = ch->master ? ch->master : ch;
 
     /*share = MIN(CONFIG_MAX_EXP_GAIN, MAX(1, base * GET_LEVEL(ch)));*/
-    share = MIN(2000000, base * GET_LEVEL(ch));
+    share = MIN(2000000, base * GET_INT(ch));
     if (!IS_NPC(ch)) {
-        if (GET_LEVEL(ch) >= 100 && GET_MAX_HIT(ch) * .025 >= GET_MAX_HIT(victim)) {
+        if (GET_INT(ch) >= 100 && GET_MAX_HIT(ch) * .025 >= GET_MAX_HIT(victim)) {
             share *= .05;
         } else if (GET_MAX_HIT(ch) * .025 >= GET_MAX_HIT(victim)) {
             share = 1;

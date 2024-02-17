@@ -1072,7 +1072,7 @@ ACMD(do_liquefy) {
             DRAGGED(DRAGGING(ch)) = nullptr;
             DRAGGING(ch) = nullptr;
         }
-        if (axion_dice(0) > GET_LEVEL(ch)) {
+        if (axion_dice(0) > GET_CON(ch)) {
             act("@MYour body starts to become loose and sag, but you lose focus and it reverts to its original shape!@n",
                 true, ch, nullptr, nullptr, TO_CHAR);
             act("@m$n@M's body starts to become loose and sag, but $e seems to return normal a moment later.@n", true,
@@ -1115,7 +1115,7 @@ ACMD(do_liquefy) {
         } else if (!can_kill(ch, vict, nullptr, 1)) {
             send_to_char(ch, "You can't kill them!\r\n");
             return;
-        } else if (axion_dice(0) > GET_LEVEL(ch)) {
+        } else if (axion_dice(0) > GET_CON(ch)) {
             act("@MYour body starts to become loose and sag, but you lose focus and it reverts to its original shape!@n",
                 true, ch, nullptr, nullptr, TO_CHAR);
             act("@m$n@M's body starts to become loose and sag, but $e seems to return normal a moment later.@n", true,
@@ -2253,18 +2253,10 @@ ACMD(do_scry) {
         vict->mod(CharAttribute::Intelligence, 2);
         vict->mod(CharAttribute::Wisdom, 2);
         ch->modPractices(-2000);
-        if (GET_LEVEL(ch) < 100) {
-            send_to_char(ch, "@D[@mPractice Sessions@D:@R -2000@D]@n\r\n");
-            if (level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0) {
-                ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch));
-                send_to_char(ch, "The remaining experience needed for your next level up has been gained!@n\r\n");
-            } else {
-                send_to_char(ch, "Due to already having enough experience to level up you gain no expereince.\r\n");
-            }
-        } else {
-            ch->gainBaseAllPercent(.025, true);
-            send_to_char(ch, "Your Powerlevel, Ki, and Stamina have improved!\r\n");
-        }
+
+        ch->gainBaseAllPercent(.025, true);
+        send_to_char(ch, "Your Powerlevel, Ki, and Stamina have improved!\r\n");
+        
     }
 
 }
@@ -2874,7 +2866,7 @@ ACMD(do_hydromancy) {
     int skill = GET_SKILL_BASE(ch, SKILL_STYLE), chance = axion_dice(0);
     int64_t cost = 0;
 
-    cost = (GET_MAX_MANA(ch) / 12) - (GET_INT(ch) * GET_LEVEL(ch));
+    cost = (GET_MAX_MANA(ch) / 12) - (GET_INT(ch) * GET_WIS(ch));
 
     if (r->geffect >= 0 && r->sector_type != SECT_WATER_SWIM &&
             r->sector_type != SECT_WATER_NOSWIM) {
@@ -3934,7 +3926,7 @@ ACMD(do_silk) {
         } ////
 
     } else if (!strcasecmp(arg, "bundle")) {
-        int64_t cost = ((GET_MAX_MANA(ch) * 0.01) * (prob * 0.20)) + (GET_INT(ch) * GET_LEVEL(ch));
+        int64_t cost = ((GET_MAX_MANA(ch) * 0.01) * (prob * 0.20)) + (GET_INT(ch) * GET_WIS(ch));
 
         if ((ch->getCurKI()) < cost) {
             send_to_char(ch, "You do not have enough ki to weave any bundles of silk.\r\n");
@@ -4134,7 +4126,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 13 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 50) {
+                } else if (GET_WIS(ch) < 50) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     for (objnum = 1110; objnum < 1120; objnum++) {
@@ -4164,7 +4156,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1120, VIRTUAL);
@@ -4181,7 +4173,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1121, VIRTUAL);
@@ -4198,7 +4190,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1122, VIRTUAL);
@@ -4215,7 +4207,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "@R%d@W RPP from your Bank paid for your selection. Enjoy!@n\r\n", cost);
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1123, VIRTUAL);
@@ -4232,7 +4224,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1124, VIRTUAL);
@@ -4249,7 +4241,7 @@ void handle_rpp_store(struct char_data *ch, int choice) {
                     send_to_char(ch, "You can not carry that much weight at this moment.\r\n");
                 } else if (IS_CARRYING_N(ch) + 1 > CAN_CARRY_N(ch)) {
                     send_to_char(ch, "You have too many items on you to carry anymore at this moment.\r\n");
-                } else if (GET_LEVEL(ch) < 40) {
+                } else if (GET_WIS(ch) < 40) {
                     send_to_char(ch, "You are below the minimum level to equip it.\r\n");
                 } else {
                     obj = read_object(1125, VIRTUAL);

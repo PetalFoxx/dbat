@@ -2910,7 +2910,7 @@ static void look_at_char(struct char_data *i, struct char_data *ch) {
         if (GET_SKILL(ch, SKILL_KEEN) > axion_dice(0) && (!IS_NPC(i) || GET_ADMLEVEL(ch) > 1)) {
             for (tmp_obj = i->contents; tmp_obj; tmp_obj = tmp_obj->next_content) {
                 if (CAN_SEE_OBJ(ch, tmp_obj) &&
-                    (ADM_FLAGGED(ch, ADM_SEEINV) || (rand_number(0, 20) < GET_LEVEL(ch)))) {
+                    (ADM_FLAGGED(ch, ADM_SEEINV) || (rand_number(0, 20) < GET_WIS(ch)))) {
                     show_obj_to_char(tmp_obj, ch, SHOW_OBJ_SHORT);
                     found = true;
                 }
