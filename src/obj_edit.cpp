@@ -206,15 +206,15 @@ void pobj_edit_parse(struct descriptor_data *d, char *arg) {
 
                     *buf = '\0';
                     sprintf(buf, "%s", d->obj_name);
-                    obj->name = strdup(buf);
+                    obj->setName(buf);
 
                     *buf2 = '\0';
                     sprintf(buf2, "%s", d->obj_short);
-                    obj->short_description = strdup(buf2);
+                    obj->setShortDesc(buf2);
 
                     *buf3 = '\0';
                     sprintf(buf3, "%s", d->obj_long);
-                    obj->room_description = strdup(buf3);
+                    obj->setShortDesc(buf3);;
 
                     d->obj_editflag = EDIT_NONE;
                     d->obj_editval = EDIT_NONE;
@@ -222,7 +222,7 @@ void pobj_edit_parse(struct descriptor_data *d, char *arg) {
                     obj->extra_flags.set(ITEM_RESTRING);
                     write_to_output(d, "Purchase complete.");
                     send_to_imm("Restring Eq: %s has bought: %s, which was %s.", GET_NAME(d->character),
-                                obj->short_description, d->obj_was);
+                                obj->getShortDesc(), d->obj_was);
                     STATE(d) = CON_PLAYING;
                 } else if (!strcasecmp(arg, "No") || !strcasecmp(arg, "no") || !strcasecmp(arg, "n") ||
                            !strcasecmp(arg, "N")) {
@@ -479,25 +479,25 @@ void pobj_edit_parse(struct descriptor_data *d, char *arg) {
                         }
                         *buf = '\0';
                         sprintf(buf, d->obj_name);
-                        obj->name = strdup(buf);
+                        obj->setName(buf);
                         *buf2 = '\0';
                         sprintf(buf2, d->obj_short);
-                        obj->short_description = strdup(buf2);
+                        obj->setShortDesc(buf2);
                         *buf3 = '\0';
                         sprintf(buf3, d->obj_long);
-                        obj->room_description = strdup(buf3);
+                        obj->setRoomDesc(buf3);
                     } else {
                         obj = read_object(20098, VIRTUAL);
                         obj_to_char(obj, d->character);
                         *buf = '\0';
                         sprintf(buf, "%s", d->obj_name);
-                        obj->name = strdup(buf);
+                        obj->setName(buf);
                         *buf2 = '\0';
                         sprintf(buf2, "%s", d->obj_short);
-                        obj->short_description = strdup(buf2);
+                        obj->setShortDesc(buf2);
                         *buf3 = '\0';
                         sprintf(buf3, "%s", d->obj_long);
-                        obj->room_description = strdup(buf3);
+                        obj->setRoomDesc(buf3);
                         switch (d->obj_weapon) {
                             case 1:
                                 GET_OBJ_VAL(obj, VAL_WEAPON_DAMTYPE) = TYPE_SLASH - TYPE_HIT;
@@ -525,8 +525,8 @@ void pobj_edit_parse(struct descriptor_data *d, char *arg) {
                     d->obj_editval = EDIT_NONE;
                     d->character->modRPP(-20);
                     GET_OBJ_SIZE(obj) = get_size(d->character);
-                    send_to_imm("Custom Eq: %s has bought: %s.", GET_NAME(d->character), obj->short_description);
-                    d->account->customs.emplace_back(obj->short_description);
+                    send_to_imm("Custom Eq: %s has bought: %s.", GET_NAME(d->character), obj->getShortDesc());
+                    d->account->customs.emplace_back(obj->getShortDesc());
                     log_custom(d, obj);
                 } else if (!strcasecmp(arg, "n") || !strcasecmp(arg, "N")) {
                     write_to_output(d, "Canceling purchase at no cost.\r\n");

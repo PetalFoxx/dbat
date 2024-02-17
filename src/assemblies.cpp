@@ -135,7 +135,7 @@ void assemblyListToChar(struct char_data *pCharacter) {
         } else {
             sprinttype(g_pAssemblyTable[i].uchAssemblyType, AssemblyTypes, szAssmType, sizeof(szAssmType));
             sprintf(szBuffer, "[%5ld] %s (%s)\r\n", g_pAssemblyTable[i].lVnum,
-                    obj_proto[lRnum].short_description, szAssmType);
+                    obj_proto[lRnum].getShortDesc().c_str(), szAssmType);
             send_to_char(pCharacter, szBuffer);
 
             for (j = 0; j < g_pAssemblyTable[i].lNumComponents; j++) {
@@ -146,7 +146,7 @@ void assemblyListToChar(struct char_data *pCharacter) {
                 } else {
                     sprintf(szBuffer, " %5ld: %-20.20s Extract=%-3.3s InRoom=%-3.3s\r\n",
                             +g_pAssemblyTable[i].pComponents[j].lVnum,
-                            obj_proto[lRnum].short_description,
+                            obj_proto[lRnum].getShortDesc().c_str(),
                             (g_pAssemblyTable[i].pComponents[j].bExtract ? "Yes" : "No"),
                             (g_pAssemblyTable[i].pComponents[j].bInRoom ? "Yes" : "No"));
                     send_to_char(pCharacter, szBuffer);

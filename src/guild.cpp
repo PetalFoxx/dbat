@@ -1365,7 +1365,7 @@ void list_guilds(struct char_data *ch, zone_rnum rnum, guild_vnum vmin, guild_vn
                      (g.gm == NOBODY) ?
                      -1 : g.gm,
                      (g.gm == NOBODY) ?
-                     "" : mob_proto[g.gm].short_description);
+                     "" : mob_proto[g.gm].getShortDesc());
 
         send_to_char(ch, "\r\n");
     };

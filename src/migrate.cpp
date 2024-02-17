@@ -351,7 +351,7 @@ static int check_object_spell_number(struct obj_data *obj, int val) {
         error = true;
     if (error)
         basic_mud_log("SYSERR: Object #%d (%s) has out of range spell #%d.",
-            GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_VAL(obj, val));
+            GET_OBJ_VNUM(obj), obj->getShortDesc(), GET_OBJ_VAL(obj, val));
 
     /*
    * This bug has been fixed, but if you don't like the special behavior...
@@ -360,7 +360,7 @@ static int check_object_spell_number(struct obj_data *obj, int val) {
                                                                                                                             if (GET_OBJ_TYPE(obj) == ITEM_STAFF &&
 	HAS_SPELL_ROUTINE(GET_OBJ_VAL(obj, val), MAG_AREAS | MAG_MASSES))
     log("... '%s' (#%d) uses %s spell '%s'.",
-	obj->short_description,	GET_OBJ_VNUM(obj),
+	obj->getShortDesc(),	GET_OBJ_VNUM(obj),
 	HAS_SPELL_ROUTINE(GET_OBJ_VAL(obj, val), MAG_AREAS) ? "area" : "mass",
 	skill_name(GET_OBJ_VAL(obj, val)));
 #endif
@@ -373,7 +373,7 @@ static int check_object_spell_number(struct obj_data *obj, int val) {
 
     if ((spellname == unused_spellname || !strcasecmp("UNDEFINED", spellname)) && (error = true))
         basic_mud_log("SYSERR: Object #%d (%s) uses '%s' spell #%d.",
-            GET_OBJ_VNUM(obj), obj->short_description, spellname,
+            GET_OBJ_VNUM(obj), obj->getShortDesc(), spellname,
             GET_OBJ_VAL(obj, val));
 
     return (error);
@@ -384,7 +384,7 @@ static int check_object_level(struct obj_data *obj, int val) {
 
     if ((GET_OBJ_VAL(obj, val) < 0) && (error = true))
         basic_mud_log("SYSERR: Object #%d (%s) has out of range level #%d.",
-            GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_VAL(obj, val));
+            GET_OBJ_VNUM(obj), obj->getShortDesc(), GET_OBJ_VAL(obj, val));
 
     return (error);
 }
@@ -413,13 +413,13 @@ static int check_object(struct obj_data *obj) {
 
     if (GET_OBJ_WEIGHT(obj) < 0 && (error = true))
         basic_mud_log("SYSERR: Object #%d (%s) has negative weight (%" I64T ").",
-            GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_WEIGHT(obj));
+            GET_OBJ_VNUM(obj), obj->getShortDesc(), GET_OBJ_WEIGHT(obj));
 
     if (GET_OBJ_RENT(obj) < 0 && (error = true))
         basic_mud_log("SYSERR: Object #%d (%s) has negative cost/day (%d).",
-            GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_RENT(obj));
+            GET_OBJ_VNUM(obj), obj->getShortDesc(), GET_OBJ_RENT(obj));
 
-    snprintf(objname, sizeof(objname), "Object #%d (%s)", GET_OBJ_VNUM(obj), obj->short_description);
+    snprintf(objname, sizeof(objname), "Object #%d (%s)", GET_OBJ_VNUM(obj), obj->getShortDesc());
     for (y = 0; y < TW_ARRAY_MAX; y++) {
         error |= check_bitvector_names(GET_OBJ_WEAR(obj)[y], wear_bits_count, objname, "object wear");
         error |= check_bitvector_names(GET_OBJ_EXTRA(obj)[y], extra_bits_count, objname, "object extra");
@@ -432,14 +432,14 @@ static int check_object(struct obj_data *obj) {
 
             strlcpy(onealias, space ? space + 1 : obj->name, sizeof(onealias));
             if (search_block(onealias, drinknames, true) < 0 && (error = true)) {
-                //log("SYSERR: Object #%d (%s) doesn't have drink type as last alias. (%s)", GET_OBJ_VNUM(obj), obj->short_description, obj->name);
+                //log("SYSERR: Object #%d (%s) doesn't have drink type as last alias. (%s)", GET_OBJ_VNUM(obj), obj->getShortDesc(), obj->name);
             }
         }
             /* Fall through. */
         case ITEM_FOUNTAIN:
             if ((GET_OBJ_VAL(obj, 0) > 0) && (GET_OBJ_VAL(obj, 1) > GET_OBJ_VAL(obj, 0) && (error = true)))
                 basic_mud_log("SYSERR: Object #%d (%s) contains (%d) more than maximum (%d).",
-                    GET_OBJ_VNUM(obj), obj->short_description,
+                    GET_OBJ_VNUM(obj), obj->getShortDesc(),
                     GET_OBJ_VAL(obj, 1), GET_OBJ_VAL(obj, 0));
             break;
         case ITEM_SCROLL:
@@ -455,7 +455,7 @@ static int check_object(struct obj_data *obj) {
             error |= check_object_spell_number(obj, 3);
             if (GET_OBJ_VAL(obj, 2) > GET_OBJ_VAL(obj, 1) && (error = true))
                 basic_mud_log("SYSERR: Object #%d (%s) has more charges (%d) than maximum (%d).",
-                    GET_OBJ_VNUM(obj), obj->short_description,
+                    GET_OBJ_VNUM(obj), obj->getShortDesc(),
                     GET_OBJ_VAL(obj, 2), GET_OBJ_VAL(obj, 1));
             break;
     }
@@ -702,21 +702,11 @@ static int Crash_load(struct char_data *ch) {
             /* read line check for xap. */
             if (!strcmp("XAP", line)) {  /* then this is a Xap Obj, requires
                                        special care */
-                if ((temp->name = fread_string(fl, "rented object name")) == nullptr) {
-                    temp->name = "undefined";
-                }
-
-                if ((temp->short_description = fread_string(fl, "rented object short desc")) == nullptr) {
-                    temp->short_description = "undefined";
-                }
-
-                if ((temp->room_description = fread_string(fl, "rented object desc")) == nullptr) {
-                    temp->room_description = "undefined";
-                }
-
-                if ((temp->look_description = fread_string(fl, "rented object adesc")) == nullptr) {
-                    temp->look_description = nullptr;
-                }
+                
+                temp->setName(withPlaceholder(fread_string(fl, "rented object name"), "undefined"));
+                temp->setShortDesc(withPlaceholder(fread_string(fl, "rented object short desc"), "undefined"));
+                temp->setRoomDesc(withPlaceholder(fread_string(fl, "rented object desc"), "undefined"));
+                temp->setLookDesc(withPlaceholder(fread_string(fl, "rented object adesc"), "undefined"));
 
                 if (!get_line(fl, line) ||
                     (sscanf(line, "%ld %ld %ld %ld %ld %ld %ld %ld", t, t + 1, t + 2, t + 3, t + 4, t + 5, t + 6, t + 7) !=
@@ -1553,14 +1543,15 @@ static int parse_mobile_from_file(FILE *mob_f, struct char_data *ch) {
     sprintf(buf2, "mob vnum %d", nr);   /* sprintf: OK (for 'buf2 >= 19') */
 
     /***** String data *****/
-    ch->name = fread_string(mob_f, buf2);
-    tmpptr = ch->short_description = fread_string(mob_f, buf2);
+    ch->setName(fread_string(mob_f, buf2));
+    ch->setShortDesc(fread_string(mob_f, buf2));
+    tmpptr = (char*)ch->getShortDesc().c_str();
     if (tmpptr && *tmpptr)
         if (!strcasecmp(fname(tmpptr), "a") || !strcasecmp(fname(tmpptr), "an") ||
             !strcasecmp(fname(tmpptr), "the"))
             *tmpptr = LOWER(*tmpptr);
-    ch->room_description = fread_string(mob_f, buf2);
-    ch->look_description = fread_string(mob_f, buf2);
+    ch->setRoomDesc(fread_string(mob_f, buf2));
+    ch->setRoomDesc(fread_string(mob_f, buf2));
 
     /* *** Numeric data *** */
     if (!get_line(mob_f, line)) {
@@ -1692,13 +1683,14 @@ static char *parse_object(FILE *obj_f, obj_vnum nr) {
     }
     auto &z = zone_table[real_zone_by_thing(nr)];
     z.objects.insert(nr);
-    tmpptr = o.short_description = fread_string(obj_f, buf2);
+    o.setShortDesc(fread_string(obj_f, buf2));
+    tmpptr = (char*)o.getShortDesc().c_str();
     if (tmpptr && *tmpptr)
         if (!strcasecmp(fname(tmpptr), "a") || !strcasecmp(fname(tmpptr), "an") ||
             !strcasecmp(fname(tmpptr), "the"))
             *tmpptr = LOWER(*tmpptr);
-
-    tmpptr = o.room_description = fread_string(obj_f, buf2);
+    o.setRoomDesc(fread_string(obj_f, buf2));
+    tmpptr = (char*)o.getRoomDesc().c_str();
     if (tmpptr && *tmpptr)
         CAP(tmpptr);
     o.look_description = fread_string(obj_f, buf2);
@@ -2941,22 +2933,11 @@ int House_load(room_vnum rvnum) {
             /* read line check for xap. */
             if (!strcmp("XAP", line)) {  /* then this is a Xap Obj, requires
                                        special care */
-                if ((temp->name = fread_string(fl, buf2)) == nullptr) {
-                    temp->name = "undefined";
-                }
-
-                if ((temp->short_description = fread_string(fl, buf2)) == nullptr) {
-                    temp->short_description = "undefined";
-                }
-
-                if ((temp->room_description = fread_string(fl, buf2)) == nullptr) {
-                    temp->room_description = "undefined";
-                }
-
-                if ((temp->look_description = fread_string(fl, buf2)) == nullptr) {
-                    temp->look_description = nullptr;
-                }
-
+                
+                temp->setName(withPlaceholder(fread_string(fl, buf2), "undefined"));
+                temp->setShortDesc(withPlaceholder(fread_string(fl, buf2), "undefined"));
+                temp->setRoomDesc(withPlaceholder(fread_string(fl, buf2), "undefined"));
+                temp->setLookDesc(withPlaceholder(fread_string(fl, buf2), "undefined"));
 
                 if (!get_line(fl, line) ||
                     (sscanf(line, "%ld %ld %ld %ld %ld %ld %ld %ld", t, t + 1, t + 2, t + 3, t + 4, t + 5, t + 6, t + 7) !=

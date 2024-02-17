@@ -189,48 +189,49 @@ ACMD(do_evolve) {
 static void see_plant(struct obj_data *obj, struct char_data *ch) {
 
     int water = GET_OBJ_VAL(obj, VAL_WATERLEVEL);
-
+    auto sd = obj->getShortDesc();
     if (water >= 0) {
+        
         switch (GET_OBJ_VAL(obj, VAL_MATURITY)) {
             case 0:
                 send_to_char(ch, "@wA @G%s@y seed@w has been planted here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 1:
                 send_to_char(ch, "@wA very young @G%s@w has sprouted from a planter here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 2:
                 send_to_char(ch, "@wA half grown @G%s@w is in a planter here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 3:
                 send_to_char(ch, "@wA mature @G%s@w is growing in a planter here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 4:
                 send_to_char(ch, "@wA mature @G%s@w is flowering in a planter here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 5:
                 send_to_char(ch, "@wA mature @G%s@w that is close to harvestable is here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             case 6:
                 send_to_char(ch, "@wA @Rharvestable @G%s@w is in the planter here. @D(@C%d Water Hours@D)@n\r\n",
-                             obj->short_description, water);
+                             sd, water);
                 break;
             default:
                 break;
         }
     } else {
         if (water > -4) {
-            send_to_char(ch, "@yA @G%s@y that is looking a bit @rdry@y, is here.@n\r\n", obj->short_description);
+            send_to_char(ch, "@yA @G%s@y that is looking a bit @rdry@y, is here.@n\r\n", sd);
         } else if (water > -10) {
-            send_to_char(ch, "@yA @G%s@y that is looking extremely @rdry@y, is here.@n\r\n", obj->short_description);
+            send_to_char(ch, "@yA @G%s@y that is looking extremely @rdry@y, is here.@n\r\n", sd);
         } else if (water <= -10) {
             send_to_char(ch, "@yA @G%s@y that is completely @rdead@y and @rwithered@y, is here.@n\r\n",
-                         obj->short_description);
+                         sd);
         }
     }
 
@@ -481,9 +482,9 @@ ACMD(do_table) {
     }
 
     char buf[200];
-    sprintf(buf, "$n looks at %s on %s.\r\n", obj2->short_description, obj->short_description);
+    sprintf(buf, "$n looks at %s on %s.\r\n", obj2->getShortDesc(), obj->getShortDesc());
     act(buf, true, ch, nullptr, nullptr, TO_ROOM);
-    send_to_char(ch, "%s", obj2->look_description);
+    send_to_char(ch, "%s", obj2->getLookDesc());
 }
 
 ACMD(do_draw) {
@@ -518,7 +519,7 @@ ACMD(do_draw) {
         return;
     } else {
         act("$n draws a card from $s $p.\r\n", true, ch, obj, nullptr, TO_ROOM);
-        send_to_char(ch, "You draw a card.\r\n%s\r\n", obj3->look_description);
+        send_to_char(ch, "You draw a card.\r\n%s\r\n", obj3->getLookDesc());
         return;
     }
 
@@ -605,7 +606,7 @@ ACMD(do_hand) {
             }
             if (obj) {
                 count += 1;
-                send_to_char(ch, "%s\r\n", obj->short_description);
+                send_to_char(ch, "%s\r\n", obj->getShortDesc());
             }
         }
         act("$n looks at $s hand.", true, ch, nullptr, nullptr, TO_ROOM);
@@ -698,8 +699,8 @@ ACMD(do_post) {
             return;
         } else {
             char buf[MAX_STRING_LENGTH];
-            sprintf(buf, "@C$n@W posts %s@W on %s@W.@n", obj->short_description, obj2->short_description);
-            send_to_char(ch, "@WYou post %s@W on %s@W.@n\r\n", obj->short_description, obj2->short_description);
+            sprintf(buf, "@C$n@W posts %s@W on %s@W.@n", obj->getShortDesc(), obj2->getShortDesc());
+            send_to_char(ch, "@WYou post %s@W on %s@W.@n\r\n", obj->getShortDesc(), obj2->getShortDesc());
             act(buf, true, ch, nullptr, nullptr, TO_ROOM);
             obj_from_char(obj);
             obj_to_room(obj, IN_ROOM(ch));
@@ -802,7 +803,7 @@ ACMD(do_nickname) {
             } else {
                 char nick[MAX_INPUT_LENGTH];
                 sprintf(nick, "%s", CAP(arg2));
-                ship2->look_description = strdup(nick);
+                ship2->setLookDesc(nick);
                 struct obj_data *k;
                 for (k = object_list; k; k = k->next) {
                     if (GET_OBJ_VNUM(k) == GET_OBJ_VNUM(ship2) + 1000) {
@@ -817,18 +818,18 @@ ACMD(do_nickname) {
         return;
     }
 
-    if (strstr(obj->short_description, "nicknamed")) {
-        send_to_char(ch, "%s@w has already been nicknamed.@n\r\n", obj->short_description);
+    if (strstr(obj->getShortDesc().c_str(), "nicknamed")) {
+        send_to_char(ch, "%s@w has already been nicknamed.@n\r\n", obj->getShortDesc());
         return;
     } else if (strstr(obj->name, "corpse")) {
-        send_to_char(ch, "%s@w is a corpse!@n\r\n", obj->short_description);
+        send_to_char(ch, "%s@w is a corpse!@n\r\n", obj->getShortDesc());
         return;
     } else {
-        send_to_char(ch, "@wYou nickname %s@w as '@C%s@w'.@n\r\n", obj->short_description, arg2);
+        send_to_char(ch, "@wYou nickname %s@w as '@C%s@w'.@n\r\n", obj->getShortDesc(), arg2);
         char nick[MAX_INPUT_LENGTH], nick2[MAX_INPUT_LENGTH];
-        sprintf(nick, "%s @wnicknamed @D(@C%s@D)@n", obj->short_description, CAP(arg2));
+        sprintf(nick, "%s @wnicknamed @D(@C%s@D)@n", obj->getShortDesc(), CAP(arg2));
         sprintf(nick2, "%s %s", obj->name, arg2);
-        obj->short_description = strdup(nick);
+        obj->getShortDesc() = strdup(nick);
         obj->name = strdup(nick2);
         return;
     }
@@ -2121,7 +2122,7 @@ static void show_obj_to_char(struct obj_data *obj, struct char_data *ch, int mod
                     if (GET_OBJ_POSTED(obj)) {
                         return;
                     } else {
-                        send_to_char(ch, "%s@w, has been posted here.@n", obj->short_description);
+                        send_to_char(ch, "%s@w, has been posted here.@n", obj->getShortDesc());
                     }
                 } else {
                     if (!OBJ_FLAGGED(obj, ITEM_BURIED)) {
@@ -2167,9 +2168,9 @@ static void show_obj_to_char(struct obj_data *obj, struct char_data *ch, int mod
             }
 
             if (PRF_FLAGGED(ch, PRF_IHEALTH)) {
-                send_to_char(ch, "@D<@gH@D: @C%d@D>@w %s", GET_OBJ_VAL(obj, VAL_ALL_HEALTH), obj->short_description);
+                send_to_char(ch, "@D<@gH@D: @C%d@D>@w %s", GET_OBJ_VAL(obj, VAL_ALL_HEALTH), obj->getShortDesc());
             } else {
-                send_to_char(ch, "%s", obj->short_description);
+                send_to_char(ch, "%s", obj->getShortDesc());
             }
             if (GET_OBJ_TYPE(obj) == ITEM_FOOD) {
                 if (GET_OBJ_VAL(obj, VAL_FOOD_FOODVAL) < FOOB(obj)) {
@@ -2258,12 +2259,8 @@ static void show_obj_to_char(struct obj_data *obj, struct char_data *ch, int mod
         case SHOW_OBJ_ACTION:
             switch (GET_OBJ_TYPE(obj)) {
                 case ITEM_NOTE:
-                    if (obj->look_description) {
-                        char notebuf[MAX_NOTE_LENGTH];
-
-                        snprintf(notebuf, sizeof(notebuf), "There is something written on it:\r\n\r\n%s",
-                                 obj->look_description);
-                        write_to_output(ch->desc, notebuf);
+                    if (auto ld = obj->getLookDesc(); !ld.empty()) {
+                        write_to_output(ch->desc, "There is something written on it:\r\n\r\n%s", ld);
                     } else
                         send_to_char(ch, "There appears to be nothing written on it.\r\n");
                     return;
@@ -2528,7 +2525,7 @@ static int show_obj_modifiers(struct obj_data *obj, struct char_data *ch) {
                 *dvnum = '\0';
                 sprintf(dvnum, "@D[@G%d@D] @w", GET_OBJ_VNUM(obj2));
                 send_to_char(ch, "\n...%s%s has been posted to it.", PRF_FLAGGED(ch, PRF_ROOMFLAGS) ? dvnum : "",
-                             obj2->short_description);
+                             obj2->getShortDesc());
             }
         }
         found++;
@@ -2551,7 +2548,7 @@ static void list_obj_to_char(struct obj_data *list, struct char_data *ch, int mo
         d = i;
         if (CONFIG_STACK_OBJS) {
             for (j = list; j != i; j = j->next_content)
-                if ((!strcasecmp(j->short_description, i->short_description) &&
+                if ((!strcasecmp(j->getShortDesc().c_str(), i->getShortDesc().c_str()) &&
                      !strcasecmp(j->room_description, i->room_description)) &&
                     (j->vn == i->vn) &&
                     ((OBJ_FLAGGED(j, ITEM_BROKEN) && OBJ_FLAGGED(i, ITEM_BROKEN)) ||
@@ -2573,7 +2570,7 @@ static void list_obj_to_char(struct obj_data *list, struct char_data *ch, int mo
             if (j != i)
                 continue;
             for (d = j = i; j; j = j->next_content)
-                if ((!strcasecmp(j->short_description, i->short_description) &&
+                if ((!strcasecmp(j->getShortDesc().c_str(), i->getShortDesc().c_str()) &&
                      !strcasecmp(j->room_description, i->room_description)) &&
                     (j->vn == i->vn) &&
                     ((OBJ_FLAGGED(j, ITEM_BROKEN) && OBJ_FLAGGED(i, ITEM_BROKEN)) ||
@@ -2598,7 +2595,7 @@ static void list_obj_to_char(struct obj_data *list, struct char_data *ch, int mo
                                                 }
         }
         if ((CAN_SEE_OBJ(ch, d) &&
-             ((*d->room_description != '.' && *d->short_description != '.') || PRF_FLAGGED(ch, PRF_HOLYLIGHT))) ||
+             ((*d->room_description != '.' && *d->getShortDesc().c_str() != '.') || PRF_FLAGGED(ch, PRF_HOLYLIGHT))) ||
             (GET_OBJ_TYPE(d) == ITEM_LIGHT)) {
             if (num > 1)
                 send_to_char(ch, "@D(@Rx@Y%2i@D)@n ", num);
@@ -2640,7 +2637,7 @@ static void diag_obj_to_char(struct obj_data *obj, struct char_data *ch) {
 }
 
 static void diag_char_to_char(struct char_data *i, struct char_data *ch) {
-    struct {
+    static struct {
         int percent;
         const char *text;
     } diagnosis[] = {
@@ -2704,8 +2701,12 @@ static void look_at_char(struct char_data *i, struct char_data *ch) {
     if (!ch->desc) {
         return;
     }
-    if (i->look_description) {
-        send_to_char(ch, "%s", i->look_description);
+    if(i->form == FormID::Base || i->transforms[i->form].description == nullptr || i->transforms[i->form].description == "") {
+        if (i->look_description) {
+            send_to_char(ch, "%s", i->look_description);
+        }
+    } else {
+        send_to_char(ch, "%s", i->transforms[i->form].description);
     }
     if (!MOB_FLAGGED(i, MOB_JUSTDESC)) {
         bringdesc(ch, i);
@@ -2867,40 +2868,26 @@ static void look_at_char(struct char_data *i, struct char_data *ch) {
         } else {
             act("The disguised person is using:", false, i, nullptr, ch, TO_VICT);
         }
-        for (j = 0; j < NUM_WEARS; j++)
-            if (GET_EQ(i, j) && CAN_SEE_OBJ(ch, GET_EQ(i, j)) && (j != WEAR_WIELD1 && j != WEAR_WIELD2)) {
-                send_to_char(ch, "%s", wear_where[j]);
-                show_obj_to_char(GET_EQ(i, j), ch, SHOW_OBJ_SHORT);
-                if (OBJ_FLAGGED(GET_EQ(i, j), ITEM_SHEATH)) {
-                    struct obj_data *obj2 = nullptr, *next_obj = nullptr, *sheath = GET_EQ(i, j);
-                    for (obj2 = sheath->contents; obj2; obj2 = next_obj) {
-                        next_obj = obj2->next_content;
-                        if (obj2) {
-                            send_to_char(ch, "@D  ---- @YSheathed@D ----@c> @n");
-                            show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
-                        }
-                    }
-                    obj2 = nullptr;
-                }
-            } else if (GET_EQ(i, j) && CAN_SEE_OBJ(ch, GET_EQ(i, j)) && (!PLR_FLAGGED(i, PLR_THANDW))) {
-                send_to_char(ch, "%s", wear_where[j]);
-                show_obj_to_char(GET_EQ(i, j), ch, SHOW_OBJ_SHORT);
-                if (OBJ_FLAGGED(GET_EQ(i, j), ITEM_SHEATH)) {
-                    struct obj_data *obj2 = nullptr, *next_obj = nullptr, *sheath = GET_EQ(i, j);
-                    for (obj2 = sheath->contents; obj2; obj2 = next_obj) {
-                        next_obj = obj2->next_content;
-                        if (obj2) {
-                            send_to_char(ch, "@D  ---- @YSheathed@D ----@c> @n");
-                            show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
-                        }
 
+        for (j = 0; j < NUM_WEARS; j++) {
+            auto eq = GET_EQ(i, j);
+            if(!eq) continue;
+            if(!CAN_SEE_OBJ(ch, eq)) continue;
+                
+            if ((j != WEAR_WIELD1 && j != WEAR_WIELD2) || (!PLR_FLAGGED(i, PLR_THANDW))) {
+                send_to_char(ch, "%s", wear_where[j]);
+                show_obj_to_char(eq, ch, SHOW_OBJ_SHORT);
+                if (OBJ_FLAGGED(eq, ITEM_SHEATH)) {
+                    for (auto obj2 = eq->contents; obj2; obj2 = obj2->next_content) {
+                        send_to_char(ch, "@D  ---- @YSheathed@D ----@c> @n");
+                        show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
                     }
-                    obj2 = nullptr;
                 }
-            } else if (GET_EQ(i, j) && CAN_SEE_OBJ(ch, GET_EQ(i, j)) && (PLR_FLAGGED(i, PLR_THANDW))) {
+            } else if (PLR_FLAGGED(i, PLR_THANDW)) {
                 send_to_char(ch, "@c<@CWielded by B. Hands@c>@n ");
-                show_obj_to_char(GET_EQ(i, j), ch, SHOW_OBJ_SHORT);
+                show_obj_to_char(eq, ch, SHOW_OBJ_SHORT);
             }
+        }
     }
     if (ch != i && ((GET_SKILL(ch, SKILL_KEEN) && AFF_FLAGGED(ch, AFF_SNEAK)) || GET_ADMLEVEL(ch))) {
         found = false;
@@ -2955,100 +2942,104 @@ static void list_one_char(struct char_data *i, struct char_data *ch) {
     if (IS_NPC(i) && i->room_description && GET_POS(i) == GET_DEFAULT_POS(i) && !FIGHTING(i)) {
         send_to_char(ch, "%s", i->room_description);
 
-        if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .9 && GET_HIT(i) != (i->getEffMaxPL()))
-            act("@R...Some slight wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .8 && GET_HIT(i) < (i->getEffMaxPL()) * .9)
-            act("@R...A few wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .7 && GET_HIT(i) < (i->getEffMaxPL()) * .8)
-            act("@R...Many wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .6 && GET_HIT(i) < (i->getEffMaxPL()) * .7)
-            act("@R...Quite a few wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .5 && GET_HIT(i) < (i->getEffMaxPL()) * .6)
-            act("@R...Horrible wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .4 && GET_HIT(i) < (i->getEffMaxPL()) * .5)
-            act("@R...Blood is seeping from the wounds on $s body.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .3 && GET_HIT(i) < (i->getEffMaxPL()) * .4)
-            act("@R...$s body is in terrible shape.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .2 && GET_HIT(i) < (i->getEffMaxPL()) * .3)
-            act("@R...Is absolutely covered in wounds.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) >= (i->getEffMaxPL()) * .1 && GET_HIT(i) < (i->getEffMaxPL()) * .2)
-            act("@R...Is on $s last leg.@w", true, i, nullptr, ch, TO_VICT);
-        else if (IS_NPC(i) && GET_HIT(i) < (i->getEffMaxPL()) * .1)
-            act("@R...Should be DEAD soon.@w", true, i, nullptr, ch, TO_VICT);
+        auto icur = GET_HIT(i);
+        auto imax = i->getEffMaxPL();
 
+        std::vector<std::string> messages;
+
+        if (icur >= (imax) * .9 && icur != (imax))
+            messages.emplace_back("@R...Some slight wounds on $s body.@w");
+        else if (icur >= (imax) * .8 && icur < (imax) * .9)
+            messages.emplace_back("@R...A few wounds on $s body.@w");
+        else if (icur >= (imax) * .7 && icur < (imax) * .8)
+            messages.emplace_back("@R...Many wounds on $s body.@w");
+        else if (icur >= (imax) * .6 && icur < (imax) * .7)
+            messages.emplace_back("@R...Quite a few wounds on $s body.@w");
+        else if (icur >= (imax) * .5 && icur < (imax) * .6)
+            messages.emplace_back("@R...Horrible wounds on $s body.@w");
+        else if (icur >= (imax) * .4 && icur < (imax) * .5)
+            messages.emplace_back("@R...Blood is seeping from the wounds on $s body.@w");
+        else if (icur >= (imax) * .3 && icur < (imax) * .4)
+            messages.emplace_back("@R...$s body is in terrible shape.@w");
+        else if (icur >= (imax) * .2 && icur < (imax) * .3)
+            messages.emplace_back("@R...Is absolutely covered in wounds.@w");
+        else if (icur >= (imax) * .1 && icur < (imax) * .2)
+            messages.emplace_back("@R...Is on $s last leg.@w");
+        else if (icur < (imax) * .1)
+            messages.emplace_back("@R...Should be DEAD soon.@w");
 
         if (GET_EAVESDROP(i) > 0) {
-            char eaves[300];
-            sprintf(eaves, "@w...$e is spying on everything to the @c%s@w.", dirs[GET_EAVESDIR(i)]);
-            act(eaves, true, i, nullptr, ch, TO_VICT);
+            messages.emplace_back(fmt::format("@w...$e is spying on everything to the @c%s@w.", dirs[GET_EAVESDIR(i)]));
         }
         if (AFF_FLAGGED(i, AFF_FLYING) && GET_ALT(i) == 1)
-            act("...$e is in the air!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e is in the air!");
         if (AFF_FLAGGED(i, AFF_FLYING) && GET_ALT(i) == 2)
-            act("...$e is high in the air!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e is high in the air!");
         if (AFF_FLAGGED(i, AFF_SANCTUARY) && !GET_SKILL(i, SKILL_AQUA_BARRIER))
-            act("...$e has a barrier around $s body!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e has a barrier around $s body!");
         if (AFF_FLAGGED(i, AFF_FIRESHIELD))
-            act("...$e has @rf@Rl@Ya@rm@Re@Ys@w around $s body!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e has @rf@Rl@Ya@rm@Re@Ys@w around $s body!");
         if (AFF_FLAGGED(i, AFF_SANCTUARY) && GET_SKILL(i, SKILL_AQUA_BARRIER))
-            act("...$e has a @Gbarrier@w of @cwater@w and @Cki@w around $s body!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e has a @Gbarrier@w of @cwater@w and @Cki@w around $s body!");
         if (!IS_NPC(i) && PLR_FLAGGED(i, PLR_SPIRAL))
-            act("...$e is spinning in a vortex!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e is spinning in a vortex!");
         if (GET_CHARGE(i))
-            act("...$e has a bright %s aura around $s body!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e has a bright %s aura around $s body!");
         if (AFF_FLAGGED(i, AFF_METAMORPH))
-            act("@w...$e has a dark, @rred@w aura and menacing presence.", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("@w...$e has a dark, @rred@w aura and menacing presence.");
         if (AFF_FLAGGED(i, AFF_HAYASA))
-            act("@w...$e has a soft @cblue@w glow around $s body!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("@w...$e has a soft @cblue@w glow around $s body!");
         if (AFF_FLAGGED(i, AFF_BLIND))
-            act("...$e is groping around blindly!", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("...$e is groping around blindly!");
         if (affected_by_spell(i, SPELL_FAERIE_FIRE))
-            act("@m...$e @mis outlined with purple fire!@m", false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back("@m...$e @mis outlined with purple fire!@m");
         if (GET_FEATURE(i)) {
-            char woo[MAX_STRING_LENGTH];
-            sprintf(woo, "@C%s@n", GET_FEATURE(i));
-            act(woo, false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back(fmt::format("@C%s@n", GET_FEATURE(i)));
         }
+
+        for(const auto& msg : messages) act(msg.c_str(), false, i, nullptr, ch, TO_VICT);
 
         return;
     }
 
+    auto shd = i->getShortDesc();
+
     if (IS_NPC(i) && !FIGHTING(i) && GET_POS(i) != POS_SITTING && GET_POS(i) != POS_SLEEPING)
-        send_to_char(ch, "@w%c%s", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s", shd);
     else if (IS_NPC(i) && GRAPPLED(i) && GRAPPLED(i) == ch)
-        send_to_char(ch, "@w%c%s is being grappled with by YOU!", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is being grappled with by YOU!", shd);
     else if (IS_NPC(i) && GRAPPLED(i) && GRAPPLED(i) != ch)
-        send_to_char(ch, "@w%c%s is being absorbed from by %s!", UPPER(*i->short_description), i->short_description + 1,
+        send_to_char(ch, "@w%s is being absorbed from by %s!", shd,
                      readIntro(ch, GRAPPLED(i)) == 1 ? get_i_name(ch, GRAPPLED(i)) : AN(RACE(GRAPPLED(i))));
     else if (IS_NPC(i) && ABSORBBY(i) && ABSORBBY(i) == ch)
-        send_to_char(ch, "@w%c%s is being absorbed from by YOU!", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is being absorbed from by YOU!", shd);
     else if (IS_NPC(i) && ABSORBBY(i) && ABSORBBY(i) != ch)
-        send_to_char(ch, "@w%c%s is being absorbed from by %s!", UPPER(*i->short_description), i->short_description + 1,
+        send_to_char(ch, "@w%s is being absorbed from by %s!", shd,
                      readIntro(ch, ABSORBBY(i)) == 1 ? get_i_name(ch, ABSORBBY(i)) : AN(RACE(ABSORBBY(i))));
     else if (IS_NPC(i) && FIGHTING(i) && FIGHTING(i) != ch && GET_POS(i) != POS_SITTING && GET_POS(i) != POS_SLEEPING &&
              is_sparring(i))
-        send_to_char(ch, "@w%c%s is sparring with %s!", UPPER(*i->short_description), i->short_description + 1,
+        send_to_char(ch, "@w%c%s is sparring with %s!", shd,
                      GET_ADMLEVEL(ch) ? GET_NAME(FIGHTING(i)) : (readIntro(ch, FIGHTING(i)) == 1 ? get_i_name(ch,
                                                                                                               FIGHTING(
                                                                                                                       i))
                                                                                                  : LRACE(FIGHTING(i))));
     else if (IS_NPC(i) && FIGHTING(i) && is_sparring(i) && FIGHTING(i) == ch && GET_POS(i) != POS_SITTING &&
              GET_POS(i) != POS_SLEEPING)
-        send_to_char(ch, "@w%c%s is sparring with you!", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is sparring with you!", shd);
     else if (IS_NPC(i) && FIGHTING(i) && FIGHTING(i) != ch && GET_POS(i) != POS_SITTING && GET_POS(i) != POS_SLEEPING)
-        send_to_char(ch, "@w%c%s is fighting %s!", UPPER(*i->short_description), i->short_description + 1,
+        send_to_char(ch, "@w%s is fighting %s!", shd,
                      GET_ADMLEVEL(ch) ? GET_NAME(FIGHTING(i)) : (readIntro(ch, FIGHTING(i)) == 1 ? get_i_name(ch,
                                                                                                               FIGHTING(
                                                                                                                       i))
                                                                                                  : LRACE(FIGHTING(i))));
     else if (IS_NPC(i) && FIGHTING(i) && FIGHTING(i) == ch && GET_POS(i) != POS_SITTING && GET_POS(i) != POS_SLEEPING)
-        send_to_char(ch, "@w%c%s is fighting YOU!", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is fighting YOU!", shd);
     else if (IS_NPC(i) && FIGHTING(i) && GET_POS(i) == POS_SITTING)
-        send_to_char(ch, "@w%c%s is sitting here.", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is sitting here.", shd);
     else if (IS_NPC(i) && FIGHTING(i) && GET_POS(i) == POS_SLEEPING)
-        send_to_char(ch, "@w%c%s is sleeping here.", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s is sleeping here.", shd);
     else if (IS_NPC(i))
-        send_to_char(ch, "@w%c%s", UPPER(*i->short_description), i->short_description + 1);
+        send_to_char(ch, "@w%s", shd);
     else if (!IS_NPC(i)) {
         if (IS_MAJIN(i) && AFF_FLAGGED(i, AFF_LIQUEFIED)) {
             send_to_char(ch, "@wSeveral blobs of %s colored goo spread out here.@n\n", skin_types[(int) GET_SKIN(i)]);
@@ -3240,9 +3231,9 @@ static void list_one_char(struct char_data *i, struct char_data *ch) {
         if (PLR_FLAGGED(i, PLR_HEALT)) {
             send_to_char(ch, "@w is floating inside a healing tank.");
         } else if (count == true) {
-            send_to_char(ch, ",@w and%s on %s.", positions[(int) GET_POS(i)], chair->short_description);
+            send_to_char(ch, ",@w and%s on %s.", positions[(int) GET_POS(i)], chair->getShortDesc());
         } else if (count == false) {
-            send_to_char(ch, "@w%s on %s.", positions[(int) GET_POS(i)], chair->short_description);
+            send_to_char(ch, "@w%s on %s.", positions[(int) GET_POS(i)], chair->getShortDesc());
         }
     } else if (!PLR_FLAGGED(i, PLR_PILOTING) && !SITS(i) && (!IS_NPC(i) || !FIGHTING(i))) {
         if (count == true) {
@@ -3290,79 +3281,68 @@ static void list_one_char(struct char_data *i, struct char_data *ch) {
         send_to_char(ch, " @D(@RIDLE@D)");
     send_to_char(ch, "@n\r\n");
 
+    std::vector<std::string> messages;
+
     if (GET_EAVESDROP(i) > 0) {
-        char eaves[300];
-        sprintf(eaves, "@w...$e is spying on everything to the @c%s@w.", dirs[GET_EAVESDIR(i)]);
-        act(eaves, true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back(fmt::format("@w...$e is spying on everything to the @c%s@w.", dirs[GET_EAVESDIR(i)]));
     }
-    if (!IS_NPC(i)) {
-        if (PLR_FLAGGED(i, PLR_FISHING)) {
-            act("@w...$e is @Cfishing@w.@n", true, i, nullptr, ch, TO_VICT);
-        }
+    if (PLR_FLAGGED(i, PLR_FISHING)) {
+        messages.emplace_back("@w...$e is @Cfishing@w.@n");
     }
     if (PLR_FLAGGED(i, PLR_AURALIGHT)) {
-        char bloom[MAX_INPUT_LENGTH];
-        sprintf(bloom, "...is surrounded by a bright %s aura.@n", aura_types[GET_AURA(i)]);
-        act(bloom, true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back(fmt::format("...is surrounded by a bright %s aura.", aura_types[GET_AURA(i)]));
     }
 
     auto is_oozaru = (i->form == FormID::Oozaru || i->form == FormID::GoldenOozaru);
 
     if (AFF_FLAGGED(i, AFF_SANCTUARY) && !GET_SKILL(i, SKILL_AQUA_BARRIER))
-        act("@w...$e has a @bbarrier@w around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has a @bbarrier@w around $s body!");
     if (AFF_FLAGGED(i, AFF_FIRESHIELD))
-        act("@w...$e has @rf@Rl@Ya@rm@Re@Ys@w around $s body!", false, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has @rf@Rl@Ya@rm@Re@Ys@w around $s body!");
     if (AFF_FLAGGED(i, AFF_HEALGLOW))
-        act("@w...$e has a serene @Cblue@Y glow@w around $s body.", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has a serene @Cblue@Y glow@w around $s body.");
     if (AFF_FLAGGED(i, AFF_EARMOR))
-        act("@w...$e has ghostly @Ggreen@w ethereal armor around $s body.", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has ghostly @Ggreen@w ethereal armor around $s body.");
     if (AFF_FLAGGED(i, AFF_SANCTUARY) && GET_SKILL(i, SKILL_AQUA_BARRIER))
-        act("@w...$e has a @bbarrier@w of @cwater@w and @CKi@w around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has a @bbarrier@w of @cwater@w and @CKi@w around $s body!");
     if (AFF_FLAGGED(i, AFF_FLYING) && GET_ALT(i) == 1)
-        act("@w...$e is in the air!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e is in the air!");
     if (AFF_FLAGGED(i, AFF_FLYING) && GET_ALT(i) == 2)
-        act("@w...$e is high in the air!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e is high in the air!");
     if (GET_KAIOKEN(i) > 0)
-        act("@w...@r$e has a red aura around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...@r$e has a red aura around $s body!");
     if (!IS_NPC(i) && PLR_FLAGGED(i, PLR_SPIRAL))
-        act("@w...$e is spinning in a vortex!", false, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e is spinning in a vortex!");
     if (IS_TRANSFORMED(i) && !IS_ANDROID(i) && !IS_SAIYAN(i) && !IS_HALFBREED(i))
-        act("@w...$e has energy crackling around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has energy crackling around $s body!");
     if (GET_CHARGE(i) && !IS_SAIYAN(i) && !IS_HALFBREED(i)) {
-        char aura[MAX_INPUT_LENGTH];
-        sprintf(aura, "@w...$e has a @Ybright@w %s aura around $s body!", aura_types[GET_AURA(i)]);
-        act(aura, true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back(fmt::format("@w...$e has a bright %s aura around $s body!", aura_types[GET_AURA(i)]));
     }
     if (!is_oozaru && GET_CHARGE(i) && IS_TRANSFORMED(i) && (IS_SAIYAN(i) || IS_HALFBREED(i)))
-        act("@w...$e has a @Ybright @Yg@yo@Yl@yd@Ye@yn@w aura around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has a @Ybright @Yg@yo@Yl@yd@Ye@yn@w aura around $s body!");
     if (!is_oozaru && GET_CHARGE(i) && !IS_TRANSFORMED(i) && (IS_SAIYAN(i) || IS_HALFBREED(i))) {
-        char aura[MAX_INPUT_LENGTH];
-        sprintf(aura, "@w...$e has a @Ybright@w %s aura around $s body!", aura_types[GET_AURA(i)]);
-        act(aura, true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back(fmt::format("@w...$e has a @Ybright@w %s aura around $s body!", aura_types[GET_AURA(i)]));
     }
     if (i->form != FormID::Oozaru && !GET_CHARGE(i) && IS_TRANSFORMED(i) && (IS_SAIYAN(i) || IS_HALFBREED(i)))
-        act("@w...$e has energy crackling around $s body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has energy crackling around $s body!");
     if (i->form == FormID::Oozaru && GET_CHARGE(i) && (IS_SAIYAN(i) || IS_HALFBREED(i)))
-        act("@w...$e is in the form of a @rgreat ape@w!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e is in the form of a @rgreat ape@w!");
     if (AFF_FLAGGED(ch, AFF_KYODAIKA))
-        act("@w...$e has expanded $s body size@w!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has expanded $s body size@w!");
     if (AFF_FLAGGED(i, AFF_HAYASA))
-        act("@w...$e has a soft @cblue@w glow around $s body!", false, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has a soft @cblue@w glow around $s body!");
     if (i->form == FormID::Oozaru && !GET_CHARGE(i) && (IS_SAIYAN(i) || IS_HALFBREED(i)))
-        act("@w...$e has energy crackling around $s @rgreat ape@w body!", true, i, nullptr, ch, TO_VICT);
+        messages.emplace_back("@w...$e has energy crackling around $s @rgreat ape@w body!");
     if (GET_FEATURE(i)) {
-        char woo[MAX_STRING_LENGTH];
-        sprintf(woo, "@C%s@n", GET_FEATURE(i));
-        act(woo, false, i, nullptr, ch, TO_VICT);
+        messages.emplace_back(fmt::format("@C%s@n", GET_FEATURE(i)));
     }
 
     if (GET_RDISPLAY(i)) {
         if (GET_RDISPLAY(i) != "Empty") {
-            char rdis[MAX_STRING_LENGTH];
-            sprintf(rdis, "...%s", GET_RDISPLAY(i));
-            act(rdis, false, i, nullptr, ch, TO_VICT);
+            messages.emplace_back(fmt::format("...%s", GET_RDISPLAY(i)));
         }
     }
+    for(const auto& msg : messages) act(msg.c_str(), false, i, nullptr, ch, TO_VICT);
 
 }
 
@@ -3523,10 +3503,10 @@ static void do_auto_exits(struct room_data *room, struct char_data *ch, int exit
             send_to_char(ch, "You can't see a damned thing, your eyes are closed!\r\n");
             return;
         }
-        if (IS_DARK(IN_ROOM(ch)) && !CAN_SEE_IN_DARK(ch) && !PLR_FLAGGED(ch, PLR_AURALIGHT)) {
+        /*if (IS_DARK(IN_ROOM(ch)) && !CAN_SEE_IN_DARK(ch) && !PLR_FLAGGED(ch, PLR_AURALIGHT)) {
             send_to_char(ch, "It is pitch black...\r\n");
             return;
-        }
+        }*/
 
         /* Is the character using a working light source? */
         has_light = ch->isProvidingLight();
@@ -3788,8 +3768,7 @@ void look_at_room(struct room_data *rm, struct char_data *ch, int ignore_brief) 
     auto sunk = SUNKEN(rm->vn);
 
     if (IS_DARK(rm->vn) && !CAN_SEE_IN_DARK(ch) && !PLR_FLAGGED(ch, PLR_AURALIGHT)) {
-        send_to_char(ch, "It is pitch black...\r\n");
-        return;
+        send_to_char(ch, "It's too dark to make out much detail...\r\n");
     } else if (AFF_FLAGGED(ch, AFF_BLIND)) {
         send_to_char(ch, "You see nothing but infinite darkness...\r\n");
         return;
@@ -3881,12 +3860,12 @@ void look_at_room(struct room_data *rm, struct char_data *ch, int ignore_brief) 
 
     if ((!IS_NPC(ch) && !PRF_FLAGGED(ch, PRF_BRIEF)) || rm->room_flags.test(ROOM_DEATH)) {
         if (dmg <= 99) {
-            send_to_char(ch, "@w%s@n", rm->look_description);
+            send_to_char(ch, "@w%s@n", rm->getLookDesc());
         }
         if (dmg == 100 &&
             (sect == SECT_WATER_SWIM || sunk || sect == SECT_FLYING ||
              sect == SECT_SHOP || sect == SECT_IMPORTANT)) {
-            send_to_char(ch, "@w%s@n", rm->look_description);
+            send_to_char(ch, "@w%s@n", rm->getLookDesc());
         }
         if (sect == SECT_INSIDE && dmg > 0) {
             send_to_char(ch, "\r\n");
@@ -4140,7 +4119,7 @@ static void look_in_obj(struct char_data *ch, char *arg) {
         if (OBJVAL_FLAGGED(obj, CONT_CLOSED))
             send_to_char(ch, "It is closed.\r\n");
         else {
-            send_to_char(ch, "%s", obj->short_description);
+            send_to_char(ch, "%s", obj->getShortDesc());
             if (GET_OBJ_TYPE(obj) == ITEM_CONTAINER &&
                 (GET_OBJ_VNUM(obj) == 697 || GET_OBJ_VNUM(obj) == 698 || GET_OBJ_VNUM(obj) == 682 ||
                  GET_OBJ_VNUM(obj) == 683 || GET_OBJ_VNUM(obj) == 684)) {
@@ -4453,8 +4432,8 @@ static void look_out_window(struct char_data *ch, char *arg) {
         if (target_room == NOWHERE) {
             send_to_char(ch, "You don't seem to be able to see outside.\r\n");
         } else {
-            if (viewport->look_description)
-                act(viewport->look_description, true, ch, viewport, nullptr, TO_CHAR);
+            if (auto vp = viewport->getLookDesc(); !vp.empty())
+                act(vp.c_str(), true, ch, viewport, nullptr, TO_CHAR);
             else
                 act("$n looks out the window.", true, ch, nullptr, nullptr, TO_ROOM);
             send_to_char(ch, "You look outside and see:\r\n");
@@ -4681,12 +4660,6 @@ ACMD(do_look) {
     }
 
     auto room = ch->getRoom();
-
-    if(IS_DARK(room->vn) && !CAN_SEE_IN_DARK(ch)) {
-        send_to_char(ch, "It is pitch black...\r\n");
-        list_char_to_char(room->people, ch);    /* glowing red eyes */
-        return;
-    }
 
     char arg[MAX_INPUT_LENGTH], arg2[200];
 
@@ -5762,42 +5735,26 @@ ACMD(do_inventory) {
 }
 
 ACMD(do_equipment) {
-    int i;
-
     send_to_char(ch, "        @YEquipment Being Worn\r\n@D-------------------------------------@w\r\n");
-    for (i = 1; i < NUM_WEARS; i++) {
-        if (GET_EQ(ch, i)) {
-            if (CAN_SEE_OBJ(ch, GET_EQ(ch, i)) && (i != WEAR_WIELD1 && i != WEAR_WIELD2)) {
-                send_to_char(ch, "%s", wear_where[i]);
-                show_obj_to_char(GET_EQ(ch, i), ch, SHOW_OBJ_SHORT);
+    for (auto i = 1; i < NUM_WEARS; i++) {
+        if (auto eq = GET_EQ(ch, i); eq) {
+            if(CAN_SEE_OBJ(ch, eq)) {
+                if ((i != WEAR_WIELD1 && i != WEAR_WIELD2) || (!PLR_FLAGGED(ch, PLR_THANDW))) {
+                    send_to_char(ch, "%s", wear_where[i]);
+                    show_obj_to_char(GET_EQ(ch, i), ch, SHOW_OBJ_SHORT);
 
-                if (OBJ_FLAGGED(GET_EQ(ch, i), ITEM_SHEATH)) {
-                    struct obj_data *obj2 = nullptr, *next_obj = nullptr, *sheath = GET_EQ(ch, i);
-                    for (obj2 = sheath->contents; obj2; obj2 = next_obj) {
-                        next_obj = obj2->next_content;
-                        if(!obj2) continue;
-                        send_to_char(ch, "@D  ---- @YSheathed@D ----@c> @n");
-                        show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
+                    if (OBJ_FLAGGED(GET_EQ(ch, i), ITEM_SHEATH)) {
+                        for (auto obj2 = eq->contents; obj2; obj2 = obj2->next_content) {
+                            send_to_char(ch, "@D  ---- @YSheathed@D ----@c> @n");
+                            show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
+                        }
                     }
-                    obj2 = nullptr;
+                } else if ((PLR_FLAGGED(ch, PLR_THANDW))) {
+                    send_to_char(ch, "@c<@CWielded by B. Hands@c>@n ");
+                    show_obj_to_char(GET_EQ(ch, i), ch, SHOW_OBJ_SHORT);
                 }
-            } else if (CAN_SEE_OBJ(ch, GET_EQ(ch, i)) && (!PLR_FLAGGED(ch, PLR_THANDW))) {
-                send_to_char(ch, "%s", wear_where[i]);
-                show_obj_to_char(GET_EQ(ch, i), ch, SHOW_OBJ_SHORT);
-                if (OBJ_FLAGGED(GET_EQ(ch, i), ITEM_SHEATH)) {
-                    struct obj_data *obj2 = nullptr, *next_obj = nullptr, *sheath = GET_EQ(ch, i);
-                    for (obj2 = sheath->contents; obj2; obj2 = next_obj) {
-                        next_obj = obj2->next_content;
-                        if (!obj2) continue;
-                        send_to_char(ch, "@D  ---- @YSheathed@D ----> @n");
-                        show_obj_to_char(obj2, ch, SHOW_OBJ_SHORT);
-                    }
-                    obj2 = nullptr;
-                }
-            } else if (CAN_SEE_OBJ(ch, GET_EQ(ch, i)) && (PLR_FLAGGED(ch, PLR_THANDW))) {
-                send_to_char(ch, "@c<@CWielded by B. Hands@c>@n ");
-                show_obj_to_char(GET_EQ(ch, i), ch, SHOW_OBJ_SHORT);
-            } else {
+            }
+            else {
                 send_to_char(ch, "%s", wear_where[i]);
                 send_to_char(ch, "Something.\r\n");
             }
@@ -6446,7 +6403,7 @@ static void perform_mortal_where(struct char_data *ch, char *arg) {
 static void print_object_location(int num, struct obj_data *obj, struct char_data *ch,
                                   int recur) {
     if (num > 0)
-        send_to_char(ch, "O%3d. %-25s - ", num, obj->short_description);
+        send_to_char(ch, "O%3d. %-25s - ", num, obj->getShortDesc());
     else
         send_to_char(ch, "%33s", " - ");
 
@@ -6461,7 +6418,7 @@ static void print_object_location(int num, struct obj_data *obj, struct char_dat
     else if (obj->worn_by)
         send_to_char(ch, "worn by %s in room [%d]\r\n", PERS(obj->worn_by, ch), GET_ROOM_VNUM(IN_ROOM(obj->worn_by)));
     else if (obj->in_obj) {
-        send_to_char(ch, "inside %s%s\r\n", obj->in_obj->short_description, (recur ? ", which is" : " "));
+        send_to_char(ch, "inside %s%s\r\n", obj->in_obj->getShortDesc(), (recur ? ", which is" : " "));
         if (recur)
             print_object_location(0, obj->in_obj, ch, recur);
     } else
@@ -7576,7 +7533,7 @@ ACMD(do_oaffects) {
             }
         }
         if(!found) continue;
-        send_to_char(ch, "[%d] %s\r\n", vn, o.short_description);
+        send_to_char(ch, "[%d] %s\r\n", vn, o.getShortDesc());
         counter++;
 
     }
@@ -7591,8 +7548,19 @@ ACMD(do_desc) {
     if(!d) {
         return;
     }
-    write_to_output(d, "Current description:\r\n%s", ch->look_description);
-    write_to_output(d, "Enter the new text you'd like others to see when they look at you.\r\n");
-    string_write(d, &ch->look_description, EXDSCR_LENGTH, 0, nullptr);
-    STATE(d) = CON_EXDESC;
+
+    if(ch->form == FormID::Base) {
+        write_to_output(d, "Current description:\r\n%s\r\n", ch->look_description);
+        write_to_output(d, "Enter the new text you'd like others to see when they look at you.\r\n");
+        string_write(d, &ch->look_description, EXDSCR_LENGTH, 0, nullptr);
+        STATE(d) = CON_EXDESC;
+    } else {
+        auto form = ch->form;
+
+        write_to_output(d, "Current description for %s:\r\n%s\r\n", trans::getName(ch, form), ch->transforms[form].description);
+        write_to_output(d, "Enter the new text you'd like others to see when they look at you in this form.\r\n");
+
+        string_write(d, &ch->transforms[form].description, EXDSCR_LENGTH, 0, nullptr);
+        STATE(d) = CON_EXDESC;
+    }
 }

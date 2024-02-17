@@ -147,16 +147,11 @@ int delete_mobile(mob_rnum refpt) {
 }
 
 int copy_mobile_strings(struct char_data *t, struct char_data *f) {
-    if (f->name)
-        t->name = strdup(f->name);
+    if(auto n = f->getName(); !n.empty()) t->setName(n);
     if (f->title)
         t->title = strdup(f->title);
-    if (f->short_description)
-        t->short_description = strdup(f->short_description);
-    if (f->room_description)
-        t->room_description = strdup(f->room_description);
-    if (f->look_description)
-        t->look_description = strdup(f->look_description);
+    if(auto r = f->getRoomDesc(); !r.empty()) t->setRoomDesc(r);
+    if(auto l = f->getLookDesc(); !l.empty()) t->setLookDesc(l);
     return true;
 }
 
@@ -165,8 +160,6 @@ int update_mobile_strings(struct char_data *t, struct char_data *f) {
         t->name = f->name;
     if (f->title)
         t->title = f->title;
-    if (f->short_description)
-        t->short_description = f->short_description;
     if (f->room_description)
         t->room_description = f->room_description;
     if (f->look_description)
@@ -179,8 +172,6 @@ int free_mobile_strings(struct char_data *mob) {
         free(mob->name);
     if (mob->title)
         free(mob->title);
-    if (mob->short_description)
-        free(mob->short_description);
     if (mob->room_description)
         free(mob->room_description);
     if (mob->look_description)
@@ -207,8 +198,6 @@ int free_mobile(struct char_data *mob) {
             free(mob->name);
         if (mob->title && mob->title != mob_proto[i].title)
             free(mob->title);
-        if (mob->short_description && mob->short_description != mob_proto[i].short_description)
-            free(mob->short_description);
         if (mob->room_description && mob->room_description != mob_proto[i].room_description)
             free(mob->room_description);
         if (mob->look_description && mob->look_description != mob_proto[i].look_description)
@@ -221,36 +210,13 @@ int free_mobile(struct char_data *mob) {
     if (SCRIPT(mob))
         extract_script(mob, MOB_TRIGGER);
 
-    free(mob);
+    delete mob;
     return true;
 }
 
 int save_mobiles(zone_rnum zone_num) {
     return true;
 }
-
-#if CONFIG_GENOLC_MOBPROG
-int write_mobile_mobprog(mob_vnum mvnum, struct char_data *mob, FILE *fd)
-{
-  char wmmarg[MAX_STRING_LENGTH], wmmcom[MAX_STRING_LENGTH];
-  MPROG_DATA *mob_prog;
-
-  for (mob_prog = GET_MPROG(mob); mob_prog; mob_prog = mob_prog->next) {
-    wmmarg[MAX_STRING_LENGTH - 1] = '\0';
-    wmmcom[MAX_STRING_LENGTH - 1] = '\0';
-    strip_cr(strncpy(wmmarg, mob_prog->arglist, MAX_STRING_LENGTH - 1));
-    strip_cr(strncpy(wmmcom, mob_prog->comlist, MAX_STRING_LENGTH - 1));
-    fprintf(fd,	"%s %s~\n"
-        "%s%c\n",
-    medit_get_mprog_type(mob_prog), wmmarg,
-    wmmcom, STRING_TERMINATOR
-    );
-    if (mob_prog->next == nullptr)
-      fputs("|\n", fd);
-  }
-  return TRUE;
-}
-#endif
 
 
 void check_mobile_strings(struct char_data *mob) {

@@ -158,3 +158,39 @@ bool unit_data::isActive() {
 void unit_data::save() {
 
 }
+
+std::string unit_data::getName() {
+    return name ? name : "";
+}
+
+void unit_data::setName(const std::string& n) {
+    if(name) free(name);
+    name = strdup(n.c_str());
+}
+
+std::string unit_data::getShortDesc() {
+    return short_description ? short_description : "";
+}
+
+void unit_data::setShortDesc(const std::string& n) {
+    if(short_description) free(short_description);
+    short_description = strdup(n.c_str());
+}
+
+std::string unit_data::getRoomDesc() {
+    return room_description ? room_description : "";
+}
+
+void unit_data::setRoomDesc(const std::string& n) {
+    if(room_description) free(room_description);
+    room_description = strdup(n.c_str());
+}
+
+std::string unit_data::getLookDesc() {
+    return look_description ? look_description : "";
+}
+
+void unit_data::setLookDesc(const std::string& n) {
+    if(look_description) free(look_description);
+    look_description = strdup(n.c_str());
+}

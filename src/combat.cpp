@@ -1383,6 +1383,9 @@ int chance_to_hit(struct char_data *ch) {
         num += GET_COND(ch, DRUNK);
     }
 
+    if(IS_DARK(IN_ROOM(ch)) && !CAN_SEE_IN_DARK(ch) && !AFF_FLAGGED(ch, AFF_INFRAVISION))
+        num += 30;
+
     return (num);
 }
 
@@ -2081,7 +2084,7 @@ void homing_update(uint64_t heartPulse, double deltaTime) {
             if (GET_OBJ_VNUM(k) == 80) { // Tsuihidan
                 if (KICHARGE(k) <= 0) {
                     send_to_room(IN_ROOM(k), "%s has lost all its energy and disappears.\r\n",
-                        k->short_description);
+                        k->getShortDesc());
                     extract_obj(k);
                     continue;
                 }
@@ -2113,7 +2116,7 @@ void homing_update(uint64_t heartPulse, double deltaTime) {
                         KICHARGE(k) -= KICHARGE(k) * 0.1;
                         if (KICHARGE(k) <= 0) {
                             send_to_room(IN_ROOM(k), "%s has lost all its energy and disappears.\r\n",
-                                         k->short_description);
+                                         k->getShortDesc());
                             extract_obj(k);
                         }
                         continue;
@@ -2227,7 +2230,7 @@ void homing_update(uint64_t heartPulse, double deltaTime) {
                         KICHARGE(k) -= KICHARGE(k) / 10;
                         if (KICHARGE(k) <= 0) {
                             send_to_room(IN_ROOM(k), "%s has lost all its energy and disappears.\r\n",
-                                         k->short_description);
+                                         k->getShortDesc());
                             extract_obj(k);
                         }
                         continue;
@@ -4873,6 +4876,9 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                     } else {
                         vict->incCurHealth(GET_CON(vict) * 100);
                     }
+
+                    vict->attemptLimitBreak();
+
                     return;
                 }
                 if (GET_DEATH_TYPE(vict) != DTYPE_HEAD) {

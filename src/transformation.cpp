@@ -142,6 +142,16 @@ namespace trans {
             case FormID::AscendThird:
                 return "@YAscend @WThird@n";
 
+            // Demon
+            case FormID::DarkKing:
+                if(ch->getBasePL() >= 1225000000)
+                    return "@bDark @rKing@n";
+                else if (ch->getBasePL() >= 85000000)
+                    return "@bDark @yLord@n";
+                else if (ch->getBasePL() >= 2000000)
+                    return "@bDark @yCourtier@n";
+                else
+                    return "@bDark @ySeed@n";
 
             //Generic Forms
             case FormID::PotentialUnleashed:
@@ -164,11 +174,19 @@ namespace trans {
     int getMasteryTier(char_data* ch, FormID form) {
         if(ch->transforms.contains(form)) {
             double timeSpent = ch->transforms[form].timeSpentInForm;
-            if (timeSpent > 100000)
-                return 3;
-            if (timeSpent > 5000)
-                return 2;
-            return 1;
+            int mastery = 0;
+            if(ch->transforms[form].limitBroken && timeSpent > LIMITBREAK_THRESHOLD)
+                mastery = 4;
+            else if (timeSpent > LIMIT_THRESHOLD)
+                mastery = 3;
+            else if (timeSpent > MASTERY_THRESHOLD)
+                mastery = 2;
+            else mastery = 1;
+
+            if(IS_AFFECTED(ch, AFF_LIMIT_BREAKING) && ch->transforms[form].limitBroken)
+                mastery += 2;
+
+            return mastery;
         } else {
             return 0;
         }
@@ -307,7 +325,11 @@ namespace trans {
             case FormID::AscendThird:
                 return "third";
 
-                //Unbound Forms
+            // Demon
+            case FormID::DarkKing:
+                return "dark";
+
+            // Unbound Forms
             case FormID::PotentialUnleashed:
                 return "potential";
             case FormID::EvilAura:
@@ -335,329 +357,424 @@ namespace trans {
         // Saiyan'y forms...
         {
             FormID::Oozaru, {
-                {APPLY_HEIGHT_MULT, 9.0},
-                {APPLY_WEIGHT_MULT, 49.0},
-                {APPLY_ALL_VITALS, 10000},
-                {APPLY_DEFENSE_PERC, -0.3},
-                {APPLY_DAMAGE_PERC, 0.3},
-                {APPLY_VITALS_MULT, 1.0},
+                {APPLY_BLOCK_PERC, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.1 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_DODGE_PERC, 0.0, -1, [](struct char_data *ch) {return -0.7 * 1.0 + (0.05 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 9.0 + (0.5 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 49.0 + (4.00 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_DEFENSE_PERC, 0.0, -1, [](struct char_data *ch) {return -0.1 - (0.05 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {return 0.2 + (0.05 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.9 + (0.05 * getMasteryTier(ch, FormID::Oozaru));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 9000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::Oozaru));}},
             }
         },
         {
             FormID::GoldenOozaru, {
-                {APPLY_HEIGHT_MULT, 9.0},
-                {APPLY_WEIGHT_MULT, 49.0},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {
                     if(ch->transforms.contains(FormID::SuperSaiyan4)) return getModifierHelper(ch, FormID::SuperSaiyan4, APPLY_ALL_VITALS, -1);
                     if(ch->transforms.contains(FormID::SuperSaiyan3)) return getModifierHelper(ch, FormID::SuperSaiyan3, APPLY_ALL_VITALS, -1);
                     if(ch->transforms.contains(FormID::SuperSaiyan2)) return getModifierHelper(ch, FormID::SuperSaiyan2, APPLY_ALL_VITALS, -1);
                     return getModifierHelper(ch, FormID::SuperSaiyan, APPLY_ALL_VITALS, -1);
                 }},
-                {APPLY_DEFENSE_PERC, -0.3},
-                {APPLY_DAMAGE_PERC, 0.3},
                 {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {
                     if(ch->transforms.contains(FormID::SuperSaiyan4)) return getModifierHelper(ch, FormID::SuperSaiyan4, APPLY_VITALS_MULT, -1);
                     if(ch->transforms.contains(FormID::SuperSaiyan3)) return getModifierHelper(ch, FormID::SuperSaiyan3, APPLY_VITALS_MULT, -1);
                     if(ch->transforms.contains(FormID::SuperSaiyan2)) return getModifierHelper(ch, FormID::SuperSaiyan2, APPLY_VITALS_MULT, -1);
                     return getModifierHelper(ch, FormID::SuperSaiyan, APPLY_VITALS_MULT, -1);
                 }},
+                {APPLY_BLOCK_PERC, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.1 * getMasteryTier(ch, FormID::GoldenOozaru));}},
+                {APPLY_DODGE_PERC, 0.0, -1, [](struct char_data *ch) {return -0.7 + (0.05 * getMasteryTier(ch, FormID::GoldenOozaru));}},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 9.0 + (0.5 * getMasteryTier(ch, FormID::GoldenOozaru));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 49.0 + (4.00 * getMasteryTier(ch, FormID::GoldenOozaru));}},
+                {APPLY_DEFENSE_PERC, 0.0, -1, [](struct char_data *ch) {return -0.1 - (0.05 * getMasteryTier(ch, FormID::GoldenOozaru));}},
+                {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {return 0.2 + (0.05 * getMasteryTier(ch, FormID::GoldenOozaru));}},
             }
         },
 
         {
             FormID::SuperSaiyan, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 800000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.9 + (0.1 * getMasteryTier(ch, FormID::SuperSaiyan));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 700000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::SuperSaiyan));}},
             }
         },
 
         {
             FormID::SuperSaiyan2, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 20000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.5 + (0.15 * getMasteryTier(ch, FormID::SuperSaiyan2));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 15000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::SuperSaiyan2));}},
             }
         },
 
         {
             FormID::SuperSaiyan3, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 80000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.4 + (0.25 * getMasteryTier(ch, FormID::SuperSaiyan3));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 70000000 * 1.0 + (0.25 * getMasteryTier(ch, FormID::SuperSaiyan3));}},
             }
         },
 
         {
             FormID::SuperSaiyan4, {
-                {APPLY_VITALS_MULT, 4.5},
-                {APPLY_ALL_VITALS, 182000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.8 + (0.35 * getMasteryTier(ch, FormID::SuperSaiyan4));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 17000000 * 1.0 + (0.35 * getMasteryTier(ch, FormID::SuperSaiyan4));}},
             }
         },
 
         // Human'y forms.
         {
             FormID::SuperHuman, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 1000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.1 * getMasteryTier(ch, FormID::SuperHuman));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 950000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::SuperHuman));}},
             }
         },
 
         {
             FormID::SuperHuman2, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 12000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.6 + (0.2 * getMasteryTier(ch, FormID::SuperHuman2));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 10000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::SuperHuman2));}},
             }
         },
 
         {
             FormID::SuperHuman3, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 50000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.5 + (0.3 * getMasteryTier(ch, FormID::SuperHuman3));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 40000000 * 1.0 + (0.3 * getMasteryTier(ch, FormID::SuperHuman3));}},
             }
         },
 
         {
             FormID::SuperHuman4, {
-                {APPLY_VITALS_MULT, 3.5},
-                {APPLY_ALL_VITALS, 270000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.5 + (0.4 * getMasteryTier(ch, FormID::SuperHuman4));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 200000000 * 1.0 + (0.4 * getMasteryTier(ch, FormID::SuperHuman4));}},
             }
         },
 
         // Icer'y Forms.
         {
             FormID::IcerFirst, {
-                {APPLY_HEIGHT_MULT, 2.0},
-                {APPLY_WEIGHT_MULT, 3.0},
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 400000},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 2.0 + (0.2 * getMasteryTier(ch, FormID::IcerFirst));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 3.0 + (0.3 * getMasteryTier(ch, FormID::IcerFirst));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.0 + (0.05 * getMasteryTier(ch, FormID::IcerFirst));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 400000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::IcerFirst));}},
 
 
             }
         },
         {
             FormID::IcerSecond, {
-                {APPLY_HEIGHT_MULT, 2.0},
-                {APPLY_WEIGHT_MULT, 3.0},
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 7000000},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 2.0 + (0.2 * getMasteryTier(ch, FormID::IcerSecond));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 3.0 + (0.3 * getMasteryTier(ch, FormID::IcerSecond));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.0 + (0.05 * getMasteryTier(ch, FormID::IcerSecond));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 7000000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::IcerSecond));}},
             }
         },
 
         {
             FormID::IcerThird, {
-                {APPLY_HEIGHT_MULT, .5},
-                {APPLY_WEIGHT_MULT, 1.0},
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 45000000},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.25 * getMasteryTier(ch, FormID::IcerThird));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 1.0 + (0.1 * getMasteryTier(ch, FormID::IcerThird));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.0 + (0.075 * getMasteryTier(ch, FormID::IcerThird));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 45000000 * 1.0 + (0.075 * getMasteryTier(ch, FormID::IcerThird));}},
             }
         },
 
         {
             FormID::IcerFourth, {
-                {APPLY_HEIGHT_MULT, 1.0},
-                {APPLY_WEIGHT_MULT, 2.0},
-                {APPLY_VITALS_MULT, 4.0},
-                {APPLY_ALL_VITALS, 200000000},
+                {APPLY_HEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 1.0 + (0.1 * getMasteryTier(ch, FormID::IcerFourth));}},
+                {APPLY_WEIGHT_MULT, 0.0, -1, [](struct char_data *ch) {return 2.0 + (0.2 * getMasteryTier(ch, FormID::IcerFourth));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 4.0 + (0.1 * getMasteryTier(ch, FormID::IcerFourth));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 200000000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::IcerFourth));}},
             }
         },
 
         // Namekian Forms.
         {
             FormID::SuperNamekian, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 200000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.0 + (0.05 * getMasteryTier(ch, FormID::SuperNamekian));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 190000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::SuperNamekian));}},
             }
         },
         {
             FormID::SuperNamekian2, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 4000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.9 + (0.1 * getMasteryTier(ch, FormID::SuperNamekian2));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 3500000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::SuperNamekian2));}},
             }
         },
         {
             FormID::SuperNamekian3, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 65000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.95 + (0.15 * getMasteryTier(ch, FormID::SuperNamekian3));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 60000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::SuperNamekian3));}},
             }
         },
         {
             FormID::SuperNamekian4, {
-                {APPLY_VITALS_MULT, 3.5},
-                {APPLY_ALL_VITALS, 230000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.3 + (0.2 * getMasteryTier(ch, FormID::SuperNamekian4));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 210000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::SuperNamekian4));}},
             }
         },
         // Mutant Forms.
         {
             FormID::MutateFirst, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 100000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.9 + (0.05 * getMasteryTier(ch, FormID::MutateFirst));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 90000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::MutateFirst));}},
             }
         },
         {
             FormID::MutateSecond, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 8500000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.7 + (0.15 * getMasteryTier(ch, FormID::MutateSecond));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 8000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::MutateSecond));}},
             }
         },
         {
             FormID::MutateThird, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 80000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.4 + (0.3 * getMasteryTier(ch, FormID::MutateThird));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 70000000 * 1.0 + (0.3 * getMasteryTier(ch, FormID::MutateThird));}},
             }
         },
         // BioAndroid forms.
         {
             FormID::BioMature, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 1000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.2 * getMasteryTier(ch, FormID::BioMature));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 900000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioMature));}},
             }
         },
         {
             FormID::BioSemiPerfect, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 8000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.7 + (0.15 * getMasteryTier(ch, FormID::BioSemiPerfect));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 7500000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::BioSemiPerfect));}},
             }
         },
         {
             FormID::BioPerfect, {
-                {APPLY_VITALS_MULT, 2.5},
-                {APPLY_ALL_VITALS, 70000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.1 + (0.2 * getMasteryTier(ch, FormID::BioPerfect));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 60000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioPerfect));}},
             }
         },
         {
             FormID::BioSuperPerfect, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 400000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.6 + (0.2 * getMasteryTier(ch, FormID::BioSuperPerfect));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 350000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioSuperPerfect));}},
             }
         },
 
         // Android Forms
         {
             FormID::Android10, {
-                {APPLY_ALL_VITALS, 12500000},
-                {APPLY_PL_GAIN_MULT, 0.2},
-                {APPLY_ST_GAIN_MULT, 0.2},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 11000000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::Android10));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.16 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.16 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
             }
         },
         {
             FormID::Android20, {
-                {APPLY_ALL_VITALS, 50000000},
-                {APPLY_PL_GAIN_MULT, 0.4},
-                {APPLY_ST_GAIN_MULT, 0.4},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 45000000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::Android20));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
             }
         },
         {
             FormID::Android30, {
-                {APPLY_ALL_VITALS, 312000000},
-                {APPLY_PL_GAIN_MULT, 0.6},
-                {APPLY_ST_GAIN_MULT, 0.6},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 300000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::Android30));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.1 * getMasteryTier(ch, FormID::Android30));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.1 * getMasteryTier(ch, FormID::Android30));}},
             }
         },
         {
             FormID::Android40, {
-                {APPLY_ALL_VITALS, 2500000000},
-                {APPLY_PL_GAIN_MULT, 0.8},
-                {APPLY_ST_GAIN_MULT, 0.8},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 2000000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::Android40));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.15 * getMasteryTier(ch, FormID::Android40));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.15 * getMasteryTier(ch, FormID::Android40));}},
             }
         },
         {
             FormID::Android50, {
-                {APPLY_ALL_VITALS, 5000000000},
-                {APPLY_PL_GAIN_MULT, 1},
-                {APPLY_ST_GAIN_MULT, 1},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 4000000000 * 1.0 + (0.25 * getMasteryTier(ch, FormID::Android50));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.2 * getMasteryTier(ch, FormID::Android50));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.2 * getMasteryTier(ch, FormID::Android50));}},
             }
         },
         {
             FormID::Android60, {
-                {APPLY_ALL_VITALS, 10000000000},
-                {APPLY_PL_GAIN_MULT, 2},
-                {APPLY_ST_GAIN_MULT, 2},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 7000000000 * 1.0 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 1.4 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 1.4 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
             }
         },
 
         // Majin Forms
         {
             FormID::MajAffinity, {
-                {APPLY_VITALS_MULT, 1.0},
-                {APPLY_ALL_VITALS, 1250000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 1150000 * 1.0 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
             }
         },
         {
-            FormID::MajAffinity, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 15000000},
+            FormID::MajSuper, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.7 + (0.15 * getMasteryTier(ch, FormID::MajSuper));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 12000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::MajSuper));}},
             }
         },
         {
-            FormID::MajAffinity, {
-                {APPLY_VITALS_MULT, 3.5},
-                {APPLY_ALL_VITALS, 340000000},
+            FormID::MajTrue, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.1 + (0.2 * getMasteryTier(ch, FormID::MajTrue));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 300000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::MajTrue));}},
             }
         },
 
         // Kai Forms
         {
             FormID::MysticFirst, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 1100000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.8 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 1000000 * 1.0 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
             }
         },
         {
             FormID::MysticSecond, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 115000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.7 + (0.15 * getMasteryTier(ch, FormID::MysticSecond));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 100000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::MysticSecond));}},
             }
         },
         {
             FormID::MysticThird, {
-                {APPLY_VITALS_MULT, 4.0},
-                {APPLY_ALL_VITALS, 270000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.6 + (0.2 * getMasteryTier(ch, FormID::MysticThird));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 220000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::MysticThird));}},
             }
         },
         // Tuffle Forms
         {
             FormID::AscendFirst, {
-                {APPLY_VITALS_MULT, 2.0},
-                {APPLY_ALL_VITALS, 1300000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.8 + (0.10 * getMasteryTier(ch, FormID::AscendFirst));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 1200000 * 1.0 + (0.10 * getMasteryTier(ch, FormID::AscendFirst));}},
             }
         },
         {
             FormID::AscendSecond, {
-                {APPLY_VITALS_MULT, 3.0},
-                {APPLY_ALL_VITALS, 80000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.7 + (0.15 * getMasteryTier(ch, FormID::AscendSecond));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 70000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::AscendSecond));}},
             }
         },
         {
             FormID::AscendThird, {
-                {APPLY_VITALS_MULT, 4.0},
-                {APPLY_ALL_VITALS, 300000000},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.6 + (0.2 * getMasteryTier(ch, FormID::AscendThird));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 250000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::AscendThird));}},
             }
         },
-        //Unbound Forms
+        // Demon Form
+        {
+            FormID::DarkKing, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {
+                    double base;
+                    auto bpl = ch->getBasePL();
+                    if(bpl < 2000000)
+                        base = 1.0;
+                    else if(bpl < 85000000)
+                        base = 1.5;
+                    else if(bpl < 1225000000)
+                        base = 2.0;
+                    else
+                        base = 3.0;
+
+                    return base + ((base/10.0) * getMasteryTier(ch, FormID::DarkKing));
+                    }},
+                {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {
+                    double base;
+                    if(ch->getCurLF() > 0) {
+                        auto bpl = ch->getBasePL();
+
+                        if(bpl < 2000000) {
+                            base = 0.4;
+                        }
+                        else if(bpl < 85000000) {
+                            base = 0.6;
+                        }
+                        else if(bpl < 1225000000) {
+                            base = 0.8;
+                        }
+                        else {
+                            base = 1.0;
+                        }
+
+                        send_to_char(ch, "@MYour tainted lifeforce infuses your attack with a sickly purple hue!@n");
+
+                        base = base * ch->decCurLFPercent(0.05);
+                    }
+                    
+                    return base + ((base/10) * getMasteryTier(ch, FormID::DarkKing));
+                }},
+                {APPLY_DEFENSE_PERC, 0.0, -1, [](struct char_data *ch) {
+                    double base = 0.0;
+                    if(ch->getCurLF() > 0) {
+                        int chance = 30;
+                        auto bpl = ch->getBasePL();
+
+                        if(bpl < 2000000) {
+                            chance = 30;
+                            base = 0.2;
+                        }
+                        else if(bpl < 85000000) {
+                            chance = 50;
+                            base = 0.3;
+                        }
+                        else if(bpl < 1225000000) {
+                            chance = 60;
+                            base = 0.5;
+                        }
+                        else {
+                            chance = 80;
+                            base = 0.6;
+                        }
+
+                        if(axion_dice(0) <= chance && GET_BARRIER(ch) <= 0) {
+                            ch->barrier = ch->getCurLF() / 5;
+                            send_to_char(ch, "@MThe mantle of your tainted life flares out, creating a barrier.@n");
+                        }
+                        else
+                            send_to_char(ch, "@MYour tainted lifeforce saps the strength of your opponents attack!@n");
+
+                        ch->decCurLFPercent(0.05);
+                    } else {
+                        send_to_char(ch, "@MYou feel far too exhausted to strengthen yourself!@n");
+                    }
+                    
+                    return -base - ((base/10) * getMasteryTier(ch, FormID::DarkKing));
+                    }},
+
+            }
+        },
+
+        // Unbound Forms
         {
             FormID::PotentialUnleashed, {
                 {APPLY_VITALS_MULT,  0.0, -1, [](struct char_data *ch) {
-                    if(ch->get(CharNum::Level) < 20) return 1.0;
-                    if(ch->get(CharNum::Level) < 40) return 2.0;
-                    if(ch->get(CharNum::Level) < 60) return 3.0;
-                    if(ch->get(CharNum::Level) < 80) return 4.5;
-                    if(ch->get(CharNum::Level) < 100) return 6.0;
-                    if(ch->get(CharNum::Level) == 100) return 7.0;
-                    return 1.0;
+                    auto cl = ch->get(CharNum::Level);
+                    if(cl < 20) return 1.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 40) return 2.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 60) return 3.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 80) return 4.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 100) return 4.5 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl == 100) return 5.0 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    return 1.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
                 }},
             }
         },
         {
             FormID::EvilAura, {
-                {APPLY_VITALS_MULT, 2.0},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) { return 2.0 + (0.2 * getMasteryTier(ch, FormID::EvilAura));}},
                 {APPLY_PL_MULT,  0.0, -1, [](struct char_data *ch) {
-	                double healthBoost = (1 - ch->health) * 5;
-	                return healthBoost;
+	                double healthBoost = (1.0 - ch->health) * 5.0;
+	                return healthBoost + (0.2 * getMasteryTier(ch, FormID::EvilAura));
                 }},
-                {APPLY_ALL_VITALS, 1300000},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) { return 1300000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::EvilAura));}},
                 {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {
                     double healthBoost = 0.1;
-                    if(ch->health < 0.75) {
-                        healthBoost = (1 - ch->health) * 4;
-                        send_to_char(ch, "@RYou feel your own pain infuse the attack.\r\n@n");
+                    auto chealth = ch->health;
+                    if(chealth < 0.75) {
+                        healthBoost = (1 - chealth) * (4 + (0.2 * getMasteryTier(ch, FormID::EvilAura)));
+                        
+                        if(chealth < 0.25)
+                            send_to_char(ch, "@RYou feel your agony infuse the attack.\r\n@n");
+                        else if(chealth < 0.50)
+                            send_to_char(ch, "@RYou feel your rage infuse the attack.\r\n@n");
+                        else 
+                            send_to_char(ch, "@RYou feel your anger infuse the attack.\r\n@n");
                     }
 	                return healthBoost;
                 }},
@@ -668,7 +785,7 @@ namespace trans {
                 {APPLY_ACCURACY, 0.0, -1, [](struct char_data *ch) {return 1 + (0.1 * getMasteryTier(ch, FormID::UltraInstinct));}},
                 {APPLY_KI_MULT, 0.0, -1, [](struct char_data *ch) {return 2 + (0.4 * getMasteryTier(ch, FormID::UltraInstinct));}},
                 {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {return -0.7 + (0.2 * getMasteryTier(ch, FormID::UltraInstinct));}},
-                {APPLY_PERFECT_DODGE, 0.0, -1, [](struct char_data *ch) {return -0.4 - (0.2 * getMasteryTier(ch, FormID::UltraInstinct));}},
+                {APPLY_PERFECT_DODGE, 0.0, -1, [](struct char_data *ch) {return -0.4 - (0.05 * getMasteryTier(ch, FormID::UltraInstinct));}},
             }
         },
 
@@ -738,6 +855,9 @@ namespace trans {
         {FormID::MysticSecond, .07},
         {FormID::MysticThird, .1},
 
+        // Demon
+        {FormID::DarkKing, .1},
+
         // Unbound Forms
         {FormID::PotentialUnleashed, .1},
         {FormID::EvilAura, .08},
@@ -767,7 +887,9 @@ namespace trans {
         for(auto ch = character_list; ch; ch = ch->next) {
             auto form = ch->form;
             auto &data = ch->transforms[form];
+            double timeBefore = data.timeSpentInForm;
             data.timeSpentInForm += deltaTime;
+            double timeAfter = data.timeSpentInForm;
 
             if(ch->form == FormID::Oozaru || form == FormID::GoldenOozaru) {
                 if(auto room = ch->getRoom(); room) {
@@ -782,16 +904,28 @@ namespace trans {
 
             }
 
+            // Notify at thresholds
+            if(form != FormID::Base && timeBefore < MASTERY_THRESHOLD && timeAfter >= MASTERY_THRESHOLD)
+                send_to_char(ch, "@mSomething settles in your core, you feel more comfortable using @n" + getName(ch, form) + "\r\n");
+
+            if(form != FormID::Base && timeBefore < LIMIT_THRESHOLD && timeAfter >= LIMIT_THRESHOLD)
+                send_to_char(ch, "@mYou feel power overwhelming eminate from your core, you instinctively know you've hit the limit of @n" + getName(ch, form) + "\r\n");
+
+            if(form != FormID::Base && timeBefore < LIMITBREAK_THRESHOLD && timeAfter >= LIMITBREAK_THRESHOLD && data.limitBroken == true)
+                send_to_char(ch, "@mThere's a snap as a tide of power rushes throughout your veins,@n " + getName(ch, form) + " @mhas evolved.@n\r\n");
+
             // Check stamina drain.
             if (auto drain = getStaminaDrain(ch, ch->form, true) * deltaTime; drain > 0) {
                 if(ch->decCurSTPercent(drain) == 0) {
                     if(!blockRevertDisallowed(ch, FormID::Base)) {
-                        act("@mExhausted of stamina, your body forcibly reverts from its form.@n", true, ch, nullptr,
+                        act("@mExhausted of stamina, your body forcibly reverts from its form.@n\r\n", true, ch, nullptr,
                             nullptr, TO_CHAR);
-                        act("@C$n @wbreathing heavily, reverts from $s form, returning to normal.@n", true, ch, nullptr,
+                        act("@C$n @wbreathing heavily, reverts from $s form, returning to normal.@n\r\n", true, ch, nullptr,
                             nullptr, TO_ROOM);
                         ch->form = FormID::Base;
                         ch->remove_kaioken(true);
+                        ch->removeLimitBreak();
+            
                     }
                 }
             }
@@ -1107,6 +1241,13 @@ namespace trans {
                                              }},
 
             {
+                    FormID::DarkKing,     {
+                                                     "@WYou kindle the dark seed within you, rooted through your body, and in a mere moment its roots pulse with power untold. Wrapping them within yourself, bound eternal, your body begins to shift as your combined strength becomes manifest.@n",
+                                                     "@C$n strains for a second as their eyes shine a fierce red, soon their body contorts, unleashing an ominous aura from within themself.@n"
+                                             }
+            },
+
+            {
                     FormID::PotentialUnleashed,     {
                                                      "@WThere is a well of potential within you, beyond simple forms. Reaching deep you tug at it, pulling what was once simple potential and flaring it to life in a burst of simple power.@n",
                                                      "@C$n takes a moment for themselves, focusing inwards. A moment later a white glow of pure aura explodes outwards, energy unbound.@n"
@@ -1231,6 +1372,9 @@ namespace trans {
         FormID::AscendSecond,
         FormID::AscendThird,
 
+        // Demon
+        FormID::DarkKing,
+
         // Unbound Forms
         FormID::PotentialUnleashed,
         FormID::EvilAura,
@@ -1272,7 +1416,8 @@ namespace trans {
         },
         {RaceID::Majin, {FormID::MajAffinity, FormID::MajSuper, FormID::MajTrue}},
         {RaceID::Kai, {FormID::MysticFirst, FormID::MysticSecond, FormID::MysticThird}},
-        {RaceID::Tuffle, {FormID::AscendFirst, FormID::AscendSecond, FormID::AscendThird}}
+        {RaceID::Tuffle, {FormID::AscendFirst, FormID::AscendSecond, FormID::AscendThird}},
+        {RaceID::Demon, {FormID::DarkKing}}
     };
 
     void initTransforms(char_data* ch) {
@@ -1303,8 +1448,6 @@ namespace trans {
                 return pforms;
 
             default:
-                //pforms = ch->unlockedForms;
-
                 for (auto form : forms) {
                     if(form.first == FormID::Base || form.first == FormID::Oozaru || form.first == FormID::GoldenOozaru)
                         form.second.visible = false;
@@ -1330,6 +1473,8 @@ namespace trans {
         for (auto form: forms) {
             auto name = getName(ch, form);
             if(getMasteryTier(ch, form) > 2)
+                name = "@RLIMITBREAK@n " + name;
+            else if(getMasteryTier(ch, form) > 2)
                 name = "@RLIMIT@n " + name;
             else if (getMasteryTier(ch, form) > 1)
                 name = "@BMASTERED@n " + name;
@@ -1462,6 +1607,9 @@ namespace trans {
         {FormID::BioPerfect, 220000000},
         {FormID::BioSuperPerfect, 1300000000},
 
+        // Demon Forms
+        {FormID::DarkKing, 800000},
+
         // Unbound Forms
         {FormID::PotentialUnleashed, 0},
         {FormID::EvilAura, 12500000},
@@ -1500,14 +1648,24 @@ trans_data::trans_data(const nlohmann::json &j) : trans_data() {
 
 void trans_data::deserialize(const nlohmann::json &j) {
     if(j.contains("timeSpentInForm")) timeSpentInForm = j["timeSpentInForm"];
-    if(j.contains("visible")) timeSpentInForm = j["visible"];
+    if(j.contains("visible")) visible = j["visible"];
+    if(j.contains("limitBroken")) limitBroken = j["limitBroken"];
     if(j.contains("blutz")) blutz = j["blutz"];
+
+    if(j.contains("description")) {
+        if(description) free(description);
+        description = strdup(j["description"].get<std::string>().c_str());
+    }
 }
 
 nlohmann::json trans_data::serialize() {
     nlohmann::json j;
     if(timeSpentInForm != 0.0) j["timeSpentInForm"] = timeSpentInForm;
-    if(!visible) j["visible"] = visible;
+    j["visible"] = visible;
+    j["limitBroken"] = limitBroken;
     if(blutz != 0.0) j["blutz"] = blutz;
+
+    if(description && strlen(description)) j["description"] = description;
+
     return j;
 }

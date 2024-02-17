@@ -628,7 +628,7 @@ char *make_prompt(struct descriptor_data *d) {
             if ((SITS(d->character) && GET_POS(d->character) == POS_SITTING) && len < sizeof(prompt) &&
                 !PRF_FLAGGED(d->character, PRF_NODEC)) {
                 chair = SITS(d->character);
-                count = snprintf(prompt + len, sizeof(prompt) - len, "Sitting on: %s\r\n", chair->short_description);
+                count = snprintf(prompt + len, sizeof(prompt) - len, "Sitting on: %s\r\n", chair->getShortDesc().c_str());
                 flagged = true;
                 if (count >= 0)
                     len += count;
@@ -636,7 +636,7 @@ char *make_prompt(struct descriptor_data *d) {
             if ((SITS(d->character) && GET_POS(d->character) == POS_RESTING) && len < sizeof(prompt) &&
                 !PRF_FLAGGED(d->character, PRF_NODEC)) {
                 chair = SITS(d->character);
-                count = snprintf(prompt + len, sizeof(prompt) - len, "Resting on: %s\r\n", chair->short_description);
+                count = snprintf(prompt + len, sizeof(prompt) - len, "Resting on: %s\r\n", chair->getShortDesc().c_str());
                 flagged = true;
                 if (count >= 0)
                     len += count;
@@ -644,7 +644,7 @@ char *make_prompt(struct descriptor_data *d) {
             if ((SITS(d->character) && GET_POS(d->character) == POS_SLEEPING) && len < sizeof(prompt) &&
                 !PRF_FLAGGED(d->character, PRF_NODEC)) {
                 chair = SITS(d->character);
-                count = snprintf(prompt + len, sizeof(prompt) - len, "Sleeping on: %s\r\n", chair->short_description);
+                count = snprintf(prompt + len, sizeof(prompt) - len, "Sleeping on: %s\r\n", chair->getShortDesc().c_str());
                 flagged = true;
                 if (count >= 0)
                     len += count;

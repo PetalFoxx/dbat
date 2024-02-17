@@ -185,24 +185,6 @@ struct obj_spellbook_spell {
     int pages;        /* How many pages does it take up */
 };
 
-struct obj_ref {
-    int64_t id{NOTHING};
-    time_t generation{};
-    struct obj_data* get(bool checkActive);
-};
-
-struct char_ref {
-    int64_t id{NOTHING};
-    time_t generation{};
-    struct char_data* get(bool checkActive);
-};
-
-struct room_ref {
-    int64_t id{NOTHING};
-    time_t generation{};
-    struct room_data* get(bool checkActive);
-};
-
 struct HasVars {
     std::unordered_map<std::string, std::string> vars;
     void addVar(const std::string &name, const std::string &value);
@@ -377,6 +359,16 @@ struct unit_data {
     virtual struct obj_data* findObject(const std::function<bool(struct obj_data*)> &func, bool working = true);
     virtual std::set<struct obj_data*> gatherObjects(const std::function<bool(struct obj_data*)> &func, bool working = true);
     virtual DgResults dgCallMember(trig_data *trig, const std::string& member, const std::string& arg);
+
+    virtual std::string getName();
+    virtual std::string getShortDesc();
+    virtual std::string getRoomDesc();
+    virtual std::string getLookDesc();
+    virtual void setName(const std::string& desc);
+    virtual void setShortDesc(const std::string& desc);
+    virtual void setRoomDesc(const std::string& desc);
+    virtual void setLookDesc(const std::string& desc);
+
 };
 
 
@@ -417,9 +409,7 @@ struct obj_data : public unit_data {
     struct room_data* getRoom();
     bool isWorking();
     void clearLocation();
-
-    obj_ref ref() { return obj_ref{id, generation}; }
-    
+  
 
     room_rnum in_room{NOWHERE};        /* In what room -1 when conta/carr	*/
     room_vnum room_loaded{NOWHERE};    /* Room loaded in, for room_max checks	*/
@@ -546,8 +536,6 @@ struct room_data : public unit_data {
     std::string getUID(bool active = true) override;
     bool isActive() override;
     void save() override;
-
-    room_ref ref() { return room_ref{id, generation}; }
 
     std::optional<room_vnum> getLaunchDestination();
 
@@ -701,8 +689,10 @@ struct trans_data {
     trans_data() = default;
     explicit trans_data(const nlohmann::json& j);
 
+    char *description{};
     double timeSpentInForm{0.0};
     bool visible = true;
+    bool limitBroken = false;
 
     double blutz{0.0}; // The number of seconds you can spend in Oozaru.
 
@@ -754,9 +744,6 @@ struct char_data : public unit_data {
 
     struct obj_data* findObject(const std::function<bool(struct obj_data*)> &func, bool working = true) override;
     std::set<struct obj_data*> gatherObjects(const std::function<bool(struct obj_data*)> &func, bool working = true) override;
-
-    char_ref ref() { return char_ref{id, generation}; }
-
 
     char *title{};
     RaceID race{RaceID::Spirit};
@@ -1062,6 +1049,8 @@ struct char_data : public unit_data {
     void hideTransform(FormID form, bool hide);
     void addTransform(FormID form);
     bool removeTransform(FormID form);
+    void attemptLimitBreak();
+    void removeLimitBreak();
 
     void resurrect(ResurrectionMode mode);
 

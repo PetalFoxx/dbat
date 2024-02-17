@@ -630,21 +630,6 @@ void destroy_db() {
     obj_index.clear();
     
     /* Mobiles */
-    for (auto &m : mob_proto) {
-        if (m.second.name)
-            free(m.second.name);
-        if (m.second.title)
-            free(m.second.title);
-        if (m.second.short_description)
-            free(m.second.short_description);
-        if (m.second.room_description)
-            free(mob_proto[cnt].room_description);
-        if (m.second.look_description)
-            free(m.second.look_description);
-
-        while (m.second.affected)
-            affect_remove(&m.second, m.second.affected);
-    }
     mob_proto.clear();
     mob_index.clear();
     /* Shops */
@@ -1234,7 +1219,7 @@ int vnum_mobile(char *searchname, struct char_data *ch) {
     for (auto &m : mob_proto)
         if (isname(searchname, m.second.name))
             send_to_char(ch, "%3d. [%5d] %-40s %s\r\n",
-                         ++found, m.first, m.second.short_description,
+                         ++found, m.first, m.second.getShortDesc(),
                          !m.second.proto_script.empty() ? m.second.scriptString().c_str() : "");
 
     return (found);
@@ -1247,7 +1232,7 @@ int vnum_object(char *searchname, struct char_data *ch) {
     for (auto &o : obj_proto)
         if (isname(searchname, o.second.name))
             send_to_char(ch, "%3d. [%5d] %-40s %s\r\n",
-                         ++found, o.first, o.second.short_description,
+                         ++found, o.first, o.second.getShortDesc(),
                          !o.second.proto_script.empty() ? o.second.scriptString().c_str() : "");
 
     return (found);
@@ -1260,7 +1245,7 @@ int vnum_material(char *searchname, struct char_data *ch) {
     for (auto &o : obj_proto)
         if (isname(searchname, material_names[o.second.value[VAL_ALL_MATERIAL]])) {
             send_to_char(ch, "%3d. [%5d] %-40s %s\r\n",
-                         ++found, o.first, o.second.short_description,
+                         ++found, o.first, o.second.getShortDesc(),
                          !o.second.proto_script.empty() ? o.second.scriptString().c_str() : "");
         }
 
@@ -1275,7 +1260,7 @@ int vnum_weapontype(char *searchname, struct char_data *ch) {
         if (o.second.type_flag == ITEM_WEAPON) {
             if (isname(searchname, weapon_type[o.second.value[VAL_WEAPON_SKILL]])) {
                 send_to_char(ch, "%3d. [%5d] %-40s %s\r\n",
-                             ++found, o.first, o.second.short_description,
+                             ++found, o.first, o.second.getShortDesc(),
                              !o.second.proto_script.empty() ? o.second.scriptString().c_str() : "");
             }
         }
@@ -1291,7 +1276,7 @@ int vnum_armortype(char *searchname, struct char_data *ch) {
         if (o.second.type_flag == ITEM_ARMOR) {
             if (isname(searchname, armor_type[o.second.value[VAL_ARMOR_SKILL]])) {
                 send_to_char(ch, "%3d. [%5d] %-40s %s\r\n",
-                             ++found, o.first, o.second.short_description,
+                             ++found, o.first, o.second.getShortDesc(),
                              !o.second.proto_script.empty() ? o.second.scriptString().c_str() : "");
             }
         }
@@ -1898,20 +1883,20 @@ void remove_unique_id(struct obj_data *obj) {
 
 void log_dupe_objects(struct obj_data *obj1, struct obj_data *obj2) {
     mudlog(BRF, ADMLVL_GOD, true, "DUPE: Dupe object found: %s [%d] [%" TMT ":%" I64T "]",
-           obj1->short_description ? obj1->short_description : "<No name>",
+           withPlaceholder(obj1->getShortDesc(), "<No name>").c_str(),
            GET_OBJ_VNUM(obj1), obj1->generation, obj1->id);
     mudlog(BRF, ADMLVL_GOD, true, "DUPE: First: In room: %d (%s), "
                                   "In object: %s, Carried by: %s, Worn by: %s",
            GET_ROOM_VNUM(IN_ROOM(obj1)),
            IN_ROOM(obj1) == NOWHERE ? "Nowhere" : obj1->getRoom()->name,
-           obj1->in_obj ? obj1->in_obj->short_description : "None",
+           obj1->in_obj ? obj1->in_obj->getShortDesc().c_str() : "None",
            obj1->carried_by ? GET_NAME(obj1->carried_by) : "Nobody",
            obj1->worn_by ? GET_NAME(obj1->worn_by) : "Nobody");
     mudlog(BRF, ADMLVL_GOD, true, "DUPE: Newer: In room: %d (%s), "
                                   "In object: %s, Carried by: %s, Worn by: %s",
            GET_ROOM_VNUM(IN_ROOM(obj2)),
            IN_ROOM(obj2) == NOWHERE ? "Nowhere" : obj2->getRoom()->name,
-           obj2->in_obj ? obj2->in_obj->short_description : "None",
+           obj2->in_obj ? obj2->in_obj->getShortDesc().c_str() : "None",
            obj2->carried_by ? GET_NAME(obj2->carried_by) : "Nobody",
            obj2->worn_by ? GET_NAME(obj2->worn_by) : "Nobody");
 
@@ -1935,7 +1920,7 @@ void check_unique_id(struct obj_data *obj) {
 
 static void log_dupe_characters(struct char_data *ch1, struct char_data *ch2) {
     mudlog(BRF, ADMLVL_GOD, true, "DUPE: Dupe character found: %s [%d] [%" TMT ":%" I64T "]",
-           ch1->short_description ? ch1->short_description : "<No name>",
+           withPlaceholder(ch1->getShortDesc(), "<No name>").c_str(),
            ch1->vn, ch1->generation, ch1->id);
 
     // assign a new unique ID to obj2.
@@ -2541,12 +2526,12 @@ void free_char(struct char_data *ch) {
             free(GET_CLAN(ch));
         if (ch->title)
             free(ch->title);
-        if (ch->short_description)
-            free(ch->short_description);
         if (ch->room_description)
             free(ch->room_description);
         if (ch->look_description)
             free(ch->look_description);
+        if(ch->short_description)
+            free(ch->short_description);
 
     } else {
         auto &m = mob_proto[ch->vn];
@@ -2554,12 +2539,12 @@ void free_char(struct char_data *ch) {
             free(ch->name);
         if (ch->title && ch->title != m.title)
             free(ch->title);
-        if (ch->short_description && ch->short_description != m.short_description)
-            free(ch->short_description);
         if (ch->room_description && ch->room_description != m.room_description)
             free(ch->room_description);
         if (ch->look_description && ch->look_description != m.look_description)
             free(ch->look_description);
+        if (ch->short_description && ch->short_description != m.short_description)
+            free(ch->short_description);
     }
 
     while (ch->affected)
@@ -2705,11 +2690,6 @@ void init_char(struct char_data *ch) {
         }
     }
 
-    set_title(ch, nullptr);
-    ch->short_description = nullptr;
-    ch->room_description = nullptr;
-    ch->look_description = nullptr;
-
     /*ch->time.birth = time(0) - birth_age(ch);*/
     ch->time.logon = ch->time.created = time(nullptr);
     ch->time.played = 0.0;
@@ -2761,105 +2741,6 @@ zone_rnum real_zone(zone_vnum vnum) {
     return zone_table.count(vnum) ? vnum : NOWHERE;
 }
 
-
-/*
- * Extend later to include more checks.
- *
- * TODO: Add checks for unknown bitvectors.
- */
-
-
-
-
-
-int my_obj_save_to_disk(FILE *fp, struct obj_data *obj, int locate) {
-    int counter2, i;
-    struct extra_descr_data *ex_desc;
-    char buf1[MAX_STRING_LENGTH + 1];
-    char ebuf0[MAX_STRING_LENGTH], ebuf1[MAX_STRING_LENGTH];
-    char ebuf2[MAX_STRING_LENGTH], ebuf3[MAX_STRING_LENGTH];
-
-
-    if (obj->look_description) {
-        strcpy(buf1, obj->look_description);
-        strip_string(buf1);
-    } else
-        *buf1 = 0;
-
-    sprintascii(ebuf0, GET_OBJ_EXTRA(obj)[0]);
-    sprintascii(ebuf1, GET_OBJ_EXTRA(obj)[1]);
-    sprintascii(ebuf2, GET_OBJ_EXTRA(obj)[2]);
-    sprintascii(ebuf3, GET_OBJ_EXTRA(obj)[3]);
-
-    fprintf(fp,
-            "#%d\n"
-            "%ld %ld %ld %ld %ld %ld %ld %ld %ld %s %s %s %s %ld %ld %ld %ld %ld %ld %d %d\n",
-            GET_OBJ_VNUM(obj), locate, GET_OBJ_VAL(obj, 0), GET_OBJ_VAL(obj, 1),
-            GET_OBJ_VAL(obj, 2), GET_OBJ_VAL(obj, 3), GET_OBJ_VAL(obj, 4),
-            GET_OBJ_VAL(obj, 5), GET_OBJ_VAL(obj, 6), GET_OBJ_VAL(obj, 7),
-            ebuf0, ebuf1, ebuf2, ebuf3,
-            GET_OBJ_VAL(obj, 8), GET_OBJ_VAL(obj, 9),
-            GET_OBJ_VAL(obj, 10), GET_OBJ_VAL(obj, 11), GET_OBJ_VAL(obj, 12),
-            GET_OBJ_VAL(obj, 13), GET_OBJ_VAL(obj, 14), GET_OBJ_VAL(obj, 15));
-
-    if (!(OBJ_FLAGGED(obj, ITEM_UNIQUE_SAVE)) && !GET_OBJ_TYPE(obj) == ITEM_SPELLBOOK) {
-        return 1;
-    }
-
-    fprintf(fp,
-            "XAP\n"
-            "%s~\n"
-            "%s~\n"
-            "%s~\n"
-            "%s~\n"
-            "%d %d %d %d %d %" I64T " %d %d\n", obj->name ? obj->name : "undefined",
-            obj->short_description ? obj->short_description : "undefined",
-            obj->room_description ? obj->room_description : "undefined",
-            buf1, GET_OBJ_TYPE(obj), GET_OBJ_WEAR(obj)[0],
-            GET_OBJ_WEAR(obj)[1], GET_OBJ_WEAR(obj)[2], GET_OBJ_WEAR(obj)[3],
-            GET_OBJ_WEIGHT(obj), GET_OBJ_COST(obj), GET_OBJ_RENT(obj));
-
-    fprintf(fp, "G\n%ld\n", obj->generation);
-    fprintf(fp, "U\n%" I64T "\n", obj->id);
-
-    fprintf(fp, "Z\n%d\n", GET_OBJ_SIZE(obj));
-
-    /* Do we have affects? */
-    for (counter2 = 0; counter2 < MAX_OBJ_AFFECT; counter2++)
-        if (obj->affected[counter2].location != APPLY_NONE)
-            fprintf(fp, "A\n"
-                        "%d %d %d\n",
-                    obj->affected[counter2].location, obj->affected[counter2].modifier,
-                    obj->affected[counter2].specific);
-
-    /* Do we have extra descriptions? */
-    if (obj->ex_description) {        /*. Yep, save them too . */
-        for (ex_desc = obj->ex_description; ex_desc; ex_desc = ex_desc->next) {
-            /*. Sanity check to prevent nasty protection faults . */
-            if (!*ex_desc->keyword || !*ex_desc->description) {
-                continue;
-            }
-            strcpy(buf1, ex_desc->description);
-            strip_string(buf1);
-            fprintf(fp, "E\n"
-                        "%s~\n"
-                        "%s~\n",
-                    ex_desc->keyword,
-                    buf1);
-        }
-    }
-
-    /* Do we have spells? */
-    if (obj->sbinfo) {        /*. Yep, save them too . */
-        for (i = 0; i < SPELLBOOK_SIZE; i++) {
-            if (obj->sbinfo[i].spellname == 0) {
-                break;
-            }
-            fprintf(fp, "S\n" "%d %d\n", obj->sbinfo[i].spellname, obj->sbinfo[i].pages);
-        }
-    }
-    return 1;
-}
 
 /* This procedure removes the '\r\n' from a string so that it may be
    saved to a file.  Use it only on buffers, not on the orginal
@@ -3342,36 +3223,4 @@ std::optional<UID> resolveUID(const std::string& uid) {
         }
     }
     return std::nullopt;
-}
-
-struct obj_data* obj_ref::get(bool checkActive) {
-    auto find = uniqueObjects.find(id);
-    if(find != uniqueObjects.end()) {
-        if(find->second.first == generation) {
-            if(checkActive && !find->second.second->isActive())
-                return nullptr;
-            return find->second.second;
-        }
-    }
-    return nullptr;
-}
-
-struct char_data* char_ref::get(bool checkActive) {
-    auto find = uniqueCharacters.find(id);
-    if(find != uniqueCharacters.end()) {
-        if(find->second.first == generation) {
-            if(checkActive && !find->second.second->isActive())
-                return nullptr;
-            return find->second.second;
-        }
-    }
-    return nullptr;
-}
-
-struct room_data* room_ref::get(bool checkActive) {
-    auto find = world.find(id);
-    if(find != world.end()) {
-        return &find->second;
-    }
-    return nullptr;
 }

@@ -1381,7 +1381,7 @@ void point_update(uint64_t heartPulse, double deltaTime) {
 
             diff = time(nullptr) - GET_LAST_LOAD(j);
             if (diff > 240 && GET_LAST_LOAD(j) > 0) {
-                basic_mud_log("No rent object (%s) extracted from room (%d)", j->short_description, GET_ROOM_VNUM(IN_ROOM(j)));
+                basic_mud_log("No rent object (%s) extracted from room (%d)", j->getShortDesc().c_str(), GET_ROOM_VNUM(IN_ROOM(j)));
                 extract_obj(j);
             }
         }
@@ -1525,18 +1525,18 @@ void point_update(uint64_t heartPulse, double deltaTime) {
                     int melt = 5 + (GET_OBJ_WEIGHT(j) * 0.02);
                     if (GET_OBJ_WEIGHT(j) - (5 + (GET_OBJ_WEIGHT(j) * 0.02)) > 0) {
                         GET_OBJ_WEIGHT(j) -= melt;
-                        send_to_char(j->carried_by, "%s @wmelts a little.\r\n", j->short_description);
+                        send_to_char(j->carried_by, "%s @wmelts a little.\r\n", j->getShortDesc());
                     } else {
-                        send_to_char(j->carried_by, "%s @wmelts completely away.\r\n", j->short_description);
+                        send_to_char(j->carried_by, "%s @wmelts completely away.\r\n", j->getShortDesc());
                         int remainder = melt - GET_OBJ_WEIGHT(j);
                         extract_obj(j);
                     }
                 } else if (IN_ROOM(j) != NOWHERE) {
                     if (GET_OBJ_WEIGHT(j) - (5 + (GET_OBJ_WEIGHT(j) * 0.02)) > 0) {
                         GET_OBJ_WEIGHT(j) -= 5 + (GET_OBJ_WEIGHT(j) * 0.02);
-                        send_to_room(IN_ROOM(j), "%s @wmelts a little.\r\n", j->short_description);
+                        send_to_room(IN_ROOM(j), "%s @wmelts a little.\r\n", j->getShortDesc());
                     } else {
-                        send_to_room(IN_ROOM(j), "%s @wmelts completely away.\r\n", j->short_description);
+                        send_to_room(IN_ROOM(j), "%s @wmelts completely away.\r\n", j->getShortDesc());
                         extract_obj(j);
                     }
                 }

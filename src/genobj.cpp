@@ -106,31 +106,10 @@ int save_objects(zone_rnum zone_num) {
  * Free all, unconditionally.
  */
 void free_object_strings(struct obj_data *obj) {
-#if 0 /* Debugging, do not enable. */
-    extern struct obj_data *object_list;
-    struct obj_data *t;
-    int i = 0;
-
-    for (t = object_list; t; t = t->next) {
-      if (t == obj) {
-        i++;
-        continue;
-      }
-      assert(obj->name != t->name);
-      assert(obj->description != t->description);
-      assert(obj->short_description != t->short_description);
-      assert(obj->action_description != t->action_description);
-      assert(obj->ex_description != t->ex_description);
-    }
-    assert(i <= 1);
-#endif
-
     if (obj->name)
         free(obj->name);
     if (obj->room_description)
         free(obj->room_description);
-    if (obj->short_description)
-        free(obj->short_description);
     if (obj->look_description)
         free(obj->look_description);
     if (obj->ex_description)
@@ -147,8 +126,6 @@ void free_object_strings_proto(struct obj_data *obj) {
         free(obj->name);
     if (obj->room_description && obj->room_description != obj_proto[robj_num].room_description)
         free(obj->room_description);
-    if (obj->short_description && obj->short_description != obj_proto[robj_num].short_description)
-        free(obj->short_description);
     if (obj->look_description && obj->look_description != obj_proto[robj_num].look_description)
         free(obj->look_description);
     if (obj->ex_description) {
@@ -177,7 +154,6 @@ void free_object_strings_proto(struct obj_data *obj) {
 void copy_object_strings(struct obj_data *to, struct obj_data *from) {
     to->name = from->name ? strdup(from->name) : nullptr;
     to->room_description = from->room_description ? strdup(from->room_description) : nullptr;
-    to->short_description = from->short_description ? strdup(from->short_description) : nullptr;
     to->look_description = from->look_description ? strdup(from->look_description) : nullptr;
 
     if (from->ex_description)
@@ -215,7 +191,7 @@ int delete_object(obj_rnum rnum) {
     zrnum = real_zone_by_thing(rnum);
 
     /* This is something you might want to read about in the logs. */
-    basic_mud_log("GenOLC: delete_object: Deleting object #%d (%s).", GET_OBJ_VNUM(obj), obj->short_description);
+    basic_mud_log("GenOLC: delete_object: Deleting object #%d (%s).", GET_OBJ_VNUM(obj), obj->getShortDesc());
 
     for (tmp = object_list; tmp; tmp = tmp->next) {
         if (tmp->vn != obj->vn)
@@ -837,10 +813,10 @@ DgResults obj_data::dgCallMember(trig_data *trig, const std::string& member, con
     if(lmember == "shortdesc") {
         if(!arg.empty()) {
             char blah[500];
-            sprintf(blah, "%s @wnicknamed @D(@C%s@D)@n", short_description, arg.c_str());
-            short_description = strdup(blah);
+            sprintf(blah, "%s @wnicknamed @D(@C%s@D)@n", getShortDesc().c_str(), arg.c_str());
+            setShortDesc(blah);
         }
-        return short_description;
+        return getShortDesc();
     }
 
     if(lmember == "size") {

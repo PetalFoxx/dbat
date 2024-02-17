@@ -171,10 +171,13 @@ enum class FormID : uint8_t {
     AscendSecond = 56,
     AscendThird = 57,
 
-    // Generic Forms
-    PotentialUnleashed = 58,
-    EvilAura = 59,
-    UltraInstinct = 60,
+    // Demon
+    DarkKing = 58,
+
+    // Unbound Forms
+    PotentialUnleashed = 59,
+    EvilAura = 60,
+    UltraInstinct = 61,
 
 };
 
@@ -1194,8 +1197,9 @@ enum class SkillID : uint16_t {
 #define AFF_ECHAINS_DEBUFF     78
 #define AFF_STARPHASE          79
 #define AFF_MBREAK_DEBUFF      80
+#define AFF_LIMIT_BREAKING     81
 
-#define NUM_AFF_FLAGS 81
+#define NUM_AFF_FLAGS 82
 
 /* Modes of connectedness: used by descriptor_data.state */
 #define CON_PLAYING     0    /* Playing - Nominal state		*/
@@ -2203,6 +2207,11 @@ input */
 
 #define LEVELTYPE_CLASS    1
 #define LEVELTYPE_RACE    2
+
+
+#define MASTERY_THRESHOLD       5000
+#define LIMIT_THRESHOLD         100000
+#define LIMITBREAK_THRESHOLD    5000000
 
 
 // The IDs in this enum are designed to correlate with the APPLY_<STAT> defines.

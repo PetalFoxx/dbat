@@ -496,7 +496,7 @@ static char *times_message(struct obj_data *obj, char *name, int num) {
     char *ptr;
 
     if (obj)
-        len = strlcpy(buf, obj->short_description, sizeof(buf));
+        len = strlcpy(buf, obj->getShortDesc().c_str(), sizeof(buf));
     else {
         if ((ptr = strchr(name, '.')) == nullptr)
             ptr = name;
@@ -714,7 +714,7 @@ static void shopping_app(char *arg, struct char_data *ch, struct char_data *keep
     }
     improve_skill(ch, SKILL_APPRAISE, 1);
     if (GET_SKILL(ch, SKILL_APPRAISE) < rand_number(1, 101)) {
-        send_to_char(ch, "@wYou were completely stumped about the worth of %s@n\r\n", obj->short_description);
+        send_to_char(ch, "@wYou were completely stumped about the worth of %s@n\r\n", obj->getShortDesc());
         WAIT_STATE(ch, PULSE_2SEC);
         return;
     } else {
@@ -724,7 +724,7 @@ static void shopping_app(char *arg, struct char_data *ch, struct char_data *keep
             displevel = 20;
 
         send_to_char(ch, "@c---------------------------------------------------------------@n\n");
-        send_to_char(ch, "@GItem Name   @W: @w%s@n\n", obj->short_description);
+        send_to_char(ch, "@GItem Name   @W: @w%s@n\n", obj->getShortDesc());
         send_to_char(ch, "@GTrue Value  @W: @Y%s@n\n", add_commas(GET_OBJ_COST(obj)).c_str());
         send_to_char(ch, "@GItem Min LVL@W: @w%d@n\n", displevel);
         if (GET_OBJ_VAL(obj, VAL_ALL_HEALTH) >= 100) {
@@ -874,8 +874,8 @@ static void shopping_buy(char *arg, struct char_data *ch, struct char_data *keep
         if (!ADM_FLAGGED(ch, ADM_MONEY))
             ch->mod(CharMoney::Carried, -charged);
         else {
-            send_to_imm("IMM PURCHASE: %s has purchased %s for free.", GET_NAME(ch), obj->short_description);
-            log_imm_action("IMM PURCHASE: %s has purchased %s for free.", GET_NAME(ch), obj->short_description);
+            send_to_imm("IMM PURCHASE: %s has purchased %s for free.", GET_NAME(ch), obj->getShortDesc());
+            log_imm_action("IMM PURCHASE: %s has purchased %s for free.", GET_NAME(ch), obj->getShortDesc());
         }
 
         last_obj = obj;
@@ -1150,20 +1150,20 @@ list_object(struct obj_data *obj, int cnt, int aindex, vnum shop_nr, struct char
     switch (GET_OBJ_TYPE(obj)) {
         case ITEM_DRINKCON:
             if (GET_OBJ_VAL(obj, VAL_DRINKCON_HOWFULL))
-                snprintf(itemname, sizeof(itemname), "%s", obj->short_description);
+                snprintf(itemname, sizeof(itemname), "%s", obj->getShortDesc().c_str());
             else
-                strlcpy(itemname, obj->short_description, sizeof(itemname));
+                strlcpy(itemname, obj->getShortDesc().c_str(), sizeof(itemname));
             break;
 
         case ITEM_WAND:
         case ITEM_STAFF:
-            snprintf(itemname, sizeof(itemname), "%s%s", obj->short_description,
+            snprintf(itemname, sizeof(itemname), "%s%s", obj->getShortDesc().c_str(),
                      GET_OBJ_VAL(obj, VAL_WAND_CHARGES) < GET_OBJ_VAL(obj, VAL_WAND_MAXCHARGES) ? " (partially used)"
                                                                                                 : "");
             break;
 
         default:
-            strlcpy(itemname, obj->short_description, sizeof(itemname));
+            strlcpy(itemname, obj->getShortDesc().c_str(), sizeof(itemname));
             break;
     }
     if (OBJ_FLAGGED(obj, ITEM_BROKEN)) {
@@ -1506,7 +1506,7 @@ static void list_detailed_shop(struct char_data *ch, vnum shop_nr) {
             column += 2;
         }
         linelen = snprintf(buf1, sizeof(buf1), "%s (#%d)",
-                           obj_proto[p].short_description,
+                           obj_proto[p].getShortDesc().c_str(),
                            p);
 
         /* Implementing word-wrapping: assumes screen-size == 80 */

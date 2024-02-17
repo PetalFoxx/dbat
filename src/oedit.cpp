@@ -199,9 +199,9 @@ ACMD(do_oasis_oedit) {
 void oedit_setup_new(struct descriptor_data *d) {
     OLC_OBJ(d) = new obj_data();
 
-    OLC_OBJ(d)->name = strdup("unfinished object");
-    OLC_OBJ(d)->room_description = strdup("An unfinished object is lying here.");
-    OLC_OBJ(d)->short_description = strdup("an unfinished object");
+    OLC_OBJ(d)->setName("unfinished object");
+    OLC_OBJ(d)->setRoomDesc("An unfinished object is lying here.");
+    OLC_OBJ(d)->setShortDesc("an unfinished object");
     OLC_OBJ(d)->wear_flags.set(ITEM_WEAR_TAKE);
     OLC_VAL(d) = 0;
     OLC_ITEM_TYPE(d) = OBJ_TRIGGER;
@@ -916,10 +916,10 @@ void oedit_disp_menu(struct descriptor_data *d) {
                     "@g6@n) Extra flags : @c%s@n\r\n",
 
                     OLC_NUM(d),
-                    (obj->name && *obj->name) ? obj->name : "undefined",
-                    (obj->short_description && *obj->short_description) ? obj->short_description : "undefined",
-                    (obj->room_description && *obj->room_description) ? obj->room_description : "undefined",
-                    (obj->look_description && *obj->look_description) ? obj->look_description : "Not Set.\r\n",
+                    withPlaceholder(obj->getName(), "undefined"),
+                    withPlaceholder(obj->getShortDesc(), "undefined"),
+                    withPlaceholder(obj->getRoomDesc(), "undefined"),
+                    withPlaceholder(obj->getLookDesc(), "Not Set."),
                     tbitbuf,
                     ebitbuf
     );
@@ -1100,9 +1100,9 @@ void oedit_parse(struct descriptor_data *d, char *arg) {
                     OLC_MODE(d) = OEDIT_ACTDESC;
                     send_editor_help(d);
                     write_to_output(d, "Enter action description:\r\n\r\n");
-                    if (OLC_OBJ(d)->look_description) {
-                        write_to_output(d, "%s", OLC_OBJ(d)->look_description);
-                        oldtext = strdup(OLC_OBJ(d)->look_description);
+                    if (auto ld = OLC_OBJ(d)->getLookDesc(); !ld.empty()) {
+                        write_to_output(d, "%s", ld);
+                        oldtext = strdup(ld.c_str());
                     }
                     string_write(d, &OLC_OBJ(d)->look_description, MAX_MESSAGE_LENGTH, 0, oldtext);
                     OLC_VAL(d) = 1;
@@ -1231,25 +1231,19 @@ void oedit_parse(struct descriptor_data *d, char *arg) {
         case OEDIT_EDIT_NAMELIST:
             if (!genolc_checkstring(d, arg))
                 break;
-            if (OLC_OBJ(d)->name)
-                free(OLC_OBJ(d)->name);
-            OLC_OBJ(d)->name = str_udup(arg);
+            OLC_OBJ(d)->setName(arg);
             break;
 
         case OEDIT_SHORTDESC:
             if (!genolc_checkstring(d, arg))
                 break;
-            if (OLC_OBJ(d)->short_description)
-                free(OLC_OBJ(d)->short_description);
-            OLC_OBJ(d)->short_description = str_udup(arg);
+            OLC_OBJ(d)->setShortDesc(arg);
             break;
 
         case OEDIT_LONGDESC:
             if (!genolc_checkstring(d, arg))
                 break;
-            if (OLC_OBJ(d)->room_description)
-                free(OLC_OBJ(d)->room_description);
-            OLC_OBJ(d)->room_description = str_udup(arg);
+            OLC_OBJ(d)->setRoomDesc(arg);
             break;
 
         case OEDIT_TYPE:

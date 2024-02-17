@@ -227,7 +227,7 @@ void sedit_products_menu(struct descriptor_data *d) {
     for (auto i : shop->producing) {
         write_to_output(d, "%2d - [@c%5d@n] - @y%s@n\r\n", i,
                         i,
-                        obj_proto[i].short_description);
+                        obj_proto[i].getShortDesc());
     }
     write_to_output(d, "\r\n"
                        "@gA@n) Add a new product.\r\n"
@@ -402,7 +402,7 @@ void sedit_disp_menu(struct descriptor_data *d) {
 
                     OLC_NUM(d),
                     S_KEEPER(shop) == NOBODY ? -1 : mob_index[S_KEEPER(shop)].vn,
-                    S_KEEPER(shop) == NOBODY ? "None" : mob_proto[S_KEEPER(shop)].short_description,
+                    S_KEEPER(shop) == NOBODY ? "None" : mob_proto[S_KEEPER(shop)].getShortDesc(),
                     S_OPEN1(shop),
                     S_CLOSE1(shop),
                     S_OPEN2(shop),

@@ -175,14 +175,14 @@ ASPELL(spell_locate_object) {
         if (!isname(name, i->name))
             continue;
 
-        send_to_char(ch, "%c%s", UPPER(*i->short_description), (i->short_description) + 1);
+        send_to_char(ch, "%s", i->getShortDesc());
 
         if (i->carried_by)
             send_to_char(ch, " is being carried by %s.\r\n", PERS(i->carried_by, ch));
         else if (IN_ROOM(i) != NOWHERE)
             send_to_char(ch, " is in %s.\r\n", i->getRoom()->name);
         else if (i->in_obj)
-            send_to_char(ch, " is in %s.\r\n", i->in_obj->short_description);
+            send_to_char(ch, " is in %s.\r\n", i->in_obj->getShortDesc());
         else if (i->worn_by)
             send_to_char(ch, " is being worn by %s.\r\n", PERS(i->worn_by, ch));
         else
@@ -258,7 +258,7 @@ ASPELL(spell_identify) {
         char buf2[MAX_STRING_LENGTH];
 
         sprinttype(GET_OBJ_TYPE(obj), item_types, bitbuf, sizeof(bitbuf));
-        send_to_char(ch, "You feel informed:\r\nObject '%s', Item type: %s\r\n", obj->short_description, bitbuf);
+        send_to_char(ch, "You feel informed:\r\nObject '%s', Item type: %s\r\n", obj->getShortDesc(), bitbuf);
 
         if (obj->bitvector.any()) {
             sprintbitarray(GET_OBJ_PERM(obj), affected_bits, AF_ARRAY_MAX, bitbuf);

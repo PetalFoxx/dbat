@@ -445,7 +445,7 @@ extern room_rnum obj_room(obj_data *obj);
 #define SCRIPT_TYPES(s)          ((s)->types)
 #define TRIGGERS(s)          ((s)->trig_list)
 
-#define GET_SHORT(ch)    ((ch)->short_description)
+#define GET_SHORT(ch)    ((ch)->getShortDesc().c_str())
 
 
 #define SCRIPT_CHECK(go, type)   (SCRIPT(go) && \

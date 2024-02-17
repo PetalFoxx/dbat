@@ -491,12 +491,12 @@ void show_board(obj_vnum board_vnum, struct char_data *ch) {
             if (GET_CLAN(ch) != nullptr) {
                 sprintf(clan, "%s", GET_CLAN(ch));
             }
-            if (!strstr(obj->look_description, clan)) {
+            if (!strstr(obj->getLookDesc().c_str(), clan)) {
                 send_to_char(ch, "You are incapable of reading this board!\r\n");
                 return;
             }
         }
-        send_to_char(ch, "@W                  This is the %20s\r\n", obj->short_description);
+        send_to_char(ch, "@W                  This is the %20s\r\n", obj->getShortDesc());
         send_to_char(ch, "@rO@b============================================================================@rO@n\n"
                          "     @D[@GX@D] means you have read the message, @D[@RX@D] means you have not.\r\n"
                          "     @WUsage@D:@CREAD@D/@cREMOVE @D<@Wmessg #@D>@W, @CRESPOND @D<@Wmessg #@D>@W, @CWRITE @D<@Wheader@D>@W.@n\r\n"
@@ -612,7 +612,7 @@ void board_display_msg(obj_vnum board_vnum, struct char_data *ch, int arg) {
             if (GET_CLAN(ch) != nullptr) {
                 sprintf(clan, "%s", GET_CLAN(ch));
             }
-            if (!strstr(obj->look_description, clan)) {
+            if (!strstr(obj->getLookDesc().c_str(), clan)) {
                 send_to_char(ch, "You are incapable of reading this board!\r\n");
                 return;
             }
@@ -1019,7 +1019,7 @@ void remove_board_msg(obj_vnum board_vnum, struct char_data *ch, int arg) {
             if (GET_CLAN(ch) != nullptr) {
                 sprintf(clan, "%s", GET_CLAN(ch));
             }
-            if (clanIsModerator(clan, ch) && strstr(obj->look_description, clan)) {
+            if (clanIsModerator(clan, ch) && strstr(obj->getLookDesc().c_str(), clan)) {
                 send_to_char(ch, "Exercising your clan leader powers....\r\n");
             } else if (GET_ADMLEVEL(ch) < REMOVE_LVL(thisboard) && strcmp(GET_NAME(ch), MESG_POSTER_NAME(cur))) {
                 send_to_char(ch, "You can't remove other people's messages.\r\n");

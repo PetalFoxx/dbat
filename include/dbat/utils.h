@@ -209,9 +209,6 @@ extern int do_simple_move(struct char_data *ch, int dir, int following);
 
 extern int perform_move(struct char_data *ch, int dir, int following);
 
-/* in act.item.c */
-extern int64_t max_carry_weight(struct char_data *ch);
-
 /* in limits.c */
 extern void advance_level(struct char_data *ch);
 
@@ -488,7 +485,7 @@ extern bool OBJ_FLAGGED(const obj_data *obj, int flag);
 
 #define GET_PC_NAME(ch)    ((ch)->name)
 #define GET_NAME(ch)    (IS_NPC(ch) ? \
-             (ch)->short_description : GET_PC_NAME(ch))
+             (char*)((ch)->getShortDesc().c_str()) : GET_PC_NAME(ch))
 #define GET_TITLE(ch)   ((ch)->desc ? ((ch)->desc->title ? (ch)->desc->title : "[Unset Title]") : "@D[@GNew User@D]")
 #define GET_USER_TITLE(d) ((d)->title)
 #define GET_PHASE(ch)   ((ch)->starphase)
@@ -819,7 +816,7 @@ void SET_SKILL_PERF(struct char_data *ch, uint16_t skill, int16_t val);
 
 #define CAN_WEAR(obj, part)    OBJWEAR_FLAGGED((obj), (part))
 #define GET_OBJ_MATERIAL(obj)   ((obj)->value[7])
-#define GET_OBJ_SHORT(obj)    ((obj)->short_description)
+#define GET_OBJ_SHORT(obj)    ((obj)->getShortDesc().c_str())
 
 /* compound utilities and other macros **********************************/
 
@@ -895,7 +892,7 @@ void SET_SKILL_PERF(struct char_data *ch, uint16_t skill, int16_t val);
                         race::getName((ch)->race).c_str()))
 
 #define OBJS(obj, vict) (CAN_SEE_OBJ((vict), (obj)) ? \
-    (obj)->short_description  : "something")
+    (obj)->getShortDesc().c_str()  : "something")
 
 #define OBJN(obj, vict) (CAN_SEE_OBJ((vict), (obj)) ? \
     fname((obj)->name) : "something")
@@ -1430,3 +1427,5 @@ extern void trim_right(std::string& str);
 extern void to_lower(std::string& str);
 extern bool is_all_alpha(const std::string& str);
 extern bool icontains(const std::string& haystack, const std::string& needle);
+
+extern std::string withPlaceholder(const std::string &text, const std::string& placeholder);

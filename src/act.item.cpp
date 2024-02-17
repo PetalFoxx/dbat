@@ -229,7 +229,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = false;
             break;
         case 1129:
@@ -238,7 +238,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17210:
@@ -249,7 +249,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17211:
@@ -260,7 +260,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17214:
@@ -271,7 +271,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17216:
@@ -280,7 +280,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17218:
@@ -291,7 +291,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17220:
@@ -302,7 +302,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17222:
@@ -313,7 +313,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17224:
@@ -324,7 +324,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 17226:
@@ -337,7 +337,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         case 3702:
@@ -348,7 +348,7 @@ static void harvest_plant(struct char_data *ch, struct obj_data *plant) {
                 obj_to_char(fruit, ch);
                 count -= 1;
             }
-            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->short_description);
+            send_to_char(ch, "@YYou harvest @D[@G%d@D]@Y @g%s@Y!@n\r\n", reward, fruit->getShortDesc());
             extract = true;
             break;
         default:
@@ -1033,7 +1033,7 @@ static void start_auction(struct char_data *ch, struct obj_data *obj, int bid) {
     curbid = bid;
 
     /* Tell th character where his item went */
-    sprintf(buf, "%s magicly flies away from your hands to be auctioned!\r\n", obj_selling->short_description);
+    sprintf(buf, "%s magicly flies away from your hands to be auctioned!\r\n", obj_selling->getShortDesc());
     CAP(buf);
     send_to_char(ch_selling, buf);
 
@@ -1119,7 +1119,7 @@ void check_auction(uint64_t heartPulse, double deltaTime) {
                 CAP(buf);
                 auc_send_to_all(buf, false);
 
-                sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->short_description);
+                sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->getShortDesc());
                 CAP(buf);
                 send_to_char(ch_selling, buf);
                 obj_to_char(obj_selling, ch_selling);
@@ -1139,11 +1139,11 @@ void check_auction(uint64_t heartPulse, double deltaTime) {
                 /* Give the object to the buyer */
                 obj_to_char(obj_selling, ch_buying);
                 sprintf(buf, "%s flies out the sky and into your hands, what a steal!\r\n",
-                        obj_selling->short_description);
+                        obj_selling->getShortDesc());
                 CAP(buf);
                 send_to_char(ch_buying, buf);
 
-                sprintf(buf, "Congrats! You have sold %s for @Y%d@W zenni!\r\n", obj_selling->short_description,
+                sprintf(buf, "Congrats! You have sold %s for @Y%d@W zenni!\r\n", obj_selling->getShortDesc(),
                         curbid);
                 send_to_char(ch_selling, buf);
 
@@ -1206,7 +1206,7 @@ void dball_load(uint64_t heartPulse, double deltaTime) {
             } else if (GET_OBJ_VNUM(k) == 26) {
                 found7 = true;
             } else if (IN_ROOM(k) != NOWHERE && ROOM_EFFECT(IN_ROOM(k)) == 6 && !OBJ_FLAGGED(k, ITEM_UNBREAKABLE)) {
-                send_to_room(IN_ROOM(k), "@R%s@r melts in the lava!@n\r\n", k->short_description);
+                send_to_room(IN_ROOM(k), "@R%s@r melts in the lava!@n\r\n", k->getShortDesc());
                 extract_obj(k);
             } else {
                 continue;
@@ -1623,7 +1623,7 @@ ACMD(do_auction) {
         return;
     } else if (aucstat != AUC_NULL_STATE) {
         sprintf(buf, "Sorry, but %s is already auctioning %s at @Y%d@W zenni!\r\n", GET_NAME(ch_selling),
-                obj_selling->short_description, bid);
+                obj_selling->getShortDesc(), bid);
         send_to_char(ch, buf);
         return;
     } else if (OBJ_FLAGGED(obj, ITEM_NOSELL)) {
@@ -1694,14 +1694,14 @@ ACMD(do_bid) {
                                  "@D[@R#@W%3d@D][@mOwner@W: @w%10s@D][@GItem Name@W: @w%-*s@D][@GCost@W: @Y%s@D]@n\r\n",
                                  list, get_name_by_id(GET_AUCTER(obj)) != nullptr ? CAP(get_name_by_id(GET_AUCTER(obj)))
                                                                                   : "Nobody",
-                                 count_color_chars(obj->short_description) + 30, obj->short_description,
+                                 count_color_chars((char*)obj->getShortDesc().c_str()) + 30, obj->getShortDesc(),
                                  add_commas(GET_BID(obj)).c_str());
                 } else if (GET_AUCTIME(obj) + 86400 > time(nullptr) && GET_CURBID(obj) > -1) {
                     send_to_char(ch,
                                  "@D[@R#@W%3d@D][@mOwner@W: @w%10s@D][@GItem Name@W: @w%-*s@D][@RTop Bid@W: %s @Y%s@D]@n\r\n",
                                  list, get_name_by_id(GET_AUCTER(obj)) != nullptr ? CAP(get_name_by_id(GET_AUCTER(obj)))
                                                                                   : "Nobody",
-                                 count_color_chars(obj->short_description) + 30, obj->short_description,
+                                 count_color_chars((char*)obj->getShortDesc().c_str()) + 30, obj->getShortDesc(),
                                  get_name_by_id(GET_CURBID(obj)) != nullptr ? CAP(get_name_by_id(GET_CURBID(obj)))
                                                                             : "Nobody", add_commas(GET_BID(obj)).c_str());
                 } else if (GET_AUCTIME(obj) + 86400 < time(nullptr) && GET_CURBID(obj) > -1) {
@@ -1709,14 +1709,14 @@ ACMD(do_bid) {
                                  "@D[@R#@W%3d@D][@mOwner@W: @w%10s@D][@GItem Name@W: @w%-*s@D][@RBid Winner@W: %s @Y%s@D]@n\r\n",
                                  list, get_name_by_id(GET_AUCTER(obj)) != nullptr ? CAP(get_name_by_id(GET_AUCTER(obj)))
                                                                                   : "Nobody",
-                                 count_color_chars(obj->short_description) + 30, obj->short_description,
+                                 count_color_chars((char*)obj->getShortDesc().c_str()) + 30, obj->getShortDesc(),
                                  get_name_by_id(GET_CURBID(obj)) != nullptr ? CAP(get_name_by_id(GET_CURBID(obj)))
                                                                             : "Nobody", add_commas(GET_BID(obj)).c_str());
                 } else {
                     send_to_char(ch, "@D[@R#@W%3d@D][@mOwner@W: @w%10s@D][@GItem Name@W: @w%-*s@D][@RClosed@D]@n\r\n",
                                  list, get_name_by_id(GET_AUCTER(obj)) != nullptr ? CAP(get_name_by_id(GET_AUCTER(obj)))
                                                                                   : "Nobody",
-                                 count_color_chars(obj->short_description) + 30, obj->short_description);
+                                 count_color_chars((char*)obj->getShortDesc().c_str()) + 30, obj->getShortDesc());
                 }
                 found = true;
             }
@@ -1759,7 +1759,7 @@ ACMD(do_bid) {
             improve_skill(ch, SKILL_APPRAISE, 1);
             if (GET_SKILL(ch, SKILL_APPRAISE) < rand_number(1, 101)) {
                 send_to_char(ch, "You look at the images for %s and fail to perceive its worth..\r\n",
-                             obj2->short_description);
+                             obj2->getShortDesc());
                 act("@c$n@w looks stumped about something they viewed on their scouter screen.@n", true, ch, nullptr,
                     nullptr, TO_ROOM);
                 WAIT_STATE(ch, PULSE_2SEC);
@@ -1771,7 +1771,7 @@ ACMD(do_bid) {
                 send_to_char(ch, "@GOwner       @W: @w%s@n\n",
                              get_name_by_id(GET_AUCTER(obj2)) != nullptr ? CAP(get_name_by_id(GET_AUCTER(obj2)))
                                                                          : "Nobody");
-                send_to_char(ch, "@GItem Name   @W: @w%s@n\n", obj2->short_description);
+                send_to_char(ch, "@GItem Name   @W: @w%s@n\n", obj2->getShortDesc());
                 send_to_char(ch, "@GCurrent Bid @W: @Y%s@n\n", add_commas(GET_BID(obj2)).c_str());
                 send_to_char(ch, "@GStore Value @W: @Y%s@n\n", add_commas(GET_OBJ_COST(obj2)).c_str());
                 send_to_char(ch, "@GItem Min LVL@W: @w%d@n\n", GET_OBJ_LEVEL(obj2));
@@ -1883,21 +1883,21 @@ ACMD(do_bid) {
             auc_save();
             struct descriptor_data *d;
             int bid = atoi(arg2);
-            basic_mud_log("AUCTION: %s has bid %s on %s", GET_NAME(ch), obj2->short_description, add_commas(bid).c_str());
+            basic_mud_log("AUCTION: %s has bid %s on %s", GET_NAME(ch), obj2->getShortDesc(), add_commas(bid).c_str());
             for (d = descriptor_list; d; d = d->next) {
                 if (STATE(d) != CON_PLAYING || IS_NPC(d->character))
                     continue;
                 if (d->character == ch) {
                     if (GET_EQ(d->character, WEAR_EYE)) {
                         send_to_char(d->character, "@RScouter Auction News@D: @GYou have bid @Y%s@G on @w%s@G@n\r\n",
-                                     add_commas(GET_BID(obj2)).c_str(), obj2->short_description);
+                                     add_commas(GET_BID(obj2)).c_str(), obj2->getShortDesc());
                     }
                     continue;
                 }
                 if (GET_EQ(d->character, WEAR_EYE)) {
                     send_to_char(d->character,
                                  "@RScouter Auction News@D: @GThe bid on, @w%s@G, has been raised to @Y%s@n\r\n",
-                                 obj2->short_description, add_commas(GET_BID(obj2)).c_str());
+                                 obj2->getShortDesc(), add_commas(GET_BID(obj2)).c_str());
                 }
             }
         }
@@ -1944,12 +1944,12 @@ void stop_auction(int type, struct char_data *ch) {
 
 
     if (type != AUC_WIZ_CANCEL) {
-        sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->short_description);
+        sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->getShortDesc());
         CAP(buf);
         send_to_char(ch_selling, buf);
         obj_to_char(obj_selling, ch_selling);
     } else {
-        sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->short_description);
+        sprintf(buf, "%s flies out the sky and into your hands.\r\n", obj_selling->getShortDesc());
         CAP(buf);
         send_to_char(ch, buf);
         obj_to_char(obj_selling, ch);
@@ -2276,10 +2276,7 @@ static void perform_put(struct char_data *ch, struct obj_data *obj,
         send_to_char(ch, "You can not bag dragon balls.\r\n");
     else if (OBJ_FLAGGED(obj, ITEM_NORENT))
         send_to_char(ch, "That isn't worth bagging. Better keep that close if you wanna keep it at all.\r\n");
-    else if (!cont->carried_by && check_saveroom_count(ch, obj) > 150) {
-        send_to_char(ch,
-                     "The save room can not hold anymore items. (150 max, count of items in containers is halved)\r\n");
-    } else {
+    else {
         obj_from_char(obj);
         obj_to_obj(obj, cont);
 
@@ -2756,9 +2753,9 @@ static void perform_drop_gold(struct char_data *ch, int amount,
                 send_to_char(ch, "You drop some zenni.\r\n");
                 obj_to_room(obj, IN_ROOM(ch));
                 if (GET_ADMLEVEL(ch) > 0) {
-                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                 GET_ROOM_VNUM(IN_ROOM(obj)));
-                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                    GET_ROOM_VNUM(IN_ROOM(obj)));
                     if (check_insidebag(obj, 0.0) > 1) {
                         send_to_imm("IMM DROP: Object contains %d other items.", check_insidebag(obj, 0.0));
@@ -2862,17 +2859,17 @@ static int perform_drop(struct char_data *ch, struct obj_data *obj,
                 act("$p plops down on some cooled lava!", false, ch, obj, nullptr, TO_ROOM);
                 obj_to_room(obj, IN_ROOM(ch));
                 if (GET_ADMLEVEL(ch) > 0) {
-                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                 GET_ROOM_VNUM(IN_ROOM(obj)));
-                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                    GET_ROOM_VNUM(IN_ROOM(obj)));
                 }
             } else {
                 obj_to_room(obj, IN_ROOM(ch));
                 if (GET_ADMLEVEL(ch) > 0) {
-                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    send_to_imm("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                 GET_ROOM_VNUM(IN_ROOM(obj)));
-                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->short_description,
+                    log_imm_action("IMM DROP: %s dropped %s in room [%d]", GET_NAME(ch), obj->getShortDesc(),
                                    GET_ROOM_VNUM(IN_ROOM(obj)));
                 }
             }
@@ -2969,9 +2966,6 @@ ACMD(do_drop) {
             send_to_char(ch, "What do you want to %s %d of?\r\n", sname, multi);
         else if (!(obj = get_obj_in_list_vis(ch, arg, nullptr, ch->contents)))
             send_to_char(ch, "You don't seem to have any %ss.\r\n", arg);
-        else if (check_saveroom_count(ch, obj) > 150)
-            send_to_char(ch,
-                         "The save room you are in can not hold anymore items! (150 max, count of items in containers is halved)\r\n");
         else {
             do {
                 next_obj = get_obj_in_list_vis(ch, arg, nullptr, obj->next_content);
@@ -2998,15 +2992,7 @@ ACMD(do_drop) {
             else {
                 for (obj = ch->contents; obj; obj = next_obj) {
                     next_obj = obj->next_content;
-                    if (check_saveroom_count(ch, obj) > 150) {
-                        fail = true;
-                    } else {
-                        amount += perform_drop(ch, obj, mode, sname, RDR);
-                    }
-                }
-                if (fail == true) {
-                    send_to_char(ch,
-                                 "Some of the items couldn't be dropped into this save room. It is too full. (150 max, containers half the count inside)\r\n");
+                    amount += perform_drop(ch, obj, mode, sname, RDR);
                 }
             }
         } else if (dotmode == FIND_ALLDOT) {
@@ -3021,23 +3007,12 @@ ACMD(do_drop) {
 
             while (obj) {
                 next_obj = get_obj_in_list_vis(ch, arg, nullptr, obj->next_content);
-                if (check_saveroom_count(ch, obj) > 150) {
-                    fail = true;
-                } else {
-                    amount += perform_drop(ch, obj, mode, sname, RDR);
-                }
+                amount += perform_drop(ch, obj, mode, sname, RDR);
                 obj = next_obj;
-            }
-            if (fail == true) {
-                send_to_char(ch,
-                             "Some of the items couldn't be dropped into this save room. It is too full. (150 max, containers half the count inside)\r\n");
             }
         } else {
             if (!(obj = get_obj_in_list_vis(ch, arg, nullptr, ch->contents))) {
                 send_to_char(ch, "You don't seem to have %s %s.\r\n", AN(arg), arg);
-            } else if (check_saveroom_count(ch, obj) > 150) {
-                send_to_char(ch,
-                             "The item couldn't be dropped into this save room. It is too full. (150 max, containers half the count inside)\r\n");
             } else {
                 amount += perform_drop(ch, obj, mode, sname, RDR);
             }
@@ -3216,9 +3191,9 @@ ACMD(do_give) {
                 next_obj = get_obj_in_list_vis(ch, arg, nullptr, obj->next_content);
                 perform_give(ch, vict, obj);
                 if (GET_ADMLEVEL(ch) > 0 && !IS_NPC(vict)) {
-                    send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                    send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                 GET_NAME(vict));
-                    log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                    log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                    GET_NAME(vict));
                 }
                 obj = next_obj;
@@ -3237,9 +3212,9 @@ ACMD(do_give) {
             else {
                 perform_give(ch, vict, obj);
                 if (GET_ADMLEVEL(ch) > 0 && !IS_NPC(vict)) {
-                    send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                    send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                 GET_NAME(vict));
-                    log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                    log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                    GET_NAME(vict));
                 }
             }
@@ -3257,9 +3232,9 @@ ACMD(do_give) {
                         ((dotmode == FIND_ALL || isname(arg, obj->name)))) {
                         perform_give(ch, vict, obj);
                         if (GET_ADMLEVEL(ch) > 0 && !IS_NPC(vict)) {
-                            send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                            send_to_imm("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                         GET_NAME(vict));
-                            log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->short_description,
+                            log_imm_action("IMM GIVE: %s has given %s to %s.", GET_NAME(ch), obj->getShortDesc(),
                                            GET_NAME(vict));
                         }
                     }
@@ -3485,8 +3460,8 @@ ACMD(do_drink) {
         act(buf, true, ch, temp, nullptr, TO_ROOM);
 
         send_to_char(ch, "You drink the %s.\r\n", drinks[GET_OBJ_VAL(temp, VAL_DRINKCON_LIQUID)]);
-        if (temp->look_description)
-            act(temp->look_description, true, ch, temp, nullptr, TO_CHAR);
+        if (auto ld = temp->getLookDesc();!ld.empty())
+            act(ld.c_str(), true, ch, temp, nullptr, TO_CHAR);
 
         /* if (drink_aff[GET_OBJ_VAL(temp, VAL_DRINKCON_LIQUID)][DRUNK] > 0)
       amount = (25 - GET_COND(ch, THIRST)) / drink_aff[GET_OBJ_VAL(temp, VAL_DRINKCON_LIQUID)][DRUNK];
@@ -3629,8 +3604,8 @@ ACMD(do_eat) {
 
     if (subcmd == SCMD_EAT) {
         act("You eat some of $p.", false, ch, food, nullptr, TO_CHAR);
-        if (food->look_description)
-            act(food->look_description, false, ch, food, nullptr, TO_CHAR);
+        if (auto ld = food->getLookDesc(); !ld.empty())
+            act(ld.c_str(), false, ch, food, nullptr, TO_CHAR);
         act("$n eats some of $p.", true, ch, food, nullptr, TO_ROOM);
     } else {
         act("You nibble a little bit of $p.", false, ch, food, nullptr, TO_CHAR);
@@ -4043,26 +4018,36 @@ static void wear_message(struct char_data *ch, struct obj_data *obj, int where) 
 }
 
 static int hands(struct char_data *ch) {
-    int x;
-
-    if (GET_EQ(ch, WEAR_WIELD1)) {
-        if (OBJ_FLAGGED(GET_EQ(ch, WEAR_WIELD1), ITEM_2H) ||
-            wield_type(get_size(ch), GET_EQ(ch, WEAR_WIELD1)) == WIELD_TWOHAND) {
-            x = 2;
-        } else
-            x = 1;
-    } else x = 0;
-
-    if (GET_EQ(ch, WEAR_WIELD2)) {
-        if (OBJ_FLAGGED(GET_EQ(ch, WEAR_WIELD2), ITEM_2H) ||
-            wield_type(get_size(ch), GET_EQ(ch, WEAR_WIELD2)) == WIELD_TWOHAND) {
-            x += 2;
-        } else
-            x += 1;
+    for(auto flag : {WEAR_WIELD1, WEAR_WIELD2}) {
+        if (GET_EQ(ch, flag)) {
+            if (OBJ_FLAGGED(GET_EQ(ch, flag), ITEM_2H) ||
+                wield_type(get_size(ch), GET_EQ(ch, flag)) == WIELD_TWOHAND) {
+                return 2;
+            } else
+                return 1;
+        }
     }
-
-    return x;
+    return 0;
 }
+
+static const std::vector<std::pair<int, int>> wearchecks = {
+            {ITEM_WEAR_FINGER, WEAR_FINGER_R},
+            {ITEM_WEAR_NECK, WEAR_NECK_1},
+            {ITEM_WEAR_BODY, WEAR_BODY},
+            {ITEM_WEAR_HEAD, WEAR_HEAD},
+            {ITEM_WEAR_LEGS, WEAR_LEGS},
+            {ITEM_WEAR_FEET, WEAR_FEET},
+            {ITEM_WEAR_HANDS, WEAR_HANDS},
+            {ITEM_WEAR_ARMS, WEAR_ARMS},
+            {ITEM_WEAR_SHIELD, WEAR_WIELD2},
+            {ITEM_WEAR_ABOUT, WEAR_ABOUT},
+            {ITEM_WEAR_WAIST, WEAR_WAIST},
+            {ITEM_WEAR_WRIST, WEAR_WRIST_R},
+            {ITEM_WEAR_PACK, WEAR_BACKPACK},
+            {ITEM_WEAR_EAR, WEAR_EAR_R},
+            {ITEM_WEAR_SH, WEAR_SH},
+            {ITEM_WEAR_EYE, WEAR_EYE}
+        };
 
 void perform_wear(struct char_data *ch, struct obj_data *obj, int where) {
     /*
@@ -4199,23 +4184,8 @@ int find_eq_pos(struct char_data *ch, struct obj_data *obj, char *arg) {
     };
 
     if (!arg || !*arg) {
-        if (CAN_WEAR(obj, ITEM_WEAR_FINGER) && BODY_FLAGGED(ch, WEAR_FINGER_R)) return WEAR_FINGER_R;
-        if (CAN_WEAR(obj, ITEM_WEAR_NECK) && BODY_FLAGGED(ch, WEAR_NECK_1)) return WEAR_NECK_1;
-        if (CAN_WEAR(obj, ITEM_WEAR_BODY) && BODY_FLAGGED(ch, WEAR_BODY)) return WEAR_BODY;
-        if (CAN_WEAR(obj, ITEM_WEAR_HEAD) && BODY_FLAGGED(ch, WEAR_HEAD)) return WEAR_HEAD;
-        if (CAN_WEAR(obj, ITEM_WEAR_LEGS) && BODY_FLAGGED(ch, WEAR_LEGS)) return WEAR_LEGS;
-        if (CAN_WEAR(obj, ITEM_WEAR_FEET) && BODY_FLAGGED(ch, WEAR_FEET)) return WEAR_FEET;
-        if (CAN_WEAR(obj, ITEM_WEAR_HANDS) && BODY_FLAGGED(ch, WEAR_HANDS)) return WEAR_HANDS;
-        if (CAN_WEAR(obj, ITEM_WEAR_ARMS) && BODY_FLAGGED(ch, WEAR_ARMS)) return WEAR_ARMS;
-        if (CAN_WEAR(obj, ITEM_WEAR_SHIELD) && BODY_FLAGGED(ch, WEAR_WIELD2)) return WEAR_WIELD2;
-        if (CAN_WEAR(obj, ITEM_WEAR_ABOUT) && BODY_FLAGGED(ch, WEAR_ABOUT)) return WEAR_ABOUT;
-        if (CAN_WEAR(obj, ITEM_WEAR_WAIST) && BODY_FLAGGED(ch, WEAR_WAIST)) return WEAR_WAIST;
-        if (CAN_WEAR(obj, ITEM_WEAR_WRIST) && BODY_FLAGGED(ch, WEAR_WRIST_R)) return WEAR_WRIST_R;
-        if (CAN_WEAR(obj, ITEM_WEAR_HOLD) && BODY_FLAGGED(ch, WEAR_WIELD2)) return WEAR_WIELD2;
-        if (CAN_WEAR(obj, ITEM_WEAR_PACK) && BODY_FLAGGED(ch, WEAR_BACKPACK)) return WEAR_BACKPACK;
-        if (CAN_WEAR(obj, ITEM_WEAR_EAR) && BODY_FLAGGED(ch, WEAR_EAR_R)) return WEAR_EAR_R;
-        if (CAN_WEAR(obj, ITEM_WEAR_SH) && BODY_FLAGGED(ch, WEAR_SH)) return WEAR_SH;
-        if (CAN_WEAR(obj, ITEM_WEAR_EYE) && BODY_FLAGGED(ch, WEAR_EYE)) return WEAR_EYE;
+        for(const auto& [iflag, wflag] : wearchecks)
+            if(CAN_WEAR(obj, iflag) && BODY_FLAGGED(ch, wflag)) return wflag;
     } else if (((where = search_block(arg, keywords, false)) < 0) || (*arg == '!')) {
         send_to_char(ch, "'%s'?  What part of your body is THAT?\r\n", arg);
         return -1;
@@ -4323,7 +4293,7 @@ ACMD(do_wield) {
     else {
         if (!CAN_WEAR(obj, ITEM_WEAR_WIELD))
             send_to_char(ch, "You can't wield that.\r\n");
-        else if (GET_OBJ_WEIGHT(obj) > max_carry_weight(ch))
+        else if (GET_OBJ_WEIGHT(obj) > ch->getAvailableCarryWeight())
             send_to_char(ch, "It's too heavy for you to use.\r\n");
         else if (OBJ_FLAGGED(obj, ITEM_BROKEN))
             send_to_char(ch, "But it seems to be broken!\r\n");
@@ -4549,53 +4519,3 @@ ACMD(do_sac) {
     extract_obj(j);
 }
 
-/* Derived from the SRD under OGL, see ../doc/srd.txt for information */
-const int max_carry_load[] = {
-        0,
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100,
-        115,
-        130,
-        150,
-        175,
-        200,
-        230,
-        260,
-        300,
-        350,
-        400,
-        460,
-        520,
-        600,
-        700,
-        800,
-        920,
-        1040,
-        1200,
-        1400,
-        1640,
-};
-
-/* Derived from the SRD under OGL, see ../doc/srd.txt for information */
-int64_t max_carry_weight(struct char_data *ch) {
-    int64_t abil;
-    int total;
-/*  abil = MAX(0, MIN(100, GET_STR(ch)));
-  total = 1;
-  while (abil > 30) {
-    abil -= 10;
-    total *= 4;
-  }*/
-
-    abil = (GET_MAX_HIT(ch) / 200) + (GET_STR(ch) * 50);
-    total = 1;
-    return (total * abil);
-}

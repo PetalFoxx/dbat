@@ -843,7 +843,7 @@ const struct command_info cmd_info[] = {
         {"absorb",        "absor",        POS_FIGHTING, do_absorb,          0,  ADMLVL_NONE,    0},
         {"at",            "at",           POS_DEAD,     do_at,              0,  ADMLVL_BUILDER, 0},
         {"adrenaline",    "adrenalin",    POS_DEAD,     do_adrenaline,      0,  ADMLVL_NONE,    0},
-        {"advance",       "adv",          POS_DEAD,     do_advance,         0,  ADMLVL_IMPL,    0},
+        {"advance",       "adv",          POS_DEAD,     do_advance,         0,  ADMLVL_GOD,    0},
         {"aedit",         "aed",          POS_DEAD,     do_oasis,           0,  ADMLVL_BUILDER, SCMD_OASIS_AEDIT},
         {"alias",         "ali",          POS_DEAD,     do_alias,           0,  ADMLVL_NONE,    0},
         {"afk",           "afk",          POS_DEAD,     do_gen_tog,         0,  ADMLVL_NONE,    SCMD_AFK},

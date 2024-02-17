@@ -1336,7 +1336,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                         act("@wYou open @c$p@w.", true, ch, obj, 0, TO_CHAR);
                         act("@C$n@w opens @c$p@w.", true, ch, obj, 0, TO_ROOM);
                         send_to_room(IN_ROOM(vehicle), "@wThe door to %s@w is opened from the other side.\r\n",
-                                     vehicle->short_description);
+                                     vehicle->getShortDesc());
                     }
                     vehicle = nullptr;
                 }
@@ -1366,7 +1366,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                 send_to_char(ch, "You open the %s that leads %s.\r\n",
                              EXIT(ch, door)->keyword ? EXIT(ch, door)->keyword : "door", dirs[door]);
             } else if (GET_OBJ_TYPE(obj) != ITEM_VEHICLE && GET_OBJ_TYPE(obj) != ITEM_HATCH) {
-                send_to_char(ch, "You open %s.\r\n", obj->short_description);
+                send_to_char(ch, "You open %s.\r\n", obj->getShortDesc());
             }
             break;
 
@@ -1386,7 +1386,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                         act("@wYou close @c$p@w.", true, ch, obj, 0, TO_CHAR);
                         act("@C$n@w closes @c$p@w.", true, ch, obj, 0, TO_ROOM);
                         send_to_room(IN_ROOM(vehicle), "@wThe door to %s@w is closed from the other side.\r\n",
-                                     vehicle->short_description);
+                                     vehicle->getShortDesc());
                     }
                     vehicle = NULL;
                 }
@@ -1405,7 +1405,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                         act("@wYou close @c$p@w.", true, ch, obj, 0, TO_CHAR);
                         act("@C$n@w closes @c$p@w.", true, ch, obj, 0, TO_ROOM);
                         send_to_room(IN_ROOM(hatch), "@wThe door to %s@w is closed from the other side.\r\n",
-                                     hatch->short_description);
+                                     hatch->getShortDesc());
                     }
                     hatch = NULL;
                 }
@@ -1418,7 +1418,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                 send_to_char(ch, "You close the %s that leads %s.\r\n",
                              EXIT(ch, door)->keyword ? EXIT(ch, door)->keyword : "door", dirs[door]);
             } else if (GET_OBJ_TYPE(obj) != ITEM_VEHICLE && GET_OBJ_TYPE(obj) != ITEM_HATCH) {
-                send_to_char(ch, "You close %s.\r\n", obj->short_description);
+                send_to_char(ch, "You close %s.\r\n", obj->getShortDesc());
             }
             break;
 
@@ -1443,7 +1443,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                 send_to_char(ch, "You lock the %s that leads %s.\r\n",
                              EXIT(ch, door)->keyword ? EXIT(ch, door)->keyword : "door", dirs[door]);
             } else {
-                send_to_char(ch, "You lock %s.\r\n", obj->short_description);
+                send_to_char(ch, "You lock %s.\r\n", obj->getShortDesc());
             }
             break;
 
@@ -1468,7 +1468,7 @@ static void do_doorcmd(struct char_data *ch, struct obj_data *obj, int door, int
                 send_to_char(ch, "You unlock the %s that leads %s.\r\n",
                              EXIT(ch, door)->keyword ? EXIT(ch, door)->keyword : "door", dirs[door]);
             } else {
-                send_to_char(ch, "You unlock %s.\r\n", obj->short_description);
+                send_to_char(ch, "You unlock %s.\r\n", obj->getShortDesc());
             }
             break;
 
@@ -1980,7 +1980,7 @@ static int do_simple_leave(struct char_data *ch, struct obj_data *obj, int need_
     send_to_scouter(buf3, ch, 0, 0);
 
     if (ch->desc != nullptr) {
-        act(obj->look_description, true, ch, obj, nullptr, TO_CHAR);
+        act(obj->getLookDesc().c_str(), true, ch, obj, nullptr, TO_CHAR);
         look_at_room(IN_ROOM(ch), ch, 0);
     }
 
@@ -2566,6 +2566,7 @@ ACMD(do_rest) {
                 SITS(ch) = chair;
                 SITTING(chair) = ch;
                 GET_POS(ch) = POS_RESTING;
+                ch->removeLimitBreak();
                 break;
             case POS_SITTING:
                 send_to_char(ch, "You should get up first.\r\n");
@@ -2583,6 +2584,7 @@ ACMD(do_rest) {
                 send_to_char(ch, "You stop floating around, and stop to rest your tired bones.\r\n");
                 act("$n stops floating around, and rests.", false, ch, nullptr, nullptr, TO_ROOM);
                 GET_POS(ch) = POS_RESTING;
+                ch->removeLimitBreak();
                 break;
         }
     }
@@ -2663,7 +2665,7 @@ ACMD(do_sleep) {
         if (SITS(ch)) {
             chair = SITS(ch);
             if (GET_OBJ_TYPE(chair) != ITEM_BED) {
-                send_to_char(ch, "You can't sleep on %s.\r\n", chair->short_description);
+                send_to_char(ch, "You can't sleep on %s.\r\n", chair->getShortDesc());
                 return;
             }
         }
@@ -2675,6 +2677,7 @@ ACMD(do_sleep) {
                 send_to_char(ch, "You go to sleep.\r\n");
                 act("$n lies down and falls asleep.", true, ch, nullptr, nullptr, TO_ROOM);
                 GET_POS(ch) = POS_SLEEPING;
+                ch->removeLimitBreak();
                 /* Fury Mode Loss for halfbreeds */
 
                 if (PLR_FLAGGED(ch, PLR_FURY)) {
@@ -2700,6 +2703,7 @@ ACMD(do_sleep) {
                 send_to_char(ch, "You stop floating around, and lie down to sleep.\r\n");
                 act("$n stops floating around, and lie down to sleep.",
                     true, ch, nullptr, nullptr, TO_ROOM);
+                ch->removeLimitBreak();
                 GET_POS(ch) = POS_SLEEPING;
                 break;
         }
@@ -2737,6 +2741,7 @@ ACMD(do_sleep) {
                 reveal_hiding(ch, 0);
                 act("You lay down on $p and sleep.", false, ch, chair, nullptr, TO_CHAR);
                 act("$n lays down on $p and sleeps.", false, ch, chair, nullptr, TO_ROOM);
+                ch->removeLimitBreak();
                 /* Fury Mode Loss for halfbreeds */
 
                 if (PLR_FLAGGED(ch, PLR_FURY)) {
@@ -2766,6 +2771,7 @@ ACMD(do_sleep) {
                 act("$n stops floating around, and lie down to sleep.",
                     true, ch, nullptr, nullptr, TO_ROOM);
                 GET_POS(ch) = POS_SLEEPING;
+                ch->removeLimitBreak();
                 break;
         }
     }

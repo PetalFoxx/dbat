@@ -241,8 +241,8 @@ void list_mobiles(struct char_data *ch, zone_rnum rnum, zone_vnum vmin, zone_vnu
             counter++;
             auto sString = !m.proto_script.empty() ? fmt::format(" {}", m.scriptString()) : "";
             send_to_char(ch, "@g%4d@n) [@g%-5d@n] @[3]%-*s @C%-9s @c%-9s @y[%4d]@n %s\r\n",
-                         vn, get_vnum_count(characterVnumIndex, vn), count_color_chars(m.short_description) + 30,
-                         m.short_description, TRUE_RACE(&m), sensei::getName(m.chclass).c_str(),
+                         vn, get_vnum_count(characterVnumIndex, vn), count_color_chars((char*)m.getShortDesc().c_str()) + 30,
+                         m.getShortDesc(), TRUE_RACE(&m), sensei::getName(m.chclass).c_str(),
                          m.get(CharNum::Level),
                          sString.c_str());
         }
@@ -276,8 +276,8 @@ void list_objects(struct char_data *ch, zone_rnum rnum, room_vnum vmin, room_vnu
             counter++;
             auto sString = !o.proto_script.empty() ? fmt::format(" {}", o.scriptString()) : "";
             send_to_char(ch, "@g%4d@n) [@g%-5d@n] @[2]%-*s @y[%s]@n%s\r\n",
-                         vn, get_vnum_count(objectVnumIndex, vn), count_color_chars(o.short_description) + 44,
-                         o.short_description, item_types[o.type_flag],
+                         vn, get_vnum_count(objectVnumIndex, vn), count_color_chars((char*)o.getShortDesc().c_str()) + 44,
+                         o.getShortDesc(), item_types[o.type_flag],
                          sString.c_str());
         }
     }
