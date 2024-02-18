@@ -778,6 +778,8 @@ struct char_data : public unit_data {
     int getSize();
     int setSize(int val);
 
+    double getPotential();
+
     std::unordered_map<CharMoney, money_t> moneys;
     money_t get(CharMoney type);
     money_t set(CharMoney type, money_t val);
@@ -934,6 +936,7 @@ struct char_data : public unit_data {
     time_t rewtime{};
     struct char_data *grappling{};
     struct char_data *grappled{};
+    int gravAcclim[]{0, 0, 0, 0, 0, 0};
     int grap{};
     int genome[2]{};                /* Bio racial bonus, Genome */
     int combo{};
@@ -941,6 +944,7 @@ struct char_data : public unit_data {
     int combhits{};
     int ping{};
     int starphase{};
+    
     std::optional<RaceID> mimic{};
     std::bitset<MAX_BONUSES> bonuses{};
 
@@ -1053,6 +1057,9 @@ struct char_data : public unit_data {
     void removeLimitBreak();
 
     void resurrect(ResurrectionMode mode);
+
+    bool hasGravAcclim(int);
+    void raiseGravAcclim();
 
     void teleport_to(IDXTYPE rnum);
 

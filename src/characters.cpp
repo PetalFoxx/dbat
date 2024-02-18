@@ -267,12 +267,56 @@ int char_data::wearing_android_canister() {
     }
 }
 
+bool char_data::hasGravAcclim(int grav) {
+    //0 is x2, 1 is x5, 2 is x10, 3 is x50 and 4 is x100, 5 is x1000
+    if(gravAcclim[grav] >= 10000)
+        return true;
+    return false;
+}
+
+void char_data::raiseGravAcclim() {
+    if (rand_number(1, 100) == 100) {
+        auto room = world.find(in_room);
+        double gravity;
+        if (room != world.end()) {
+            gravity = room->second.getGravity();
+        }
+
+        if(gravity >= 1000 && !hasGravAcclim(5) && hasGravAcclim(4))
+            gravAcclim[5] += 1;
+        else if(gravity >= 100 && !hasGravAcclim(4) && hasGravAcclim(3))
+            gravAcclim[5] += 1;
+        else if(gravity >= 50 && !hasGravAcclim(3) && hasGravAcclim(2))
+            gravAcclim[5] += 1;
+        else if(gravity >= 10 && !hasGravAcclim(2) && hasGravAcclim(1))
+            gravAcclim[5] += 1;
+        else if(gravity >= 5 && !hasGravAcclim(1) && hasGravAcclim(0))
+            gravAcclim[5] += 1;
+        else if(gravity >= 2 && !hasGravAcclim(0))
+            gravAcclim[5] += 1;
+    }
+}
+
 int64_t char_data::calcGravCost(int64_t num) {
     double gravity = 1.0;
     auto room = world.find(in_room);
     if (room != world.end()) {
         gravity = room->second.getGravity();
     }
+
+    if(gravity >= 1000 && hasGravAcclim(5))
+        gravity /= 1000;
+    else if(gravity >= 100 && hasGravAcclim(4))
+        gravity /= 100;
+    else if(gravity >= 50 && hasGravAcclim(3))
+        gravity /= 50;
+    else if(gravity >= 10 && hasGravAcclim(2))
+        gravity /= 10;
+    else if(gravity >= 5 && hasGravAcclim(1))
+        gravity /= 5;
+    else if(gravity >= 2 && hasGravAcclim(0))
+        gravity /= 2;
+
     int64_t cost = (gravity * gravity);
 
     if (!num) {
@@ -1195,6 +1239,21 @@ int char_data::getSize() {
     return size != SIZE_UNDEFINED ? size : race::getSize(race);
 }
 
+double char_data::getPotential() {
+    //Gain one potential per RL week, reaches 100 in two years
+    double timePotential = 1 + (time_info.month / 3) + (time_info.year * 4);
+    timePotential /= 4;
+
+    int physiquePotential = 1;
+    if(hasGravAcclim(0)) physiquePotential += 5;
+    if(hasGravAcclim(1)) physiquePotential += 5;
+    if(hasGravAcclim(2)) physiquePotential += 5;
+    if(hasGravAcclim(3)) physiquePotential += 5;
+    if(hasGravAcclim(4)) physiquePotential += 5;
+    if(hasGravAcclim(5)) physiquePotential += 5;
+
+    return timePotential * physiquePotential;
+}
 
 money_t char_data::get(CharMoney mon) {
     if(auto find = moneys.find(mon); find != moneys.end()) {
@@ -1285,7 +1344,21 @@ bool char_data::canCarryWeight(weight_t val) {
     auto room = world.find(in_room);
     if(room != world.end()) {
         gravity = room->second.getGravity();
+        if(gravity >= 1000 && hasGravAcclim(5))
+            gravity /= 1000;
+        else if(gravity >= 100 && hasGravAcclim(4))
+            gravity /= 100;
+        else if(gravity >= 50 && hasGravAcclim(3))
+            gravity /= 50;
+        else if(gravity >= 10 && hasGravAcclim(2))
+            gravity /= 10;
+        else if(gravity >= 5 && hasGravAcclim(1))
+            gravity /= 5;
+        else if(gravity >= 2 && hasGravAcclim(0))
+            gravity /= 2;
     }
+
+
     return getAvailableCarryWeight() >= (val * gravity);
 }
 
@@ -1301,7 +1374,20 @@ weight_t char_data::getCurrentBurden() {
     auto total = getTotalWeight();
     auto room = world.find(in_room);
     if(room != world.end()) {
-        total *= room->second.getGravity();
+        int gravity = room->second.getGravity();
+        if(gravity >= 1000 && hasGravAcclim(5))
+            gravity /= 1000;
+        else if(gravity >= 100 && hasGravAcclim(4))
+            gravity /= 100;
+        else if(gravity >= 50 && hasGravAcclim(3))
+            gravity /= 50;
+        else if(gravity >= 10 && hasGravAcclim(2))
+            gravity /= 10;
+        else if(gravity >= 5 && hasGravAcclim(1))
+            gravity /= 5;
+        else if(gravity >= 2 && hasGravAcclim(0))
+            gravity /= 2;
+            total *= gravity;
     }
     return total;
 }
