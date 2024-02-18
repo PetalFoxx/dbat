@@ -7610,10 +7610,8 @@ ACMD(do_situp) {
         act("@g$n does a situp, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
-
     double base = (double)ch->getBaseST();
-    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
+    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_CON(ch) / 20) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7654,6 +7652,7 @@ ACMD(do_situp) {
         bonus += bonus * 0.1;
     }
     if(bonus <= 0) bonus = 1;
+    if(bonus > (ch->getBaseST() / 40)) bonus = ch->getBaseST() / 40;
     send_to_char(ch, "You feel slightly more vigorous @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
     ch->gainBaseST(bonus, true);
     WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
@@ -7808,10 +7807,8 @@ ACMD(do_meditate) {
         act("@g$n meditates calmly, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
-
     double base = (double)ch->getBaseKI();
-    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
+    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_WIS(ch) / 20) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7866,6 +7863,7 @@ ACMD(do_meditate) {
     }
     if(bonus <= 0) bonus = 0;
     /* Rillao: transloc, add new transes here */
+    if(bonus > (ch->getBaseKI() / 40)) bonus = ch->getBaseKI() / 40;
     send_to_char(ch, "You feel your spirit grow stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
     ch->gainBaseKI(bonus, true);
     WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
@@ -7958,10 +7956,8 @@ ACMD(do_pushup) {
         act("@g$n does a pushup, while sweating profusely.@n", true, ch, nullptr, nullptr, TO_ROOM);
     }
 
-    //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
-
     double base = (double)ch->getBasePL();
-    double start_bonus = (base * 0.01) * Random::get<double>(0.8, 1.2);
+    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_CON(ch) / 20) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -8001,12 +7997,14 @@ ACMD(do_pushup) {
         bonus += bonus * 0.1;
     }
     /* Rillao: transloc, add new transes here */
-    send_to_char(ch, "You feel slightly stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
+    
 
     if (IS_HUMAN(ch)) {
         bonus = bonus * 0.8;
     }
     if(bonus <= 0) bonus = 1;
+    if(bonus > (ch->getBasePL() / 40)) bonus = ch->getBasePL() / 40;
+    send_to_char(ch, "You feel slightly stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
     ch->gainBasePL(bonus, true);
     WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
     ch->decCurST(cost);
