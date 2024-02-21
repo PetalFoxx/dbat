@@ -796,11 +796,11 @@ ACMD(do_echo) {
         int found = false, trunc = 0;
         struct char_data *vict = nullptr, *next_v = nullptr, *tch = nullptr;
 
-        if (strlen(argument) > 7000) {
+        /*if (strlen(argument) > 7000) {
             trunc = strlen(argument) - 7000;
             argument[strlen(argument) - trunc] = '\0';
             sprintf(argument, "%s\n@D(@gMessage truncated to 7000 characters@D)@n\n", argument);
-        }
+        }*/
 
         for (vict = ch->getRoom()->people; vict; vict = next_v) {
             next_v = vict->next_in_room;
@@ -832,6 +832,8 @@ ACMD(do_echo) {
             search_replace(buf, "#", "$n");
             search_replace(buf, "&1", "'@C");
             search_replace(buf, "&2", "@w'");
+            search_replace(buf, "&n", "\n");
+            search_replace(buf, "&r", "\r");
             if (found == true) {
                 search_replace(buf, name, "$N");
             } else if (strstr(buf, "*")) {
@@ -842,6 +844,8 @@ ACMD(do_echo) {
             search_replace(buf, "#", "$n");
             search_replace(buf, "&1", "'@C");
             search_replace(buf, "&2", "@w'");
+            search_replace(buf, "&n", "\n");
+            search_replace(buf, "&r", "\r");
             if (found == true) {
                 search_replace(buf, name, "$N");
             }
@@ -857,6 +861,8 @@ ACMD(do_echo) {
                     IS_NPC(ch) ? GET_NAME(ch) : (ch->desc->account == nullptr ? "ERROR REPORT" : ch->desc->account->name.c_str()));
             act(blom, false, ch, nullptr, nullptr, TO_ROOM);
         }
+        act("\n\n", false, ch, nullptr, nullptr, TO_CHAR);
+        act("\n\n", false, ch, nullptr, nullptr, TO_ROOM);
         if (found == false) {
             act(buf, false, ch, nullptr, nullptr, TO_CHAR);
             act(buf, false, ch, nullptr, nullptr, TO_ROOM);
@@ -867,6 +873,8 @@ ACMD(do_echo) {
             search_replace(buf, "$N", "you");
             act(buf, false, ch, nullptr, tch, TO_VICT);
         }
+        act("\n\n", false, ch, nullptr, nullptr, TO_CHAR);
+        act("\n\n", false, ch, nullptr, nullptr, TO_ROOM);
     }
 }
 
