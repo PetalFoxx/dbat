@@ -462,6 +462,11 @@ nlohmann::json char_data::serializeInstance() {
         if(conditions[i]) j["conditions"].push_back(std::make_pair(i, conditions[i]));
     }
 
+    for(auto i = 0; i < 6 ; i++) {
+        if(gravAcclim[i]) j["gravAcclim"].push_back(std::make_pair(i, gravAcclim[i]));
+    }
+
+    if(internalKi) j["internalKi"] = internalKi;
     if(freeze_level) j["freeze_level"] = freeze_level;
     if(invis_level) j["invis_level"] = invis_level;
     if(wimp_level) j["wimp_level"] = wimp_level;
@@ -657,6 +662,13 @@ void char_data::deserializeInstance(const nlohmann::json &j, bool isActive) {
         }
     }
 
+    if(j.contains("gravAcclim")) {
+        for(auto &i : j["gravAcclim"]) {
+            gravAcclim[i[0].get<int>()] = i[1];
+        }
+    }
+
+    if(j.contains("internalKi")) internalKi = j["internalKi"];
     if(j.contains("damage_mod")) damage_mod = j["damage_mod"];
     if(j.contains("droom")) droom = j["droom"];
     if(j.contains("accuracy_mod")) accuracy_mod = j["accuracy_mod"];

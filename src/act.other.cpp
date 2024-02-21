@@ -7394,11 +7394,11 @@ ACMD(do_transform) {
 
     auto npc = IS_NPC(ch);
 
-    /*R: Hidden transformation stuff following this*/
-    if (!npc && (ch->getBasePL()) < 50000) {
-        send_to_char(ch, "@RYou are too weak to comprehend transforming!@n\r\n");
-        return;
-    }
+    // /*R: Hidden transformation stuff following this*/
+    // if (!npc && (ch->getBasePL()) < 50000) {
+    //     send_to_char(ch, "@RYou are too weak to comprehend transforming!@n\r\n");
+    //     return;
+    // }
 
     // Moved this further down. No need to parse the entry if we quit early. -Volund
     two_arguments(argument, arg, arg2);
@@ -7473,11 +7473,6 @@ ACMD(do_transform) {
         return;
     }
 
-    if (!npc && (trans::getRequiredPL(ch, trans) > ch->getBasePL())) {
-        send_to_char(ch, "You are not strong enough to handle that transformation!\r\n");
-        return;
-    }
-
     if (!npc && (ch->getCurST()) <= GET_MAX_MOVE(ch) * trans::getStaminaDrain(ch, trans)) {
         send_to_char(ch, "You do not have enough stamina!");
         return;
@@ -7486,6 +7481,7 @@ ACMD(do_transform) {
     if (!npc) {
         // Pay the price to unlock form if necessary.
         if (!trans::unlock(ch, trans)) {
+            send_to_char(ch, "You do not have enough internal Ki to unlock this transformation!\r\n");
             return;
         }
     }

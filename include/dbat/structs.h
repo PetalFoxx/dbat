@@ -694,6 +694,7 @@ struct trans_data {
     double timeSpentInForm{0.0};
     bool visible = true;
     bool limitBroken = false;
+    bool unlocked = false;
 
     double blutz{0.0}; // The number of seconds you can spend in Oozaru.
 
@@ -779,6 +780,7 @@ struct char_data : public unit_data {
     int getSize();
     int setSize(int val);
 
+    double getTimeModifier();
     double getPotential();
 
     std::unordered_map<CharMoney, money_t> moneys;
@@ -883,6 +885,7 @@ struct char_data : public unit_data {
 
     FormID form{FormID::Base};        /* Current form of the character		*/
     double transBonus{0.0};   // Varies from -0.3 to 0.3
+    double internalKi{0.0};
     void gazeAtMoon();
 
     // Data stored about different forms.
@@ -937,7 +940,7 @@ struct char_data : public unit_data {
     time_t rewtime{};
     struct char_data *grappling{};
     struct char_data *grappled{};
-    int gravAcclim[]{0, 0, 0, 0, 0, 0};
+    int gravAcclim[6] = {0, 0, 0, 0, 0, 0};
     int grap{};
     int genome[2]{};                /* Bio racial bonus, Genome */
     int combo{};

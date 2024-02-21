@@ -214,7 +214,7 @@ static std::map<int, uint16_t> grav_threshold = {
 int64_t char_data::calc_soft_cap() {
     //auto level = get(CharNum::Level);
     //if(level >= 100) 
-    return 5e9;
+    return 750000000;
     //return race::getSoftCap(race, level);
 }
 
@@ -275,7 +275,7 @@ bool char_data::hasGravAcclim(int grav) {
 }
 
 void char_data::raiseGravAcclim() {
-    if (rand_number(1, 100) == 100) {
+    if (rand_number(1, 140) >= get(CharAttribute::Strength)) {
         auto room = world.find(in_room);
         double gravity;
         if (room != world.end()) {
@@ -285,15 +285,15 @@ void char_data::raiseGravAcclim() {
         if(gravity >= 1000 && !hasGravAcclim(5) && hasGravAcclim(4))
             gravAcclim[5] += 1;
         else if(gravity >= 100 && !hasGravAcclim(4) && hasGravAcclim(3))
-            gravAcclim[5] += 1;
+            gravAcclim[4] += 1;
         else if(gravity >= 50 && !hasGravAcclim(3) && hasGravAcclim(2))
-            gravAcclim[5] += 1;
+            gravAcclim[3] += 1;
         else if(gravity >= 10 && !hasGravAcclim(2) && hasGravAcclim(1))
-            gravAcclim[5] += 1;
+            gravAcclim[2] += 1;
         else if(gravity >= 5 && !hasGravAcclim(1) && hasGravAcclim(0))
-            gravAcclim[5] += 1;
+            gravAcclim[1] += 1;
         else if(gravity >= 2 && !hasGravAcclim(0))
-            gravAcclim[5] += 1;
+            gravAcclim[0] += 1;
     }
 }
 
@@ -868,14 +868,17 @@ void char_data::removeLimitBreak() {
 }
 
 int64_t char_data::gainBasePL(int64_t amt, bool trans_mult) {
+    raiseGravAcclim();
     return mod(CharStat::PowerLevel, amt);
 }
 
 int64_t char_data::gainBaseST(int64_t amt, bool trans_mult) {
+    raiseGravAcclim();
     return mod(CharStat::Stamina, amt);
 }
 
 int64_t char_data::gainBaseKI(int64_t amt, bool trans_mult) {
+    raiseGravAcclim();
     return mod(CharStat::Ki, amt);
 }
 
@@ -1239,9 +1242,13 @@ int char_data::getSize() {
     return size != SIZE_UNDEFINED ? size : race::getSize(race);
 }
 
+double char_data::getTimeModifier() {
+    return 1 + (time_info.month / 3) + (time_info.year * 4);
+}
+
 double char_data::getPotential() {
     //Gain one potential per RL week, reaches 100 in two years
-    double timePotential = 1 + (time_info.month / 3) + (time_info.year * 4);
+    double timePotential = getTimeModifier();
     timePotential /= 4;
 
     int physiquePotential = 1;
