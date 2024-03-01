@@ -1246,20 +1246,39 @@ double char_data::getTimeModifier() {
     return 1 + (time_info.month / 3) + (time_info.year * 4);
 }
 
+double getServerDaysPassed() {
+    double ingameDays = time_info.day + (time_info.month * 30) + (time_info.year * 365);
+    return ingameDays / 12;
+}
+
 double char_data::getPotential() {
     //Gain one potential per RL week, reaches 100 in two years
     double timePotential = getTimeModifier();
     timePotential /= 4;
 
     int physiquePotential = 1;
-    if(hasGravAcclim(0)) physiquePotential += 5;
-    if(hasGravAcclim(1)) physiquePotential += 5;
-    if(hasGravAcclim(2)) physiquePotential += 5;
-    if(hasGravAcclim(3)) physiquePotential += 5;
-    if(hasGravAcclim(4)) physiquePotential += 5;
-    if(hasGravAcclim(5)) physiquePotential += 5;
+    if(hasGravAcclim(0)) physiquePotential += 1;
+    if(hasGravAcclim(1)) physiquePotential += 1;
+    if(hasGravAcclim(2)) physiquePotential += 1;
+    if(hasGravAcclim(3)) physiquePotential += 1;
+    if(hasGravAcclim(4)) physiquePotential += 1;
+    if(hasGravAcclim(5)) physiquePotential += 1;
 
     return timePotential * physiquePotential;
+}
+
+void char_data::gainGrowth() {
+    double modifier = 1;
+    if (ROOM_FLAGGED(IN_ROOM(this), ROOM_RHELL) || ROOM_FLAGGED(IN_ROOM(this), ROOM_AL)) {
+        modifier = 2;
+    }
+
+    // You cannot exceed the amount of days the server has been online for
+    double gain = (modifier * (getTimeModifier() / 20.0)) / 10000.0;
+    if(lifetimeGrowth + gain < getServerDaysPassed()) {
+        internalGrowth += gain;
+        lifetimeGrowth += gain;
+    }
 }
 
 money_t char_data::get(CharMoney mon) {

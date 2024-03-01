@@ -2240,6 +2240,7 @@ ACMD(do_pgrant) {
 
     two_arguments(argument, arg1, arg2);
 
+
     std::string strForm;
     if(!*arg2) {
         vict = ch;
@@ -2250,6 +2251,14 @@ ACMD(do_pgrant) {
             return;
         }
         strForm = arg2;
+    }
+
+    if(strForm == "growth") {
+        if (vict)
+            vict->internalGrowth += 500;
+        else
+            ch->internalGrowth += 500;
+        return;
     }
 
 
