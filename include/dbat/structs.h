@@ -781,6 +781,7 @@ struct char_data : public unit_data {
 
     double getTimeModifier();
     double getPotential();
+    void gainGrowth();
 
     std::unordered_map<CharMoney, money_t> moneys;
     money_t get(CharMoney type);
@@ -883,8 +884,10 @@ struct char_data : public unit_data {
     int damage_mod{};        /* Any bonus or penalty to the damage	*/
 
     FormID form{FormID::Base};        /* Current form of the character		*/
+    std::set<FormID> permForms {};        /* Current permforms of the character		*/
     double transBonus{0.0};   // Varies from -0.3 to 0.3
-    double internalKi{0.0};
+    double internalGrowth{0.0};
+    double lifetimeGrowth{0.0};
     void gazeAtMoon();
 
     // Data stored about different forms.

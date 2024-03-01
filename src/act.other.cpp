@@ -7474,6 +7474,11 @@ ACMD(do_transform) {
         return;
     }
 
+    if(ch->permForms.contains(trans)) {
+        send_to_char(ch, "You are already evolved into that form!.\r\n");
+        return;
+    }
+
     if (!npc && (ch->getCurST()) <= GET_MAX_MOVE(ch) * trans::getStaminaDrain(ch, trans)) {
         send_to_char(ch, "You do not have enough stamina!");
         return;
@@ -7482,14 +7487,19 @@ ACMD(do_transform) {
     if (!npc) {
         // Pay the price to unlock form if necessary.
         if (!trans::unlock(ch, trans)) {
-            send_to_char(ch, "You do not have enough internal Ki to unlock this transformation!\r\n");
+            send_to_char(ch, "You do not have enough Growth to unlock this transformation!\r\n");
             return;
         }
     }
 
     
     ch->removeLimitBreak();
-    ch->form = trans;
+    int formtype = trans::getFormType(ch, trans);
+    if(formtype == 0)
+        ch->form = trans;
+    else if (formtype == 1)
+        ch->permForms.insert(trans);
+
     // No way is this a stealthy process...
     reveal_hiding(ch, 0);
     trans::handleEchoTransform(ch, trans);

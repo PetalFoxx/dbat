@@ -466,7 +466,8 @@ nlohmann::json char_data::serializeInstance() {
         if(gravAcclim[i]) j["gravAcclim"].push_back(std::make_pair(i, gravAcclim[i]));
     }
 
-    if(internalKi) j["internalKi"] = internalKi;
+    if(internalGrowth) j["internalGrowth"] = internalGrowth;
+    if(lifetimeGrowth) j["lifetimeGrowth"] = lifetimeGrowth;
     if(freeze_level) j["freeze_level"] = freeze_level;
     if(invis_level) j["invis_level"] = invis_level;
     if(wimp_level) j["wimp_level"] = wimp_level;
@@ -565,6 +566,9 @@ nlohmann::json char_data::serializeInstance() {
     j["transBonus"] = transBonus;
     for(auto &[frm, tra] : transforms) {
         j["transforms"].push_back(std::make_pair(static_cast<int>(frm), tra.serialize()));
+    }
+    for(auto form : permForms) {
+        j["permForms"].push_back(form);
     }
 
     return j;
@@ -668,7 +672,8 @@ void char_data::deserializeInstance(const nlohmann::json &j, bool isActive) {
         }
     }
 
-    if(j.contains("internalKi")) internalKi = j["internalKi"];
+    if(j.contains("internalGrowth")) internalGrowth = j["internalGrowth"];
+    if(j.contains("lifetimeGrowth")) lifetimeGrowth = j["lifetimeGrowth"];
     if(j.contains("damage_mod")) damage_mod = j["damage_mod"];
     if(j.contains("droom")) droom = j["droom"];
     if(j.contains("accuracy_mod")) accuracy_mod = j["accuracy_mod"];
@@ -746,6 +751,11 @@ void char_data::deserializeInstance(const nlohmann::json &j, bool isActive) {
         // it is a list of pairs that fills up the transforms map.
         for(const auto &j2 : j["transforms"]) {
             transforms.emplace(j2[0].get<FormID>(), j2[1]);
+        }
+    }
+    if(j.contains("permForms")) {
+        for(auto form : j["permForms"]) {
+            permForms.insert(form.get<FormID>());
         }
     }
 

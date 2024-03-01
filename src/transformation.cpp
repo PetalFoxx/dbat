@@ -810,7 +810,14 @@ namespace trans {
     }
 
     double getModifier(char_data* ch, int location, int specific) {
-        return getModifierHelper(ch, ch->form, location, specific);
+        double modifier = 0;
+        if(!ch->permForms.empty()) {
+            for(auto form : ch->permForms) {
+                modifier += getModifierHelper(ch, form, location, specific);
+            }
+        }
+        modifier += getModifierHelper(ch, ch->form, location, specific);
+        return modifier;
     }
 
     static std::unordered_map<FormID, double> trans_drain = {
@@ -904,12 +911,8 @@ namespace trans {
 
             }
 
-            // Increment Internal Ki
-            double modifier = 1;
-            if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_RHELL) || ROOM_FLAGGED(IN_ROOM(ch), ROOM_AL)) {
-                modifier = 2;
-            }
-            ch->internalKi += (modifier * deltaTime * (ch->getTimeModifier() / 20.0)) / 100.0;
+            // Increment Growth
+            ch->gainGrowth();
 
             // Notify at thresholds
             if(form != FormID::Base && timeBefore < MASTERY_THRESHOLD && timeAfter >= MASTERY_THRESHOLD)
@@ -1475,11 +1478,12 @@ namespace trans {
 
         send_to_char(ch, "              @YForms@n\r\n");
         send_to_char(ch, "@b------------------------------------------------@n\r\n");
-        auto ik = ch->internalKi;
+        auto ik = ch->internalGrowth;
         
         std::vector<std::string> form_names;
         for (auto form: forms) {
             bool unlocked = ch->transforms[form].unlocked;
+            bool permActive = ch->permForms.contains(form);
             auto name = getName(ch, form);
             if(getMasteryTier(ch, form) > 3)
                 name = "@RLIMITBREAK@n " + name;
@@ -1488,13 +1492,31 @@ namespace trans {
             else if (getMasteryTier(ch, form) > 1)
                 name = "@BMASTERED@n " + name;
             auto req = getRequiredPL(ch, form);
-            if (unlocked) {
-                send_to_char(ch, "@W%s@n\r\n", name);
-            } else {
-                send_to_char(ch, "@W%s@n @R-@G %s Internal Ki Req\r\n", name,
-                         (ik >= (req * 0.75) && !unlocked) ? add_commas(req) : "??????????");
+            if(!permActive) {
+                if (unlocked) {
+                    send_to_char(ch, "@W%s@n\r\n", name);
+                } else {
+                    send_to_char(ch, "@W%s@n @R-@G %s Growth Req\r\n", name,
+                            (ik >= (req * 0.75) && !unlocked) ? add_commas(req) : "??????????");
+                }
+            
+                form_names.push_back(getAbbr(ch, form));
             }
-            form_names.push_back(getAbbr(ch, form));
+        }
+
+        if(!ch->permForms.empty()) {
+            send_to_char(ch, "@b-------------------Perm Forms-------------------@n\r\n");
+            for(auto form : ch->permForms) {
+                auto name = getName(ch, form);
+                if(getMasteryTier(ch, form) > 3)
+                    name = "@RLIMITBREAK@n " + name;
+                else if(getMasteryTier(ch, form) > 2)
+                    name = "@RLIMIT@n " + name;
+                else if (getMasteryTier(ch, form) > 1)
+                    name = "@BMASTERED@n " + name;
+                
+                send_to_char(ch, "@W%s@n\r\n", name);
+            }
         }
 
         send_to_char(ch, "@b------------------------------------------------@n\r\n");
@@ -1523,8 +1545,8 @@ namespace trans {
         send_to_char(ch, "@b------------------------------------------------@n\r\n");
         std::stringstream ss;
         ss << std::fixed << std::setprecision(0) << ik;
-        std::string kiString = ss.str();
-        send_to_char(ch, "\r\n@BInternal Ki: %s@n\r\n", kiString);
+        std::string growthString = ss.str();
+        send_to_char(ch, "\r\n@BGrowth: %s@n\r\n", growthString);
     }
 
     bool blockRevertDisallowed(struct char_data* ch, FormID form) {
@@ -1587,85 +1609,92 @@ namespace trans {
     }
 
 
-    static const std::unordered_map<FormID, int64_t> trans_pl = {
+    static const std::unordered_map<FormID, std::pair<int64_t, int>> trans_pl = {
         // Human
-        {FormID::SuperHuman, 180},
-        {FormID::SuperHuman2, 350},
-        {FormID::SuperHuman3, 1900},
-        {FormID::SuperHuman4, 3800},
+        {FormID::SuperHuman, {40, 0}},
+        {FormID::SuperHuman2, {80, 0}},
+        {FormID::SuperHuman3, {90, 0}},
+        {FormID::SuperHuman4, {140, 0}},
 
         // Saiyan/Halfbreed.
-        {FormID::SuperSaiyan, 120},
-        {FormID::SuperSaiyan2, 360},
-        {FormID::SuperSaiyan3, 1080},
-        {FormID::SuperSaiyan4, 3260},
+        {FormID::SuperSaiyan, {30, 0}},
+        {FormID::SuperSaiyan2, {60, 0}},
+        {FormID::SuperSaiyan3, {90, 0}},
+        {FormID::SuperSaiyan4, {180, 0}},
 
         // Namek Forms
-        {FormID::SuperNamekian, 360},
-        {FormID::SuperNamekian2, 950},
-        {FormID::SuperNamekian3, 1200},
-        {FormID::SuperNamekian4, 4000},
+        {FormID::SuperNamekian, {50, 0}},
+        {FormID::SuperNamekian2, {50, 0}},
+        {FormID::SuperNamekian3, {70, 0}},
+        {FormID::SuperNamekian4, {130, 0}},
 
         // Icer Forms
-        {FormID::IcerFirst, 90},
-        {FormID::IcerSecond, 440},
-        {FormID::IcerThird, 980},
-        {FormID::IcerFourth, 1950},
+        {FormID::IcerFirst, {25, 0}},
+        {FormID::IcerSecond, {50, 0}},
+        {FormID::IcerThird, {120, 0}},
+        {FormID::IcerFourth, {160, 0}},
 
         // Majin Forms
-        {FormID::MajAffinity, 800},
-        {FormID::MajSuper, 1600},
-        {FormID::MajTrue, 2400},
+        {FormID::MajAffinity, {40, 1}},
+        {FormID::MajSuper, {80, 1}},
+        {FormID::MajTrue, {120, 1}},
 
         // Tuffle Forms
-        {FormID::AscendFirst, 800},
-        {FormID::AscendSecond, 1600},
-        {FormID::AscendThird, 2400},
+        {FormID::AscendFirst, {50, 1}},
+        {FormID::AscendSecond, {70, 1}},
+        {FormID::AscendThird, {120, 1}},
 
         // Mutant Forms
-        {FormID::MutateFirst, 120},
-        {FormID::MutateSecond, 360},
-        {FormID::MutateThird, 1080},
+        {FormID::MutateFirst, {30, 0}},
+        {FormID::MutateSecond, {75, 0}},
+        {FormID::MutateThird, {140, 0}},
 
 
-        // kai Forms
-        {FormID::MysticFirst, 240},
-        {FormID::MysticSecond, 720},
-        {FormID::MysticThird, 2400},
+        // Kai Forms
+        {FormID::MysticFirst, {50, 0}},
+        {FormID::MysticSecond, {80, 0}},
+        {FormID::MysticThird, {150, 0}},
 
         // Konatsu Forms
 
-        {FormID::ShadowFirst, 180},
-        {FormID::ShadowSecond, 390},
-        {FormID::ShadowThird, 980},
+        {FormID::ShadowFirst, {35, 0}},
+        {FormID::ShadowSecond, {75, 0}},
+        {FormID::ShadowThird, {125, 0}},
 
         // Android Forms
-        {FormID::Android10, 600},
-        {FormID::Android20, 900},
-        {FormID::Android30, 1350},
-        {FormID::Android40, 2025},
-        {FormID::Android50, 3037},
-        {FormID::Android60, 4555},
+        {FormID::Android10, {10, 1}},
+        {FormID::Android20, {20, 1}},
+        {FormID::Android30, {30, 1}},
+        {FormID::Android40, {40, 1}},
+        {FormID::Android50, {50, 1}},
+        {FormID::Android60, {60, 1}},
 
         // Bio Forms
-        {FormID::BioMature, 800},
-        {FormID::BioSemiPerfect, 1600},
-        {FormID::BioPerfect, 2400},
-        {FormID::BioSuperPerfect, 3600},
+        {FormID::BioMature, {30, 1}},
+        {FormID::BioSemiPerfect, {60, 1}},
+        {FormID::BioPerfect, {80, 1}},
+        {FormID::BioSuperPerfect, {120, 1}},
 
         // Demon Forms
-        {FormID::DarkKing, 1800},
+        {FormID::DarkKing, {180, 0}},
 
         // Unbound Forms
-        {FormID::PotentialUnleashed, 1000},
-        {FormID::EvilAura, 2500},
-        {FormID::UltraInstinct, 5000}
+        {FormID::PotentialUnleashed, {120, 0}},
+        {FormID::EvilAura, {90, 0}},
+        {FormID::UltraInstinct, {200, 0}}
 
     };
 
     int64_t getRequiredPL(struct char_data* ch, FormID trans) {
         if (auto req = trans_pl.find(trans); req != trans_pl.end()) {
-            return req->second * (1.0 + ch->transBonus);
+            return req->second.first * (1.0 + ch->transBonus);
+        }
+        return 0;
+    }
+
+    int getFormType(struct char_data* ch, FormID trans) {
+        if (auto req = trans_pl.find(trans); req != trans_pl.end()) {
+            return req->second.second;
         }
         return 0;
     }
@@ -1685,7 +1714,10 @@ namespace trans {
         }
 
         if(data.unlocked == false) {
-            ch->internalKi -= getRequiredPL(ch, form);
+            if(ch->internalGrowth >= getRequiredPL(ch, form))
+                ch->internalGrowth -= getRequiredPL(ch, form);
+            else 
+                return false;
             data.unlocked = true;
         }
         return data.unlocked;
