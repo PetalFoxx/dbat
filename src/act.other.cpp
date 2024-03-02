@@ -2879,15 +2879,12 @@ ACMD(do_potential) {
     }
         /* Rillao: transloc, add new transes here */
     else {
-        boost = GET_SKILL(ch, SKILL_POTENTIAL) / 2;
 
-        vict->affected_by.set(PLR_PR);
 
-        vict->gainBasePL((vict->getBasePL() / 100) * boost);
-        if (IS_HALFBREED(vict)) {
-            vict->gainBaseKI((vict->getBaseKI() / 100) * boost);
-            vict->gainBaseST((vict->getBaseST() / 100) * boost);
-        }
+        vict->addTransform(FormID::PotentialUnlocked);
+        if(GET_SKILL(ch, SKILL_POTENTIAL) >= 100)
+            vict->addTransform(FormID::PotentialUnlockedMax);
+
         reveal_hiding(ch, 0);
         act("You place your hand on top of $N's head. After a moment of concentrating you release their hidden potential.",
             true, ch, nullptr, vict, TO_CHAR);
@@ -2954,7 +2951,7 @@ ACMD(do_majinize) {
         return;
     }
         /* Rillao: transloc, add new transes here */
-    else if (MAJINIZED(vict) > 0 && MAJINIZED(vict) == ((ch)->id)) {
+    else if (ch->permForms.contains(FormID::Majinized) && MAJINIZED(vict) == ((ch)->id)) {
         reveal_hiding(ch, 0);
         act("You remove $N's majinization, freeing them from your influence, but also weakening them.", true, ch,
             nullptr, vict, TO_CHAR);
@@ -2968,7 +2965,7 @@ ACMD(do_majinize) {
         if (GET_MAJINIZED(vict) == 0) {
             GET_MAJINIZED(vict) = ((vict->getBasePL()) * .4);
         }
-        vict->loseBasePL(GET_MAJINIZED(vict));
+        ch->permForms.erase(FormID::Majinized);
         return;
     } else if (GET_BOOSTS(ch) == 0) {
         send_to_char(ch, "You are incapable of majinizing%s.\r\n", GET_INT(ch) < 100 ? " right now" : " anymore");
@@ -2994,7 +2991,7 @@ ACMD(do_majinize) {
         GET_BOOSTS(ch) -= 1;
 
         GET_MAJINIZED(vict) = (vict->getBasePL()) * .4;
-        vict->gainBasePLPercent(.4, true);
+        ch->addTransform(FormID::Majinized);
         return;
     }
 

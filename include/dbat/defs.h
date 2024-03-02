@@ -174,10 +174,19 @@ enum class FormID : uint8_t {
     // Demon
     DarkKing = 58,
 
-    // Unbound Forms
+    // Unbound Alternate Forms
     PotentialUnleashed = 59,
     EvilAura = 60,
     UltraInstinct = 61,
+
+
+    // Unbound Perm Forms
+    PotentialUnlocked = 90,
+    PotentialUnlockedMax = 91,
+    Majinized = 92,
+    DivineWater = 93,
+
+
 
 };
 

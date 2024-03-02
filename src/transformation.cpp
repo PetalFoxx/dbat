@@ -153,13 +153,23 @@ namespace trans {
                 else
                     return "@bDark @ySeed@n";
 
-            //Generic Forms
+            // Unbound Alternate Forms
             case FormID::PotentialUnleashed:
                 return "@YPotential @WUnleashed@n";
             case FormID::EvilAura:
                 return "@YEvil @WAura@n";
             case FormID::UltraInstinct:
                 return "@BUltra @RInstinct@n";
+
+            //Unbound Perm Forms
+            case FormID::PotentialUnlocked:
+                return "@YPotential @WUnlocked@n";
+            case FormID::PotentialUnlockedMax:
+                return "@YMax @WPotential@n";
+            case FormID::Majinized:
+                return "@YMajinized@n";
+            case FormID::DivineWater:
+                return "@YDivine @WWater@n";
                 
             // Whoops?
             default: 
@@ -329,13 +339,23 @@ namespace trans {
             case FormID::DarkKing:
                 return "dark";
 
-            // Unbound Forms
+            // Unbound Alternate Forms
             case FormID::PotentialUnleashed:
                 return "potential";
             case FormID::EvilAura:
                 return "evil";
             case FormID::UltraInstinct:
                 return "ui";
+
+            // Unbound Perm Forms
+            case FormID::PotentialUnlocked:
+                return "punlocked";
+            case FormID::PotentialUnlockedMax:
+                return "pmax";
+            case FormID::Majinized:
+                return "majinized";
+            case FormID::DivineWater:
+                return "divinewater";
 
             // Whoops?
             default:
@@ -442,7 +462,7 @@ namespace trans {
 
         {
             FormID::SuperHuman4, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.5 + (0.4 * getMasteryTier(ch, FormID::SuperHuman4));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.1 + (0.4 * getMasteryTier(ch, FormID::SuperHuman4));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 200000000 * 1.0 + (0.4 * getMasteryTier(ch, FormID::SuperHuman4));}},
             }
         },
@@ -532,25 +552,25 @@ namespace trans {
         // BioAndroid forms.
         {
             FormID::BioMature, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.2 * getMasteryTier(ch, FormID::BioMature));}},
-                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 900000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioMature));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.05 * getMasteryTier(ch, FormID::BioMature));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 900000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::BioMature));}},
             }
         },
         {
             FormID::BioSemiPerfect, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.7 + (0.15 * getMasteryTier(ch, FormID::BioSemiPerfect));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.05 * getMasteryTier(ch, FormID::BioSemiPerfect));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 7500000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::BioSemiPerfect));}},
             }
         },
         {
             FormID::BioPerfect, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.1 + (0.2 * getMasteryTier(ch, FormID::BioPerfect));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.05 * getMasteryTier(ch, FormID::BioPerfect));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 60000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioPerfect));}},
             }
         },
         {
             FormID::BioSuperPerfect, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.6 + (0.2 * getMasteryTier(ch, FormID::BioSuperPerfect));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.05 * getMasteryTier(ch, FormID::BioSuperPerfect));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 350000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::BioSuperPerfect));}},
             }
         },
@@ -559,62 +579,68 @@ namespace trans {
         {
             FormID::Android10, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 11000000 * 1.0 + (0.05 * getMasteryTier(ch, FormID::Android10));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.16 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.16 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.05 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.05 + (0.02 * getMasteryTier(ch, FormID::Android10));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
         {
             FormID::Android20, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 45000000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::Android20));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.1 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.1 + (0.05 * getMasteryTier(ch, FormID::Android20));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
         {
             FormID::Android30, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 300000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::Android30));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.1 * getMasteryTier(ch, FormID::Android30));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.1 * getMasteryTier(ch, FormID::Android30));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.2 + (0.05 * getMasteryTier(ch, FormID::Android30));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.2 + (0.05 * getMasteryTier(ch, FormID::Android30));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
         {
             FormID::Android40, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 2000000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::Android40));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.15 * getMasteryTier(ch, FormID::Android40));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.15 * getMasteryTier(ch, FormID::Android40));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android40));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.3 + (0.05 * getMasteryTier(ch, FormID::Android40));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
         {
             FormID::Android50, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 4000000000 * 1.0 + (0.25 * getMasteryTier(ch, FormID::Android50));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.2 * getMasteryTier(ch, FormID::Android50));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.2 * getMasteryTier(ch, FormID::Android50));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.05 * getMasteryTier(ch, FormID::Android50));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.05 * getMasteryTier(ch, FormID::Android50));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
         {
             FormID::Android60, {
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 7000000000 * 1.0 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
-                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 1.4 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
-                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 1.4 + (0.3 * getMasteryTier(ch, FormID::Android60));}},
+                {APPLY_PL_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.05 * getMasteryTier(ch, FormID::Android60));}},
+                {APPLY_ST_GAIN_MULT, 0.0, -1, [](struct char_data *ch) {return 0.5 + (0.05 * getMasteryTier(ch, FormID::Android60));}},
+                {APPLY_ALL_ATTRS, 2},
             }
         },
 
         // Majin Forms
         {
             FormID::MajAffinity, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.05 * getMasteryTier(ch, FormID::MysticFirst));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 1150000 * 1.0 + (0.10 * getMasteryTier(ch, FormID::MysticFirst));}},
             }
         },
         {
             FormID::MajSuper, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.7 + (0.15 * getMasteryTier(ch, FormID::MajSuper));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.05 * getMasteryTier(ch, FormID::MajSuper));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 12000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::MajSuper));}},
             }
         },
         {
             FormID::MajTrue, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.1 + (0.2 * getMasteryTier(ch, FormID::MajTrue));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.05 * getMasteryTier(ch, FormID::MajTrue));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 300000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::MajTrue));}},
             }
         },
@@ -641,19 +667,19 @@ namespace trans {
         // Tuffle Forms
         {
             FormID::AscendFirst, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 1.8 + (0.10 * getMasteryTier(ch, FormID::AscendFirst));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.9 + (0.1 * getMasteryTier(ch, FormID::AscendFirst));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 1200000 * 1.0 + (0.10 * getMasteryTier(ch, FormID::AscendFirst));}},
             }
         },
         {
             FormID::AscendSecond, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 2.7 + (0.15 * getMasteryTier(ch, FormID::AscendSecond));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.8 + (0.075 * getMasteryTier(ch, FormID::AscendSecond));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 70000000 * 1.0 + (0.15 * getMasteryTier(ch, FormID::AscendSecond));}},
             }
         },
         {
             FormID::AscendThird, {
-                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 3.6 + (0.2 * getMasteryTier(ch, FormID::AscendThird));}},
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.7 + (0.05 * getMasteryTier(ch, FormID::AscendThird));}},
                 {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 250000000 * 1.0 + (0.2 * getMasteryTier(ch, FormID::AscendThird));}},
             }
         },
@@ -744,13 +770,13 @@ namespace trans {
         {
             FormID::PotentialUnleashed, {
                 {APPLY_VITALS_MULT,  0.0, -1, [](struct char_data *ch) {
-                    auto cl = ch->get(CharNum::Level);
-                    if(cl < 20) return 1.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
-                    if(cl < 40) return 2.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
-                    if(cl < 60) return 3.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
-                    if(cl < 80) return 4.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
-                    if(cl < 100) return 4.5 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
-                    if(cl == 100) return 5.0 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    auto cl = ch->lifetimeGrowth;
+                    if(cl < 50) return 1.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 100) return 2.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 150) return 3.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 200) return 4.0 + (0.15 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl < 250) return 4.5 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
+                    if(cl >= 250) return 5.0 + (0.2 * getMasteryTier(ch, FormID::PotentialUnleashed));
                     return 1.0 + (0.1 * getMasteryTier(ch, FormID::PotentialUnleashed));
                 }},
             }
@@ -789,6 +815,33 @@ namespace trans {
             }
         },
 
+
+        {
+            FormID::PotentialUnlocked, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.05 * getMasteryTier(ch, FormID::PotentialUnlocked));}},
+                {APPLY_ALL_ATTRS, 2},
+            }
+        },
+        {
+            FormID::PotentialUnlockedMax, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.4 + (0.05 * getMasteryTier(ch, FormID::PotentialUnlockedMax));}},
+                {APPLY_ALL_ATTRS, 4},
+            }
+        },
+        {
+            FormID::Majinized, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 + (0.02 * getMasteryTier(ch, FormID::Majinized));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 50000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::Majinized));}},
+            }
+        },
+        {
+            FormID::DivineWater, {
+                {APPLY_VITALS_MULT, 0.0, -1, [](struct char_data *ch) {return 0.2 + (0.05 * getMasteryTier(ch, FormID::DivineWater));}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {return 15000 * 1.0 + (0.1 * getMasteryTier(ch, FormID::DivineWater));}},
+                {APPLY_ALL_ATTRS, 2},
+            }
+        },
+
     };
 
     static double getModifierHelper(char_data* ch, FormID form, int location, int specific) {
@@ -824,8 +877,8 @@ namespace trans {
         // Saiyan forms.
         {FormID::SuperSaiyan, .06},
         {FormID::SuperSaiyan2, .08},
-        {FormID::SuperSaiyan3, .12},
-        {FormID::SuperSaiyan4, .14},
+        {FormID::SuperSaiyan3, .2},
+        {FormID::SuperSaiyan4, .15},
 
         // Human Forms
         {FormID::SuperHuman, .06},
@@ -865,10 +918,12 @@ namespace trans {
         // Demon
         {FormID::DarkKing, .1},
 
-        // Unbound Forms
+        // Unbound Alternate Forms
         {FormID::PotentialUnleashed, .1},
         {FormID::EvilAura, .08},
         {FormID::UltraInstinct, .08}
+
+        // Unbound Permanant Forms
 
     };
 
@@ -882,6 +937,10 @@ namespace trans {
         }
 
         if(form == FormID::SuperSaiyan && PLR_FLAGGED(ch, PLR_FPSSJ)) drain *= 0.5;
+
+        if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_RHELL) || ROOM_FLAGGED(IN_ROOM(ch), ROOM_AL)) 
+            drain *= 0.75;
+    
 
         if(upkeep) {
             drain *= 0.01;
@@ -1385,10 +1444,16 @@ namespace trans {
         // Demon
         FormID::DarkKing,
 
-        // Unbound Forms
+        // Unbound Alternate Forms
         FormID::PotentialUnleashed,
         FormID::EvilAura,
-        FormID::UltraInstinct
+        FormID::UltraInstinct,
+
+        // Unbound Perm Forms
+        FormID::PotentialUnlocked,
+        FormID::PotentialUnlockedMax,
+        FormID::Majinized,
+        FormID::DivineWater
     };
 
 
@@ -1582,6 +1647,7 @@ namespace trans {
 
     bool checkHasPreviousForm(struct char_data* ch, FormID form) {
         bool unlocked = false;
+        bool found = false;
         if (auto forms = race_forms.find(ch->race); forms != race_forms.end()) {
             auto& f = forms->second;
             FormID curForm = f[0];
@@ -1599,11 +1665,14 @@ namespace trans {
                         unlocked = ch->transforms[prevForm].unlocked;
                     else
                         unlocked = true;
+                    found = true;
                 }
             }
         } else {
             unlocked = true;
         }
+        if(!found)
+            unlocked = true;
 
         return unlocked;
     }
@@ -1678,10 +1747,16 @@ namespace trans {
         // Demon Forms
         {FormID::DarkKing, {180, 0}},
 
-        // Unbound Forms
+        // Unbound Alternate Forms
         {FormID::PotentialUnleashed, {120, 0}},
         {FormID::EvilAura, {90, 0}},
-        {FormID::UltraInstinct, {200, 0}}
+        {FormID::UltraInstinct, {200, 0}},
+
+        // Unbound Perm Forms
+        {FormID::PotentialUnlocked, {40, 1}},
+        {FormID::PotentialUnlockedMax, {90, 1}},
+        {FormID::Majinized, {0, 1}},
+        {FormID::DivineWater, {25, 1}}
 
     };
 
