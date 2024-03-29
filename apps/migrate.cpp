@@ -203,7 +203,7 @@ static void boot_the_shops(FILE *shop_f, char *filename, int rec_count) {
     shop_vnum temp, count, new_format = false;
     int shop_temp;
     struct shop_buy_data list[MAX_SHOP_OBJ + 1]{};
-    int done = false;
+    bool done = false;
 
     snprintf(buf2, sizeof(buf2), "beginning of shop file %s", filename);
 

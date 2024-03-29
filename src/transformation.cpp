@@ -1296,14 +1296,33 @@ namespace trans {
         {
             FormID::Kaioken, {
                 {APPLY_PL_MULT, 0.0, -1, [](struct char_data *ch) {return 0.1 * (ch->transforms[FormID::Kaioken].grade);}},
-                {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {return 0.05 * (ch->transforms[FormID::Kaioken].grade);}},
+                {APPLY_DAMAGE_PERC, 0.0, -1, [](struct char_data *ch) {
+                    double mult = (1 + (0.05 * getMasteryTier(ch, FormID::Kaioken)));
+                    if (axion_dice(0) <= (GET_SKILL(ch, (int)SkillID::Kaioken) * mult)) {
+                        send_to_char(ch, "You push yourself to the limit as you attack!.\r\n");
+                        send_to_room(ch->getRoom(), "$n's red aura ripples with power as they strike!\r\n");
+                        improve_skill(ch, (int)SkillID::Kaioken, 0);
+                        return (0.06 * ch->transforms[FormID::Kaioken].grade) * mult;
+                    }
+                    return 0.03 * (ch->transforms[FormID::Kaioken].grade);}},
                 {APPLY_REGEN_PL_PERC, 0.0, -1, [](struct char_data *ch) {return -0.05 * (ch->transforms[FormID::Kaioken].grade) + (0.01 * getMasteryTier(ch, FormID::Kaioken));}},
                 {APPLY_REGEN_KI_PERC, 0.0, -1, [](struct char_data *ch) {return -0.05 * (ch->transforms[FormID::Kaioken].grade) + (0.01 * getMasteryTier(ch, FormID::Kaioken));}},
             }
         },
         {
             FormID::DarkMeta, {
-                {APPLY_PL_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 * (ch->transforms[FormID::DarkMeta].grade) + (0.05 * getMasteryTier(ch, FormID::Kaioken));}},
+                {APPLY_PL_MULT, 0.0, -1, [](struct char_data *ch) {return 0.6 * (ch->transforms[FormID::DarkMeta].grade) + (0.05 * getMasteryTier(ch, FormID::DarkMeta));}},
+                {APPLY_KI_DAM_PERC, 0.0, -1, [](struct char_data *ch) {
+                    double mult = (1 + (0.05 * getMasteryTier(ch, FormID::DarkMeta)));
+                    
+                    if (axion_dice(0) <= (GET_SKILL(ch, (int)SkillID::Metamorph) * mult)) {
+                        send_to_char(ch, "Your darkness burns into your very ki!.\r\n");
+                        send_to_room(ch->getRoom(), "$n's ki ripples with a horrifying darkness!\r\n");
+                        improve_skill(ch, (int)SkillID::Metamorph, 0);
+                        return (0.05 * ch->transforms[FormID::DarkMeta].grade) * mult;
+                    }
+
+                    return 0.0;}},
             }
         },
 
@@ -1315,6 +1334,7 @@ namespace trans {
                     if (axion_dice(0) <= (GET_SKILL(ch, (int)SkillID::TigerStance) * mult)) {
                         send_to_char(ch, "Primal strength courses through you.\r\n");
                         send_to_room(ch->getRoom(), "$n lurches forwards with ferocious might.\r\n");
+                        improve_skill(ch, (int)SkillID::TigerStance, 0);
                         return (0.05 * ch->transforms[FormID::TigerStance].grade) * mult;
                     }
 
@@ -1329,6 +1349,7 @@ namespace trans {
                     if (axion_dice(0) <= (GET_SKILL(ch, (int)SkillID::EagleStance) * mult)) {
                         send_to_char(ch, "Your mind an ki align, power flaring.\r\n");
                         send_to_room(ch->getRoom(), "$n's movements slow, their ki redoubling in strength.\r\n");
+                        improve_skill(ch, (int)SkillID::EagleStance, 0);
                         return (0.05 * ch->transforms[FormID::EagleStance].grade) * mult;
                     }
 
@@ -1343,6 +1364,7 @@ namespace trans {
                     if (axion_dice(0) <= (GET_SKILL(ch, (int)SkillID::OxStance) * mult)) {
                         send_to_char(ch, "Hah, that didn't hurt half as much!\r\n");
                         send_to_room(ch->getRoom(), "$n's hulking form barely seems grazed by the attack!\r\n");
+                        improve_skill(ch, (int)SkillID::OxStance, 0);
                         return (0.05 * ch->transforms[FormID::OxStance].grade) * mult;
                     }
 
