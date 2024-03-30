@@ -116,3 +116,5 @@ extern int handle_defender(struct char_data *vict, struct char_data *ch);
 extern void handle_multihit(struct char_data *ch, struct char_data *vict);
 
 extern int64_t armor_calc(struct char_data *ch, int64_t dmg, int type);
+
+extern void giveRandomVital(char_data* ch, int64_t pl, int64_t ki, int64_t st, int attrChance);

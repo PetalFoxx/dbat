@@ -1538,8 +1538,8 @@ ACMD(do_train) {
         ch->mod(train, -needed);
         send_to_char(ch, "You feel your %s improve!@n\r\n", stat_name);
         ch->mod(attr, 1);
-        if (IS_PICCOLO(ch) && IS_NAMEK(ch) && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0) {
-            ch->modExperience(level_exp(ch, GET_LEVEL(ch) + 1) * 0.25);
+        if (IS_PICCOLO(ch) && IS_NAMEK(ch)) {
+            giveRandomVital(ch, ch->getMaxPL() / 5, ch->getMaxKI() / 5, ch->getMaxST() / 5, 30);
             send_to_char(ch, "You gained quite a bit of experience from that!\r\n");
         }
         ch->save();
@@ -5426,11 +5426,9 @@ ACMD(do_focus) {
                         true, ch, nullptr, vict, TO_VICT);
                     act("$n focuses ki while chanting spiritual words. $n then places a hand on $N's head, blessing them!",
                         true, ch, nullptr, vict, TO_NOTVICT);
-                    if ((vict->master == ch || ch->master == vict || ch->master == vict->master) &&
-                        AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
-                        if (IS_KAI(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 &&
-                            rand_number(1, 3) == 3) {
-                            ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.05);
+                    if ((!IS_NPC(vict)) &&  AFF_FLAGGED(ch, AFF_GROUP) && AFF_FLAGGED(vict, AFF_GROUP)) {
+                        if (IS_KAI(ch)) {
+                             giveRandomVital(ch, ch->getMaxPL() / 100, ch->getMaxKI() / 100, ch->getMaxST() / 100, 30);
                         }
                     }
                     if (AFF_FLAGGED(vict, AFF_CURSE)) {
@@ -6565,12 +6563,9 @@ ACMD(do_heal) {
             send_to_char(vict, "You feel that your lifeforce has recovered some!\r\n");
         }
         improve_skill(ch, SKILL_HEAL, 0);
-        if (vict->master == ch || ch->master == vict || ch->master == vict->master) {
-            if (IS_NAIL(ch) && IS_NAMEK(ch) && level_exp(ch, GET_INT(ch) + 1) - GET_EXP(ch) > 0 && GET_HIT(vict) <=
-                                                                                                     (vict->getMaxPL()) *
-                                                                                                     0.85 &&
-                rand_number(1, 3) == 3) {
-                ch->modExperience(level_exp(ch, GET_INT(ch) + 1) * 0.005);
+        if (!IS_NPC(vict)) {
+            if (IS_NAIL(ch) && IS_NAMEK(ch) && GET_HIT(vict) <= (vict->getMaxPL()) * 0.85) {
+                giveRandomVital(ch, ch->getMaxPL() / 100, ch->getMaxKI() / 100, ch->getMaxST() / 100, 30);
             }
         }
 

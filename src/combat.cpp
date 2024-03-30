@@ -3816,7 +3816,12 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
         if(ki > (ch->getBaseKI() / 20)) ki = ch->getBaseKI() / 20;
         if(st > (ch->getBaseST() / 20)) st = ch->getBaseST() / 20;
 
-		//Handling for awarding vitals to the player
+		giveRandomVital(ch, pl, ki, st, attrChance);
+    }
+}
+
+void giveRandomVital(char_data* ch, int64_t pl, int64_t ki, int64_t st, int attrChance) {
+    //Handling for awarding vitals to the player
         std::vector<int64_t> stats;
         for (const auto stat: {CharStat::PowerLevel, CharStat::Ki, CharStat::Stamina}) {
             if (!ch->is_soft_cap((int) stat, 1.0))
@@ -3889,7 +3894,7 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
         } else {
             send_to_char(ch, "\r\n");
         }
-    }
+    
 }
 
 void spar_gain(struct char_data *ch, struct char_data *vict, int type, int64_t dmg) {
