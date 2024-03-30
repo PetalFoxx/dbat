@@ -3834,9 +3834,8 @@ void giveRandomVital(char_data* ch, int64_t pl, int64_t ki, int64_t st, int attr
 
         if(!stats.empty()) {
 
-            auto itr = Random::get(stats);
-
             do {
+                auto itr = Random::get(stats);
                 switch(*itr) {
                     case 0:
                         send_to_char(ch, "@D[@Y+ @R%s @rPL@D]@n\r\n", add_commas(pl).c_str());
