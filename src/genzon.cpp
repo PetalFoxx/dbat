@@ -306,6 +306,9 @@ void remove_room_zone_commands(zone_rnum zone, room_rnum room_num) {
             case 'D':
             case 'R':
                 return room_num == c.arg1;
+            case 'G':
+            case 'E':
+                return true;
             default:
                 return false;
         }
@@ -353,13 +356,11 @@ int count_commands(struct reset_com *list) {
  * Error check user input and then add new (blank) command  
  */
 int new_command(struct zone_data *zone, int pos) {
-    int subcmd = 0;
+    int subcmd = zone->cmd.size();
     struct reset_com new_com;
     new_com.command = 'N';
 
     /* * Error check to ensure users hasn't given too large an index  */
-    while (zone->cmd[subcmd].command != 'S')
-        subcmd++;
 
     if (pos < 0 || pos > subcmd)
         return 0;

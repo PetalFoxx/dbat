@@ -1162,7 +1162,7 @@ void list_zone_commands_room(struct char_data *ch, room_vnum rvnum) {
     }
 
     send_to_char(ch, "Zone commands in this room:@y\r\n");
-    while (ZOCMD.command != 'S') {
+    for(int i; i < zone_table[zrnum].cmd.size(); i++) {
         switch (ZOCMD.command) {
             case 'M':
             case 'O':
