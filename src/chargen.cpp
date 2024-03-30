@@ -360,15 +360,15 @@ namespace net {
             "Slacker     - Physical activity drains more stamina                  @D[@G+3pts @D]", /* Neg 39 */
             "Slow Learner- Character auto-trains skills slower                    @D[@G+3pts @D]", /* Neg 40 */
             "Masochistic - Defense Skills Cap At 75                               @D[@G+5pts @D]", /* Neg 41 */
-            "Mute        - Can't use IC speech related commands                   @D[@G+4pts @D]", /* Neg 42 */
+            "DISABLED",//"Mute        - Can't use IC speech related commands                   @D[@G+4pts @D]", /* Neg 42 */
             "Wimp        - Strength is capped at 45                               @D[@G+6pts @D]", /* Neg 43 */
             "Dull        - Intelligence is capped at 45                           @D[@G+6pts @D]", /* Neg 44 */
             "Foolish     - Wisdom is capped at 45                                 @D[@G+6pts @D]", /* Neg 45 */
             "Clumsy      - Agility is capped at 45                                @D[@G+3pts @D]", /* Neg 46 */
             "Slow        - Speed is capped at 45                                  @D[@G+6pts @D]", /* Neg 47 */
             "Frail       - Constitution capped at 45                              @D[@G+4pts @D]", /* Neg 48 */
-            "Sadistic    - Half Experience Gained For Quick Kills                 @D[@G+3pts @D]", /* Neg 49 */
-            "Loner       - Can't Group, +5% Train gains, +10% to physical gains   @D[@G+2pts @D]", /* Neg 50 */
+            "DISABLED",//"Sadistic    - Half Experience Gained For Quick Kills                 @D[@G+3pts @D]", /* Neg 49 */
+            "DISABLED",//"Loner       - Can't Group, +5% Train gains, +10% to physical gains   @D[@G+2pts @D]", /* Neg 50 */
             "Bad Memory  - -5 Skill Slots                                         @D[@G+6pts @D]"  /* Neg 51 */
     };
 
@@ -472,20 +472,23 @@ namespace net {
             case 39:
             case 40:
             case 41:
-            case 42:
+            
             case 43:
             case 44:
             case 45:
             case 46:
             case 47:
             case 48:
-            case 49:
-            case 50:
+            
+            
             case 51:
                 value = ident - 1;
                 break;
 
                 /* Invalid Selections */
+            case 42:
+            case 49:
+            case 50:
             default:
                 value = -1;
                 break;
