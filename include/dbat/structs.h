@@ -566,6 +566,8 @@ struct char_data : public unit_data {
     RaceID race{RaceID::Spirit};
     SenseiID chclass{SenseiID::Commoner};
 
+    std::list<std::pair<int, std::string>> wait_input_queue;
+
 
     /* PC / NPC's weight                    */
     weight_t weight{0};

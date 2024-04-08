@@ -1249,12 +1249,12 @@ double char_data::getTimeModifier() {
 
 double getServerDaysPassed() {
     double ingameDays = time_info.day + (time_info.month * 30) + (time_info.year * 365);
-    return ingameDays / 12;
+    return (ingameDays / 12);
 }
 
 double char_data::getPotential() {
     //Gain one potential per RL week, reaches 100 in two years
-    double timePotential = getServerDaysPassed();
+    double timePotential = 1 + getServerDaysPassed();
     timePotential /= 7;
 
     int physiquePotential = 1;

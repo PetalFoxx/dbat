@@ -2150,6 +2150,7 @@ void descriptor_data::handle_input() {
         if(command == "--") {
             // this is a special command that clears out the processed input_queue.
             input_queue.clear();
+            character->wait_input_queue.clear();
             write_to_output(this, "All queued commands cancelled.\r\n");
         } else {
             perform_alias(this, (char*)command.c_str());
@@ -2157,13 +2158,13 @@ void descriptor_data::handle_input() {
     }
     raw_input_queue.clear();
 
-    if (character && GET_WAIT_STATE(character)) {
-        character->mod(CharNum::Wait, -1);
-        if(GET_WAIT_STATE(character) < 0) character->set(CharNum::Wait, 0);
-        if (GET_WAIT_STATE(character)) return;
+    if(input_queue.empty()) {
+        if(!character->wait_input_queue.empty()) {
+            pushWaitQueue(character);
+            return;
+        } else
+            return;
     }
-
-    if(input_queue.empty()) return;
     auto command = input_queue.front();
     input_queue.pop_front();
 

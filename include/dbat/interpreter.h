@@ -20,6 +20,10 @@ extern const char *list_bonus[];
 
 extern void perform_alias(struct descriptor_data *d, char *orig);
 
+extern void pushWaitQueue(char_data* ch);
+
+void processCommand(char_data* ch, int cmd, std::string arg);
+
 extern void topLoad(void);
 
 extern void topWrite(struct char_data *ch);

@@ -255,6 +255,7 @@ struct command_info {
     int16_t minimum_level;
     int16_t minimum_admlevel;
     int subcmd;
+    int wait_list;
 };
 
 extern const struct command_info cmd_info[];
