@@ -365,7 +365,7 @@ ACMD(do_mimic) {
     int count = 0, x = 0;
 
     // generate a list of mimic'able races.
-    auto check = [&](RaceID id) {return race::getValidSexes(id).contains(GET_SEX(ch)) && race::isValidMimic(id);};
+    auto check = [&](RaceID id) {return race::isValidMimic(id);};
     auto races = race::filterRaces(check);
     if (!*arg) {
         send_to_char(ch, "@CMimic Menu\n@c--------------------@W\r\n");
@@ -6635,14 +6635,13 @@ ACMD(do_diagnose) {
         if (!(vict = get_char_vis(ch, buf, nullptr, FIND_CHAR_ROOM)))
             send_to_char(ch, "%s", CONFIG_NOPERSON);
         else {
-            send_to_char(ch, "%s", GET_SEX(vict) == SEX_MALE ? "He " : (GET_SEX(vict) == SEX_FEMALE ? "She " : "It "));
+            send_to_char(ch, "%s", HSSH(ch));
             diag_char_to_char(vict, ch);
         }
     } else {
         if (FIGHTING(ch)) {
             send_to_char(ch, "%s",
-                         GET_SEX(FIGHTING(ch)) == SEX_MALE ? "He " : (GET_SEX(FIGHTING(ch)) == SEX_FEMALE ? "She "
-                                                                                                          : "It "));
+                         HSSH(ch));
             diag_char_to_char(FIGHTING(ch), ch);
         } else {
             send_to_char(ch, "Diagnose who?\r\n");

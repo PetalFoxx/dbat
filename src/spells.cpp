@@ -122,7 +122,7 @@ ASPELL(spell_summon) {
                                  "%s failed because you have summon protection on.\r\n"
                                  "Type NOSUMMON to allow other players to summon you.\r\n",
                          GET_NAME(ch), ch->getRoom()->name,
-                         (GET_SEX(ch) == SEX_MALE) ? "He" : "She");
+                         HSSH(ch));
 
             send_to_char(ch, "You failed because %s has summon protection on.\r\n", GET_NAME(victim));
             mudlog(BRF, ADMLVL_IMMORT, true, "%s failed summoning %s to %s.", GET_NAME(ch), GET_NAME(victim),

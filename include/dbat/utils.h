@@ -830,10 +830,10 @@ void SET_SKILL_PERF(struct char_data *ch, uint16_t skill, int16_t val);
 #define CIRCLEMUD_VERSION(major, minor, patchlevel) \
     (((major) << 16) + ((minor) << 8) + (patchlevel))
 
-#define HSHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "his":"her") :"its")
-#define HSSH(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "he" :"she") : "it")
-#define HMHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "him":"her") : "it")
-#define MAFE(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "male":"female") : "questionably gendered")
+#define HSHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "his": (GET_SEX(ch)==SEX_FEMALE ? "hers" : "theirs")) :"its")
+#define HSSH(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "he" : (GET_SEX(ch)==SEX_FEMALE ? "she" : "they")) : "it")
+#define HMHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "him": (GET_SEX(ch)==SEX_FEMALE ? "her" : "their")) : "it")
+#define MAFE(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "male": (GET_SEX(ch)==SEX_FEMALE ? "female" : "androgynous")) : "questionably gendered")
 
 #define ANA(obj) (strchr("aeiouAEIOU", *(obj)->name) ? "An" : "A")
 #define SANA(obj) (strchr("aeiouAEIOU", *(obj)->name) ? "an" : "a")

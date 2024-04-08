@@ -3108,7 +3108,7 @@ void rpp_feature(struct char_data *ch, const char *arg) {
         return;
     } else {
         char sex[128], buf8[MAX_INPUT_LENGTH];
-        sprintf(sex, "%s", GET_SEX(ch) == SEX_FEMALE ? "She" : GET_SEX(ch) == SEX_MALE ? "He" : "It");
+        sprintf(sex, "%s", HSSH(ch));
 
         ch->modRPP(-cost);
         sprintf(buf8, "...%s has %s.", sex, arg);
