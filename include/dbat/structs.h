@@ -514,6 +514,40 @@ struct trans_data {
     void deserialize(const nlohmann::json& j);
 };
 
+enum Task 
+{
+    nothing = 0,
+    meditate = 1,
+    situps = 2,
+    pushups = 3,
+
+    trainStr = 10,
+    trainAgl = 11,
+    trainCon = 12,
+    trainSpd = 13,
+    trainInt = 14,
+    trainWis = 15,
+};
+
+const std::string DoingTaskName[] {
+    "nothing",
+    "meditating",
+    "situps",
+    "pushups",
+    "RES",
+    "RES",
+    "RES",
+    "RES",
+    "RES",
+    "RES",
+    "str training",
+    "agl training",
+    "con training",
+    "spd training",
+    "int training",
+    "wis training",
+};
+
 
 /* ================== Structure for player/non-player ===================== */
 struct char_data : public unit_data {
@@ -567,6 +601,7 @@ struct char_data : public unit_data {
     SenseiID chclass{SenseiID::Commoner};
 
     std::list<std::pair<int, std::string>> wait_input_queue;
+    Task task = Task::nothing;
 
 
     /* PC / NPC's weight                    */

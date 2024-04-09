@@ -145,9 +145,13 @@ void command_interpreter(struct char_data *ch, char *argument) {
     }
     
     if(complete_cmd_info[cmd].wait_list == 1) {
-        std::string ln = line;
-        std::pair<int, std::string> pair = {cmd, ln};
-        ch->wait_input_queue.emplace_back(pair);
+        if (ch->task != Task::nothing) {
+            send_to_char(ch, "Use '--' if you want to stop your current task.\r\n");
+        } else {
+            std::string ln = line;
+            std::pair<int, std::string> pair = {cmd, ln};
+            ch->wait_input_queue.emplace_back(pair);
+        }
         return;
     }
 
@@ -159,6 +163,10 @@ void pushWaitQueue(char_data* ch) {
     if (ch && GET_WAIT_STATE(ch)) {
         ch->mod(CharNum::Wait, -1);
         if(GET_WAIT_STATE(ch) < 0) ch->set(CharNum::Wait, 0);
+        if(GET_WAIT_STATE(ch) == 0 && ch->task != Task::nothing) {
+            doContinuedTask(ch);
+            return;
+        }
         if (GET_WAIT_STATE(ch)) return;
     }
 

@@ -25,6 +25,7 @@
 #include "dbat/act.informative.h"
 #include "dbat/screen.h"
 #include "dbat/players.h"
+#include <dbat/act.other.h>
 
 /* local functions */
 char commastring[MAX_STRING_LENGTH];
@@ -3390,4 +3391,25 @@ bool is_all_alpha(const std::string& str) {
     return boost::algorithm::all(str, [](unsigned char c) {
         return std::isalpha(c);
     });
+}
+
+void doContinuedTask(char_data* ch) {
+    auto task = ch->task;
+
+    if (task == Task::meditate) {
+        meditateProgress(ch);
+    }
+
+    if (task == Task::situps) {
+        situpProgress(ch);
+    }
+
+    if (task == Task::pushups) {
+        pushupProgress(ch);
+    }
+
+    if (task == Task::trainStr || task == Task::trainAgl || task == Task::trainCon || task == Task::trainSpd
+        || task == Task::trainInt || task == Task::trainWis) {
+        trainProgress(ch);
+    }
 }

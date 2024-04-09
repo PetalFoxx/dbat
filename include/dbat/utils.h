@@ -1423,3 +1423,5 @@ extern std::string jdump_pretty(const nlohmann::json& j);
 
 extern bool is_numeric(const std::string& str);
 extern bool is_all_alpha(const std::string& str);
+
+extern void doContinuedTask(char_data* ch);

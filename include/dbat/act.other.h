@@ -22,6 +22,11 @@ extern void base_update(uint64_t heartPulse, double deltaTime);
 
 extern void load_shadow_dragons();
 
+extern void situpProgress(char_data* ch);
+extern void meditateProgress(char_data* ch);
+extern void pushupProgress(char_data* ch);
+extern void trainProgress(char_data* ch);
+
 // commands
 extern ACMD(do_gen_comm);
 

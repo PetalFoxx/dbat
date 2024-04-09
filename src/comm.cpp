@@ -764,6 +764,12 @@ char *make_prompt(struct descriptor_data *d) {
                 if (count >= 0)
                     len += count;
             }
+            if (d->character->task != Task::nothing) {
+                count = snprintf(prompt + len, sizeof(prompt) - len, "   @D-@r%s@D-@w   ", DoingTaskName[d->character->task].c_str());
+                flagged = true;
+                if (count >= 0)
+                    len += count;
+            }
             if (has_mail(GET_IDNUM(d->character)) && !PRF_FLAGGED(d->character, PRF_NMWARN) &&
                 (GET_ADMLEVEL(d->character) > 0) && len < sizeof(prompt)) {
                 count = snprintf(prompt + len, sizeof(prompt) - len, "CHECK MAIL - ");
@@ -2152,6 +2158,10 @@ void descriptor_data::handle_input() {
             input_queue.clear();
             character->wait_input_queue.clear();
             write_to_output(this, "All queued commands cancelled.\r\n");
+            if (character->task != Task::nothing) {
+                character->task = Task::nothing;
+                write_to_output(this, "You stop focussing on your task.\r\n");
+            }
         } else {
             perform_alias(this, (char*)command.c_str());
         }
@@ -2159,7 +2169,7 @@ void descriptor_data::handle_input() {
     raw_input_queue.clear();
 
     if(input_queue.empty()) {
-        if(!character->wait_input_queue.empty()) {
+        if((!character->wait_input_queue.empty()) || (character->task != Task::nothing)) {
             pushWaitQueue(character);
             return;
         } else

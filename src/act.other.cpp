@@ -1300,18 +1300,204 @@ ACMD(do_train) {
         return;
     }
 
-    auto stat_cap = 20;
-    if (GET_LEVEL(ch) >= 61)
-        stat_cap = 80;
-    else if (GET_LEVEL(ch) > 40)
-        stat_cap = 60;
-    else if (GET_LEVEL(ch) > 20)
-        stat_cap = 40;
+    /* what training message is displayed? */
+    reveal_hiding(ch, 0);
 
-    if (stat_val >= stat_cap) {
-        send_to_char(ch, "You have reached the stat cap for your level.\r\n");
+    switch (attr) {
+        case CharAttribute::Strength:
+            ch->task = Task::trainStr;
+            break;
+        case CharAttribute::Agility:
+            ch->task = Task::trainAgl;
+            break;
+        case CharAttribute::Constitution:
+            ch->task = Task::trainCon;
+            break;
+        case CharAttribute::Speed:
+            ch->task = Task::trainSpd;
+            break;
+        case CharAttribute::Intelligence:
+            ch->task = Task::trainInt;
+            break;
+        case CharAttribute::Wisdom:
+            ch->task = Task::trainWis;
+            break;
+    }
+    WAIT_STATE(ch, PULSE_5SEC * 6);
+
+}
+
+void trainProgress(char_data* ch) {
+    if (ch->getBurdenRatio() >= 1.0) {
+        send_to_char(ch, "You are weighted down too much!\r\n");
         return;
     }
+
+    int plus = 0;
+    int64_t total = 0, weight = 0, bonus = 0, cost = 0;
+
+    weight = ch->getCarriedWeight();
+
+    int strcap = 5000, spdcap = 5000, intcap = 5000, wiscap = 5000, concap = 5000, aglcap = 5000;
+
+    strcap += 500 * ch->get(CharAttribute::Strength, true);
+    intcap += 500 * ch->get(CharAttribute::Intelligence, true);
+    wiscap += 500 * ch->get(CharAttribute::Wisdom, true);
+    spdcap += 500 * ch->get(CharAttribute::Speed, true);
+    concap += 500 * ch->get(CharAttribute::Constitution, true);
+    aglcap += 500 * ch->get(CharAttribute::Agility, true);
+
+    if (IS_HUMAN(ch)) {
+        intcap = intcap * 0.75;
+        wiscap = wiscap * 0.75;
+    } else if (IS_KANASSAN(ch)) {
+        intcap = intcap * 0.4;
+        wiscap = wiscap * 0.4;
+        aglcap = aglcap * 0.4;
+    } else if (IS_HALFBREED(ch)) {
+        intcap = intcap * 0.75;
+        strcap = strcap * 0.75;
+    } else if (IS_TRUFFLE(ch)) {
+        strcap = strcap * 1.5;
+        concap = concap * 1.5;
+    }
+
+    /* Figure up the weight bonus */
+    auto ratio = ch->getBurdenRatio();
+    auto chCon = GET_CON(ch);
+    total = chCon * 6;
+    total += total * ratio;
+
+    if (GET_ROOM_VNUM(IN_ROOM(ch)) >= 6100 && GET_ROOM_VNUM(IN_ROOM(ch)) <= 6135) {
+        total += total * 0.15;
+    }
+
+    auto sensei = ch->chclass;
+    bool senseiPresent = false;
+
+    if (GET_ROOM_VNUM(IN_ROOM(ch)) == sensei::getLocation(sensei)) {
+        senseiPresent = true;
+        if (!(GET_GOLD(ch) >= 8 && GET_PRACTICES(ch) >= 1)) {
+            send_to_char(ch, "It costs 8 Zenni and 1 PS to train with your sensei.\r\n");
+            return;
+        }
+        total += total * 0.85;
+        if (chCon >= 100)
+            total *= 15000;
+        else if (chCon >= 80)
+            total *= 1500;
+        else if (chCon >= 40)
+            total *= 600;
+        else if (chCon >= 20)
+            total *= 300;
+        else if (chCon >= 10)
+            total *= 150;
+        send_to_char(ch, "@G%s begins to instruct you in training technique.@n\r\n", sensei::getName(sensei).c_str());
+    }
+
+    if (total > GET_MAX_HIT(ch) * 2) {
+        bonus = 5;
+    } else if (total > GET_MAX_HIT(ch)) {
+        bonus = 4;
+    } else if (total > (GET_MAX_HIT(ch) / 2)) {
+        bonus = 3;
+    } else if (total > (GET_MAX_HIT(ch) / 4)) {
+        bonus = 2;
+    } else if (total > (GET_MAX_HIT(ch) / 8)) {
+        bonus = 1;
+    }
+
+    if (!senseiPresent)
+        cost = ((total / 20) + (GET_MAX_MOVE(ch) / 50));
+    else
+        cost = ((total / 25) + (GET_MAX_MOVE(ch) / 60));
+
+    cost += cost * ratio;
+
+
+    if (GET_BONUS(ch, BONUS_HARDWORKER)) {
+        cost -= cost * 0.25;
+    }
+
+    if (GET_RELAXCOUNT(ch) >= 464) {
+        cost *= 10;
+    } else if (GET_RELAXCOUNT(ch) >= 232) {
+        cost *= 5;
+    } else if (GET_RELAXCOUNT(ch) >= 116) {
+        cost *= 2;
+    }
+
+    CharAttribute attr;
+    CharTrain train;
+    char *stat_name = nullptr;
+    int bonus_trait = -1;
+    int nega_trait = -1;
+    int needed = 0;
+
+    auto trainType = ch->task;
+
+    if (trainType == Task::trainStr) {
+        attr = CharAttribute::Strength;
+        train = CharTrain::Strength;
+        stat_name = "strength";
+        bonus_trait = BONUS_BRAWNY;
+        nega_trait = BONUS_WIMP;
+        needed = strcap;
+    } else if (trainType == Task::trainSpd) {
+        attr = CharAttribute::Speed;
+        train = CharTrain::Speed;
+        stat_name = "speed";
+        bonus_trait = BONUS_QUICK;
+        nega_trait = BONUS_SLOW;
+        needed = spdcap;
+    } else if (trainType == Task::trainCon) {
+        attr = CharAttribute::Constitution;
+        train = CharTrain::Constitution;
+        stat_name = "constitution";
+        bonus_trait = BONUS_STURDY;
+        nega_trait = BONUS_FRAIL;
+        needed = concap;
+    } else if (trainType == Task::trainAgl) {
+        attr = CharAttribute::Agility;
+        train = CharTrain::Agility;
+        stat_name = "agility";
+        bonus_trait = BONUS_AGILE;
+        nega_trait = BONUS_CLUMSY;
+        needed = aglcap;
+    } else if (trainType == Task::trainInt) {
+        attr = CharAttribute::Intelligence;
+        train = CharTrain::Intelligence;
+        stat_name = "intelligence";
+        bonus_trait = BONUS_SCHOLARLY;
+        nega_trait = BONUS_DULL;
+        needed = intcap;
+    } else if (trainType == Task::trainWis) {
+        attr = CharAttribute::Wisdom;
+        train = CharTrain::Wisdom;
+        stat_name = "wisdom";
+        bonus_trait = BONUS_SAGE;
+        nega_trait = BONUS_FOOLISH;
+        needed = wiscap;
+    } else {
+        send_to_char(ch, "Invalid\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    auto stat_val = ch->get(attr, true);
+
+    if (stat_val == 80) {
+        send_to_char(ch, "Your base %s is maxed!\r\n", stat_name);
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (stat_val >= 45 && GET_BONUS(ch, nega_trait) > 0) {
+        send_to_char(ch, "You're not able to withstand increasing your %s beyond 45.\r\n", stat_name);
+        ch->task = Task::nothing;
+        return;
+    }
+
 
     switch (attr) {
         case CharAttribute::Strength:
@@ -1320,6 +1506,7 @@ ACMD(do_train) {
         case CharAttribute::Speed:
             if ((ch->getCurST()) < cost) {
                 send_to_char(ch, "You do not have enough stamina with the current weight worn and gravity!\r\n");
+                ch->task = Task::nothing;
                 return;
             }
             plus = (((total / 20) + (GET_MAX_MOVE(ch) / 50)) * 100) / GET_MAX_MOVE(ch);
@@ -1329,6 +1516,7 @@ ACMD(do_train) {
         case CharAttribute::Wisdom:
             if ((ch->getCurKI()) < cost) {
                 send_to_char(ch, "You do not have enough ki with the current weight worn and gravity!\r\n");
+                ch->task = Task::nothing;
                 return;
             }
             plus = (((total / 20) + (GET_MAX_MANA(ch) / 50)) * 100) / GET_MAX_MANA(ch);
@@ -1496,36 +1684,37 @@ ACMD(do_train) {
 
     switch (bonus) {
         case 1:
-            stat_train += 5 + plus;
-            send_to_char(ch, "You feel slight improvement. @D[@G+%d@D]@n\r\n", (plus + 5));
-            WAIT_STATE(ch, PULSE_3SEC);
+            plus = (plus + 5) * 2;
+            stat_train += plus;
+            send_to_char(ch, "You feel slight improvement. @D[@G+%d@D]@n\r\n", plus);
             break;
         case 2:
-            stat_train += 10 + plus;
-            send_to_char(ch, "You feel some improvement. @D[@G+%d@D]@n\r\n", (plus + 10));
-            WAIT_STATE(ch, PULSE_3SEC);
+            plus = (plus + 10) * 2;
+            stat_train += plus;
+            send_to_char(ch, "You feel some improvement. @D[@G+%d@D]@n\r\n", plus);
             break;
         case 3:
-            stat_train += 25 + plus;
-            send_to_char(ch, "You feel good improvement. @D[@G+%d@D]@n\r\n", (plus + 25));
-            WAIT_STATE(ch, PULSE_3SEC);
+            plus = (plus + 25) * 2;
+            stat_train += plus;
+            send_to_char(ch, "You feel good improvement. @D[@G+%d@D]@n\r\n", plus);
             break;
         case 4:
-            stat_train += 50 + plus;
-            send_to_char(ch, "You feel great improvement! @D[@G+%d@D]@n\r\n", (plus + 50));
-            WAIT_STATE(ch, PULSE_5SEC);
+            plus = (plus + 50) * 2;
+            stat_train += plus;
+            send_to_char(ch, "You feel great improvement! @D[@G+%d@D]@n\r\n", plus);
             break;
         case 5:
-            stat_train += 100 + plus;
-            send_to_char(ch, "You feel awesome improvement! @D[@G+%d@D]@n\r\n", (plus + 100));
-            WAIT_STATE(ch, PULSE_5SEC);
+            plus = (plus + 100) * 2;
+            stat_train += plus;
+            send_to_char(ch, "You feel awesome improvement! @D[@G+%d@D]@n\r\n", plus);
             break;
         default:
             stat_train += 1;
             send_to_char(ch, "You barely feel any improvement. @D[@G+1@D]@n\r\n");
-            WAIT_STATE(ch, PULSE_3SEC);
             break;
     }
+
+    WAIT_STATE(ch, PULSE_5SEC * 6);
 
     if (senseiPresent) {
         ch->mod(CharMoney::Carried, -8);
@@ -7427,6 +7616,70 @@ ACMD(do_situp) {
         return;
     }
 
+    send_to_char(ch, "You start to do situps.\r\n");
+    ch->task = Task::situps;
+    WAIT_STATE(ch, PULSE_5SEC * 6);
+}
+
+void situpProgress(char_data* ch) {
+    int64_t cost = 1, bonus = 0;
+
+    if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_HELL)) {
+        send_to_char(ch, "The fire makes it too hot!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (DRAGGING(ch)) {
+        send_to_char(ch, "You are dragging someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (PLR_FLAGGED(ch, PLR_FISHING)) {
+        send_to_char(ch, "Stop fishing first.\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (CARRYING(ch)) {
+        send_to_char(ch, "You are carrying someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (IS_ANDROID(ch) || IS_BIO(ch) || IS_MAJIN(ch) || IS_ARLIAN(ch)) {
+        send_to_char(ch, "You will gain nothing from exercising!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (!limb_ok(ch, 1)) {
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if(!can_grav(ch)) {
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (FIGHTING(ch)) {
+        send_to_char(ch, "You are fighting you moron!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (AFF_FLAGGED(ch, AFF_FLYING)) {
+        send_to_char(ch, "You can't do situps in midair!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    auto ratio = ch->getBurdenRatio();
+
+    if(ratio <= 0.1) {
+        send_to_char(ch, "It would simply be too easy like this. Increase your weight or the gravity!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
     cost = ch->getPercentOfMaxST(0.04) * Random::get<double>(0.8, 1.2);
     cost *= (1.0 + ratio);
 
@@ -7447,6 +7700,7 @@ ACMD(do_situp) {
 
     if ((ch->getCurST()) < cost) {
         send_to_char(ch, "You are too tired!\r\n");
+        ch->task = Task::nothing;
         return;
     }
 
@@ -7509,8 +7763,8 @@ ACMD(do_situp) {
     }
     if(bonus <= 0) bonus = 1;
     send_to_char(ch, "You feel slightly more vigorous @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBaseST(bonus, true);
-    WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
+    ch->gainBaseST(bonus * 2, true);
+    WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurST(cost);
 }
 
@@ -7619,10 +7873,62 @@ ACMD(do_meditate) {
         }
     }
 
+    
+    send_to_char(ch, "You start to meditate.\r\n");
+    ch->task = Task::meditate;
+    WAIT_STATE(ch, PULSE_5SEC * 6);
+
+}
+
+void meditateProgress(char_data* ch) {
+    int64_t bonus = 0, cost = 1;
+
+    if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_HELL)) {
+        send_to_char(ch, "The fire makes it too hot!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (PLR_FLAGGED(ch, PLR_FISHING)) {
+        send_to_char(ch, "Stop fishing first.\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (IS_ANDROID(ch) || IS_BIO(ch) || IS_MAJIN(ch) || IS_ARLIAN(ch)) {
+        send_to_char(ch, "You will gain nothing from exercising!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (CARRYING(ch)) {
+        send_to_char(ch, "You are carrying someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (DRAGGING(ch)) {
+        send_to_char(ch, "You are dragging someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (FIGHTING(ch)) {
+        send_to_char(ch, "You are fighting you moron!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (GET_POS(ch) != POS_SITTING) {
+        send_to_char(ch, "You need to be sitting to meditate.\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
     auto ratio = ch->getBurdenRatio();
 
     if(ratio <= 0.1) {
         send_to_char(ch, "It would simply be too easy like this. Increase your weight or the gravity!\r\n");
+        ch->task = Task::nothing;
         return;
     }
 
@@ -7645,6 +7951,7 @@ ACMD(do_meditate) {
 
     if ((ch->getCurKI()) < cost) {
         send_to_char(ch, "You don't have enough ki!\r\n");
+        ch->task = Task::nothing;
         return;
     }
 
@@ -7721,8 +8028,8 @@ ACMD(do_meditate) {
     if(bonus <= 0) bonus = 0;
     /* Rillao: transloc, add new transes here */
     send_to_char(ch, "You feel your spirit grow stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBaseKI(bonus, true);
-    WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
+    ch->gainBaseKI(bonus * 2, true);
+    WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurKI(cost);
 
 }
@@ -7776,6 +8083,67 @@ ACMD(do_pushup) {
         return;
     }
 
+    send_to_char(ch, "You start to do push-ups.\r\n");
+    ch->task = Task::pushups;
+    WAIT_STATE(ch, PULSE_5SEC * 6);
+
+    
+}
+
+void pushupProgress(char_data* ch) {
+    int64_t cost = 1, bonus = 0;
+
+    if (PLR_FLAGGED(ch, PLR_FISHING)) {
+        send_to_char(ch, "Stop fishing first.\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (DRAGGING(ch)) {
+        send_to_char(ch, "You are dragging someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (CARRYING(ch)) {
+        send_to_char(ch, "You are carrying someone!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (IS_ANDROID(ch) || IS_BIO(ch) || IS_MAJIN(ch) || IS_ARLIAN(ch)) {
+        ch->task = Task::nothing;
+        send_to_char(ch, "You will gain nothing from exercising!\r\n");
+        return;
+    }
+
+    if (!limb_ok(ch, 0)) {
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if(!can_grav(ch)) {
+        ch->task = Task::nothing;
+        return;
+    }
+
+    if (FIGHTING(ch)) {
+        send_to_char(ch, "You are fighting you moron!\r\n");
+        ch->task = Task::nothing;
+        return;
+    }
+    if (AFF_FLAGGED(ch, AFF_FLYING)) {
+        ch->task = Task::nothing;
+        send_to_char(ch, "You can't do pushups in midair!\r\n");
+        return;
+    }
+
+    auto ratio = ch->getBurdenRatio();
+
+    if(ratio <= 0.1) {
+        ch->task = Task::nothing;
+        send_to_char(ch, "It would simply be too easy like this. Increase your weight or the gravity!\r\n");
+        return;
+    }
+
     cost = ch->getPercentOfMaxST(0.04) * Random::get<double>(0.8, 1.2);
     cost *= (1.0 + ratio);
 
@@ -7794,6 +8162,7 @@ ACMD(do_pushup) {
     }
 
     if ((ch->getCurST()) < cost) {
+        ch->task = Task::nothing;
         send_to_char(ch, "You are too tired!\r\n");
         return;
     }
@@ -7862,8 +8231,8 @@ ACMD(do_pushup) {
     if(bonus <= 0) bonus = 1;
     if(bonus > (ch->getBasePL() / 40)) bonus = ch->getBasePL() / 40;
     send_to_char(ch, "You feel slightly stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBasePL(bonus, true);
-    WAIT_STATE(ch, std::min<int>(PULSE_7SEC,PULSE_7SEC * ratio));
+    ch->gainBasePL(bonus * 2, true);
+    WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurST(cost);
 }
 
