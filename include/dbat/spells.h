@@ -8,8 +8,8 @@
 *  CircleMUD is based on DikuMUD, Copyright (C) 1990, 1991.               *
 ************************************************************************ */
 #pragma once
+#include "defs.h"
 
-#include "structs.h"
 
 #define DEFAULT_STAFF_LVL    12
 #define DEFAULT_WAND_LVL    12

@@ -18,6 +18,7 @@
 #include "dbat/players.h"
 #include "dbat/transformation.h"
 #include "dbat/weather.h"
+#include "dbat/attack.h"
 
 static std::string robot = "Robotic-Humanoid", robot_lower = "robotic-humanoid", unknown = "UNKNOWN";
 
@@ -1514,6 +1515,20 @@ int char_data::getArmor() {
             out += obj->getAffectModifier(APPLY_AC, -1);
     }
     return out;
+}
+
+void char_data::onAttack(atk::Attack& outgoing) {
+    if(form != FormID::Base)
+        trans::onAttack(this, outgoing, form);
+    if(technique != FormID::Base)
+        trans::onAttack(this, outgoing, technique);
+}
+
+void char_data::onAttacked(atk::Attack& incoming) {
+    if(form != FormID::Base)
+        trans::onAttacked(this, incoming, form);
+    if(technique != FormID::Base)
+        trans::onAttacked(this, incoming, technique);
 }
 
 int64_t char_data::getExperience() {

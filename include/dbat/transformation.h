@@ -1,5 +1,6 @@
 #pragma once
 #include "structs.h"
+#include "dbat/attack.h"
 
 namespace trans {
     extern std::string getName(struct char_data *ch, FormID form);
@@ -27,6 +28,12 @@ namespace trans {
     extern bool blockRevertDisallowed(struct char_data *ch, FormID form);
 
     extern std::optional<FormID> findForm(struct char_data *ch, const std::string& arg);
+
+    extern void onAttacked(char_data *ch, atk::Attack& incoming, FormID form);
+    extern void onAttack(char_data *ch, atk::Attack& outgoing, FormID form);
+
+    extern void transform(struct char_data *ch, FormID form, int grade = 1);
+    extern void revert(char_data* ch);
 
     extern void gamesys_transform(uint64_t heartPulse, double deltaTime);
     extern void gamesys_oozaru(uint64_t heartPulse, double deltaTime);

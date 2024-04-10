@@ -1,6 +1,7 @@
 #pragma once
-#include "dbat/structs.h"
 #include "spells.h"
+
+struct char_data;
 
 namespace atk {
     // If there is no entry for a skill, then the attack doesn't require a skill.

@@ -4639,18 +4639,17 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                 GET_POS(vict) = POS_STANDING;
             }
         }
-        if (IS_NPC(ch)) {
-            if (GET_LEVEL(ch) > 10) {
+        if (IS_NPC(vict)) {
+            if (GET_LEVEL(vict) > 10) {
                 if (dmg - index > 0) {
                     dmg -= index;
                 } else if (dmg - index <= 0 && dmg >= 1) {
                     dmg = 1;
                 }
-            } else if (GET_LEVEL(ch) <= 10) {
+            } else if (GET_LEVEL(vict) <= 10) {
                 dmg = (dmg * .8);
             }
-        }
-        if (!IS_NPC(ch)) {
+        } else {
             if (dmg >= 1) {
                 if(dmg * 2 <= index) {
                     dmg = dmg * 0.025;

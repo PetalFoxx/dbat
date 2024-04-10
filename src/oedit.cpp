@@ -358,8 +358,8 @@ void oedit_disp_prompt_apply_menu(struct descriptor_data *d) {
     for (counter = 0; counter < MAX_OBJ_AFFECT; counter++) {
         if (OLC_OBJ(d)->affected[counter].modifier) {
             sprinttype(OLC_OBJ(d)->affected[counter].location, apply_types, apply_buf, sizeof(apply_buf));
-            write_to_output(d, " @g%d@n) %+d to @b%s@n", counter + 1,
-                            OLC_OBJ(d)->affected[counter].modifier, apply_buf);
+            write_to_output(d, " @g%s@n) %s to @b%s@n", std::to_string(counter + 1),
+                            std::to_string(OLC_OBJ(d)->affected[counter].modifier), apply_buf);
             switch (OLC_OBJ(d)->affected[counter].location) {
                 case APPLY_FEAT:
                     write_to_output(d, " (%s)", feat_list[OLC_OBJ(d)->affected[counter].specific].name);

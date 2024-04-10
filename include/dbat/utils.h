@@ -830,7 +830,7 @@ void SET_SKILL_PERF(struct char_data *ch, uint16_t skill, int16_t val);
 #define CIRCLEMUD_VERSION(major, minor, patchlevel) \
     (((major) << 16) + ((minor) << 8) + (patchlevel))
 
-#define HSHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "his": (GET_SEX(ch)==SEX_FEMALE ? "hers" : "theirs")) :"its")
+#define HSHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "his": (GET_SEX(ch)==SEX_FEMALE ? "her" : "their")) :"its")
 #define HSSH(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "he" : (GET_SEX(ch)==SEX_FEMALE ? "she" : "they")) : "it")
 #define HMHR(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "him": (GET_SEX(ch)==SEX_FEMALE ? "her" : "their")) : "it")
 #define MAFE(ch) (GET_SEX(ch) ? (GET_SEX(ch)==SEX_MALE ? "male": (GET_SEX(ch)==SEX_FEMALE ? "female" : "androgynous")) : "questionably gendered")

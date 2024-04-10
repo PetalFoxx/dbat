@@ -3352,7 +3352,7 @@ static void list_one_char(struct char_data *i, struct char_data *ch) {
     if(i->form != FormID::Base)
         act(trans::getExtra(i, i->form).c_str(), true, i, nullptr, ch, TO_VICT);
     if(i->technique != FormID::Base)
-        act(trans::getExtra(i, i->form).c_str(), true, i, nullptr, ch, TO_VICT);
+        act(trans::getExtra(i, i->technique).c_str(), true, i, nullptr, ch, TO_VICT);
     if (GET_FEATURE(i)) {
         char woo[MAX_STRING_LENGTH];
         sprintf(woo, "@C%s@n", GET_FEATURE(i));

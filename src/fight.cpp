@@ -2095,7 +2095,6 @@ void raw_kill(struct char_data *ch, struct char_data *killer) {
 
         switch (death_type) {
             case Afterlife:
-                ch->ghostify();
                 purge_homing(ch);
                 if (GET_LEVEL(ch) > 0 && has_group(ch)) {
                     if (ch->master != nullptr) {
@@ -2105,6 +2104,7 @@ void raw_kill(struct char_data *ch, struct char_data *killer) {
                     }
                 }
                 ch->teleport_to(6000);
+                ch->ghostify();
                 break;
             case Northran:
                 ch->restore(false);
@@ -2203,21 +2203,12 @@ void die(struct char_data *ch, struct char_data *killer) {
                     GET_DTIME(ch) = time(nullptr) + 28800;
                     GET_DCOUNT(ch) += 1;
                 } else if (killer != nullptr && !IS_NPC(killer)) {
-                    GET_DTIME(ch) = time(nullptr) + 1123200;
+                    GET_DTIME(ch) = time(nullptr) + 28800;
                     ch->playerFlags.set(PLR_PDEATH);
                     GET_DCOUNT(ch) += 1;
                 } else {
-                    if (GET_DCOUNT(ch) <= 0) {
-                        GET_DTIME(ch) = time(nullptr) + 28800;
-                    } else if (GET_DCOUNT(ch) <= 1) {
-                        GET_DTIME(ch) = time(nullptr) + 43200;
-                    } else if (GET_DCOUNT(ch) <= 3) {
-                        GET_DTIME(ch) = time(nullptr) + 86400;
-                    } else if (GET_DCOUNT(ch) <= 5) {
-                        GET_DTIME(ch) = time(nullptr) + 172800;
-                    } else if (GET_DCOUNT(ch) > 5) {
-                        GET_DTIME(ch) = time(nullptr) + 604800;
-                    }
+                    GET_DTIME(ch) = time(nullptr) + 28800;
+
                     GET_DCOUNT(ch) += 1;
                 }
             }

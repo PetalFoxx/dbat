@@ -10,6 +10,7 @@
 #pragma once
 
 #include "net.h"
+#include "dbat/attack.h"
 
 /**********************************************************************
 * Structures                                                          *
@@ -508,6 +509,8 @@ struct trans_data {
     bool limitBroken = false;
     bool unlocked = false;
 
+    double vars[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+
     double blutz{0.0}; // The number of seconds you can spend in Oozaru.
 
     nlohmann::json serialize();
@@ -616,6 +619,9 @@ struct char_data : public unit_data {
 
     void ageBy(double addedTime);
     void setAge(double newAge);
+
+    void onAttack(atk::Attack& outgoing);
+    void onAttacked(atk::Attack& incoming);
 
     std::optional<std::string> dgCallMember(const std::string& member, const std::string& arg);
 

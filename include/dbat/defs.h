@@ -206,6 +206,8 @@ enum class FormID : uint16_t {
     EagleStance = 303,
     OxStance = 304,
 
+    SpiritAbsorption = 305,
+
 };
 
 

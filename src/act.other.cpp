@@ -7455,25 +7455,11 @@ ACMD(do_transform) {
         }
 
         if(ch->form != FormID::Base) {
-            trans::handleEchoRevert(ch, ch->form);
-            ch->form = FormID::Base;
+            trans::revert(ch);
         }
         if(ch->technique != FormID::Base) {
-            trans::handleEchoRevert(ch, ch->technique);
-            ch->technique = FormID::Base;
+            trans::revert(ch);
         }
-        ch->removeLimitBreak();
-
-        int64_t afterKi = ch->getMaxKI();
-
-        if (beforeKi > afterKi && GET_BARRIER(ch) > 0) {
-            int64_t barrier = GET_BARRIER(ch);
-            float ratio = (float) afterKi / (float) beforeKi;
-            GET_BARRIER(ch) = barrier * ratio;
-
-            send_to_char(ch, "Your barrier shimmers as it loses some energy with your transformation.\r\n");
-        }
-
         return;
     }
 
@@ -7519,48 +7505,7 @@ ACMD(do_transform) {
         }
     }
 
-    if (grade > trans::getMaxGrade(ch, trans)) {
-        grade = trans::getMaxGrade(ch, trans);
-        send_to_char(ch, "The max grade of this form is %s!\r\nSetting to max.\r\n", std::to_string(grade));
-    }
-    if (grade < 1)
-        grade = 1;
-
-    
-    ch->removeLimitBreak();
-    
-    if(formtype == 0)
-        ch->form = trans;
-    else if (formtype == 1)
-        ch->permForms.insert(trans);
-    else if (formtype == 2)
-        ch->technique = trans;
-    ch->transforms[trans].grade = grade;
-    // No way is this a stealthy process...
-    reveal_hiding(ch, 0);
-    trans::handleEchoTransform(ch, trans);
-
-    int64_t afterKi = ch->getMaxKI();
-
-    if (beforeKi > afterKi && GET_BARRIER(ch) > 0) {
-        int64_t barrier = GET_BARRIER(ch);
-        float ratio = (float) afterKi / (float) beforeKi;
-        GET_BARRIER(ch) = barrier * ratio;
-
-        send_to_char(ch, "Your barrier shimmers as it loses some energy with your transformation.\r\n");
-    }
-
-    // Announce noisy transformations in the zone.
-    int zone = 0;
-    if (race::isSenseable(ch->race)) {
-        if ((zone = real_zone_by_thing(IN_ROOM(ch))) != NOWHERE) {
-            send_to_zone("An explosion of power ripples through the surrounding area!\r\n", zone);
-        };
-    }
-
-    send_to_sense(0, "You sense a nearby power grow unbelievably!", ch);
-    sprintf(buf3, "@D[@GBlip@D]@r Transformed Powerlevel@D: [@Y%s@D]", add_commas(GET_HIT(ch)).c_str());
-    send_to_scouter(buf3, ch, 1, 0);
+    trans::transform(ch, trans, grade);
 
 }
 
@@ -10227,12 +10172,17 @@ ACMD(do_display) {
     skip_spaces(&argument);
 
     if (!*argument) {
-        send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | G | L | O | E | all/on | none/off }\r\n");
+        send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | G | L | O | E | all/on | none/off | transforms}\r\n");
         return;
     }
 
     auto allPrefs = {PRF_DISPHP, PRF_DISPKI, PRF_DISPMOVE, PRF_DISPTNL, PRF_FURY, PRF_DISTIME, PRF_DISGOLD, PRF_DISPRAC,
         PRF_DISHUTH, PRF_DISPERC, PRF_FORM, PRF_TECH};
+
+    if (!strcasecmp(argument, "transforms")) {
+        ch->pref.flip(PRF_FORM);
+        ch->pref.flip(PRF_TECH);
+    }
 
     if (!strcasecmp(argument, "on") || !strcasecmp(argument, "all")) {
         for(auto f : allPrefs) ch->pref.set(f);

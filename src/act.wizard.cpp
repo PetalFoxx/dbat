@@ -2248,7 +2248,7 @@ ACMD(do_pgrant) {
 
     std::string strForm;
     if(!*arg1) {
-        send_to_char(ch, "Usage: pgrant <char> <target>\r\n");
+        send_to_char(ch, "Usage: pgrant <char> <form>||growth\r\n");
         return;
     }
 
@@ -2257,7 +2257,7 @@ ACMD(do_pgrant) {
         strForm = arg1;
     } else {
         if (!(vict = get_char_vis(ch, arg1, nullptr, FIND_CHAR_WORLD))) {
-            send_to_char(ch, "No such character.\r\nUsage: pgrant <char> <target>\r\n");
+            send_to_char(ch, "No such character.\r\nUsage: pgrant <char> <form>||growth\r\n");
             return;
         }
         strForm = arg2;
@@ -2266,10 +2266,10 @@ ACMD(do_pgrant) {
     if(strForm == "growth") {
         if (vict) {
             vict->internalGrowth += 500;
-            send_to_char(ch, "500 growth has been given to you.\r\n");
+            send_to_char(ch, "Given 500 growth to %s\r\n", vict->name);
         } else {
             ch->internalGrowth += 500;
-            send_to_char(ch, "Given 500 growth to %s\r\n", vict->name);
+            send_to_char(ch, "500 growth has been given to you.\r\n");
         }
         return;
     }
