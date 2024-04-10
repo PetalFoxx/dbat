@@ -30,6 +30,8 @@ static card refine = {"Refine",
         task->pObject->affected[slot].modifier += mod;
         task->pObject->affected[slot].location = bonus;
 
+        task->pObject->cost *= 1.2; 
+
         if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
             return true;
         
@@ -448,9 +450,9 @@ void deck::discardCard(card cardMove) {
         int i = 0;
         bool found = false;
         while((!found) && i < deck.size()) {
-            i++;
             if (deck.at(i).name == cardMove.name)
                 found = true;
+            i++;
         }
 
         if(found) {
@@ -503,9 +505,9 @@ void deck::removeCard(card toRem) {
         int i = 0;
         bool found = false;
         while((!found) && i < deck.size()) {
-            i++;
             if (deck.at(i).name == toRem.name)
                 found = true;
+            i++;
         }
 
         if(found) {
@@ -556,9 +558,21 @@ void deck::initDeck(char_data* ch) {
         addCardToDeck(comprehension);
     }
 
+    if(ch->transforms.contains(FormID::AscendFirst)) {
+        removeCard(timePasses);
+        removeCard(timePasses);
+    }
+
     if(ch->transforms.contains(FormID::AscendSecond)) {
         addCardToDeck(tuffleIngenuity);
         addCardToDeck(tuffleArtisany);
+    }
+
+    if(ch->transforms.contains(FormID::AscendThird)) {
+        removeCard(improvedAttr);
+        addCardToDeck(tuffleIngenuity);
+        addCardToDeck(reflection);
+        addCardToDeck(refine);
     }
 
     shuffleDeck();

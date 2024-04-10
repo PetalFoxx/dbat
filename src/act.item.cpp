@@ -2014,10 +2014,12 @@ ACMD(do_assemble) {
     long lVnum = NOTHING;
     struct obj_data *pObject = nullptr;
     char buf[MAX_STRING_LENGTH];
+    char arg[MAX_INPUT_LENGTH], arg2[MAX_INPUT_LENGTH];
 
     int roll = 0;
 
-    skip_spaces(&argument);
+    //skip_spaces(&argument);
+    two_arguments(argument, arg, arg2);
 
     struct obj_data *tools = nullptr, *tool = nullptr, *next_obj;
 
@@ -2030,14 +2032,37 @@ ACMD(do_assemble) {
         }
     }
 
-    if (*argument == '\0') {
+    int menu = 0;
+
+    for(int i = 0; i < NUM_ITEM_TYPES; i++) {  
+        if(strcasestr(arg, item_types[i]))
+            menu = i;
+    }
+
+    if (*argument == '\0' || menu > 0) {
         send_to_char(ch, "What would you like to %s?\r\n", CMD_NAME);
+        assemblyListToChar(ch, menu);
         return;
-    } else if ((lVnum = assemblyFindAssembly(argument)) < 0) {
-        send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
+    } 
+
+    if(!strcasestr(arg, "create")) {
+        send_to_char(ch, "If you wish to make something, the syntax is 'build create <item>'\r\n");
+        send_to_char(ch, "Categories available to show via 'build <category>':\r\n");
+        send_to_char(ch, "[WEAPON]\r\n");
+        send_to_char(ch, "[ARMOR]\r\n");
+        send_to_char(ch, "[LIGHT]\r\n");
+        send_to_char(ch, "[WORN]\r\n");
+        send_to_char(ch, "[LIQCONTAINER]\r\n");
+        send_to_char(ch, "[CAMPFIRE]\r\n");
+        send_to_char(ch, "[OTHER]\r\n");
+        
         return;
-    } else if (assemblyGetType(lVnum) != subcmd) {
-        send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
+    }
+    
+    
+    
+    if ((lVnum = assemblyFindAssembly(arg2)) < 0 && (lVnum = assemblyGetAssemblyIndex(atoi(arg2))) < 0) {
+        send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(arg2), arg2);
         return;
     } else if (!assemblyCheckComponents(lVnum, ch, false)) {
         send_to_char(ch, "You haven't got all the things you need.\r\n");
@@ -2045,24 +2070,19 @@ ACMD(do_assemble) {
     } else if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_SPACE)) {
         send_to_char(ch, "You can't do that in space.");
         return;
-    } else if (!GET_SKILL(ch, SKILL_SURVIVAL) && !strcasecmp(argument, "campfire")) {
+    } else if (!GET_SKILL(ch, SKILL_SURVIVAL) && !strcasecmp(arg2, "campfire")) {
         send_to_char(ch, "You know nothing about building campfires.\r\n");
         return;
     }
 
-    if (strstr(argument, "Signal") || strstr(argument, "signal")) {
+    if (strstr(arg2, "Signal") || strstr(arg2, "signal")) {
         if (GET_SKILL(ch, SKILL_BUILD) < 70) {
             send_to_char(ch, "You need at least a build skill level of 70.\r\n");
             return;
         }
     }
 
-    if (tool == nullptr) {
-        send_to_char(ch, "You wish you had tools, but make the best out of what you do have anyway...\r\n");
-        roll = 20;
-    }
-
-    if (strcasecmp(argument, "campfire")) {
+    if (strcasecmp(arg2, "campfire")) {
         if (ROOM_FLAGGED(IN_ROOM(ch), ROOM_SPACE) || SECT(IN_ROOM(ch)) == SECT_WATER_NOSWIM || SUNKEN(IN_ROOM(ch))) {
             send_to_char(ch, "This area will not allow a fire to burn properly.\r\n");
             return;
@@ -2072,39 +2092,12 @@ ACMD(do_assemble) {
 
         improve_skill(ch, SKILL_SURVIVAL, 1);
 
-    } else {
-        if (GET_SKILL(ch, SKILL_SURVIVAL) >= 90) {
-            roll += axion_dice(0);
-        } else if (GET_SKILL(ch, SKILL_SURVIVAL) < 90) {
-            roll += axion_dice(-10);
-        }
-        improve_skill(ch, SKILL_BUILD, 1);
-        /*if (GET_SKILL(ch, SKILL_SURVIVAL) <= roll) {
-            if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
-                send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
-                return;
-            }
-
-            extract_obj(pObject);
-            send_to_char(ch, "You start to %s %s %s, but mess up royally!\r\n", CMD_NAME, AN(argument), argument);
-
-            if (tool && rand_number(1, 3) == 3 && GET_OBJ_VAL(tool, VAL_ALL_HEALTH) > 0) {
-                GET_OBJ_VAL(tool, VAL_ALL_HEALTH) -= rand_number(1, 5);
-                act("@RYour toolset is looking a bit more worn.@n", true, ch, nullptr, nullptr, TO_CHAR);
-                if (GET_OBJ_VAL(tool, VAL_ALL_HEALTH) <= 0) {
-                    GET_OBJ_VAL(tool, VAL_ALL_HEALTH) = 0;
-                }
-            }
-            if (assemblyCheckComponents(lVnum, ch, true)) {
-                roll = 9001;
-            }
-            return;
-        }*/
-    }
+    } 
+    improve_skill(ch, SKILL_BUILD, 1);
 
     /* Create the assembled object. */
     if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
-        send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
+        send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(arg2), arg2);
         return;
     }
 

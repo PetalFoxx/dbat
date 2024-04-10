@@ -4638,20 +4638,26 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
         }
         if (!IS_NPC(ch)) {
             if (dmg >= 1) {
-                if ((dmg + (dmg * 0.5)) - index <= 0) {
-                    dmg = 1;
-                } else if ((dmg + (dmg * 0.4)) - index <= 0) {
-                    dmg = dmg * 0.04;
-                } else if ((dmg + (dmg * 0.3)) - index <= 0) {
-                    dmg = dmg * 0.08;
-                } else if ((dmg + (dmg * 0.2)) - index <= 0) {
-                    dmg = dmg * 0.12;
-                } else if ((dmg + (dmg * 0.1)) - index <= 0) {
-                    dmg = dmg * 0.16;
-                } else if (dmg - index <= 0) {
+                if(dmg * 2 <= index) {
+                    dmg = dmg * 0.025;
+                } else if (dmg * 1.8 <= index) {
+                    dmg = dmg * 0.05;
+                } else if (dmg * 1.6 <= index) {
+                    dmg = dmg * 0.1;
+                } else if (dmg * 1.4 <= index) {
                     dmg = dmg * 0.2;
-                } else if (dmg - index <= dmg * 0.25) {
-                    dmg = dmg * 0.25;
+                } else if (dmg * 1.2 <= index) {
+                    dmg = dmg * 0.3;
+                } else if (dmg <= index) {
+                    dmg = dmg * 0.4;
+                } else if (dmg * 0.75 <= index) {
+                    dmg = dmg * 0.5;
+                } else if (dmg * 0.5 <= index) {
+                    dmg = dmg * 0.6;
+                } else if (dmg * 0.25 <= index) {
+                    dmg = dmg * 0.7;
+                } else if (dmg * 0.1 <= index) {
+                    dmg = dmg * 0.85;
                 } else {
                     dmg -= index;
                 }

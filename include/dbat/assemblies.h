@@ -56,7 +56,7 @@ extern void assemblyBootAssemblies();
 
 extern void assemblySaveAssemblies();
 
-extern void assemblyListToChar(struct char_data *pCharacter);
+extern void assemblyListToChar(struct char_data *pCharacter, int type = 0);
 
 extern bool assemblyAddComponent(long lVnum, long lComponentVnum,
                                  bool bExtract, bool bInRoom);
