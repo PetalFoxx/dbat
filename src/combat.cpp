@@ -4952,14 +4952,14 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                 if (GET_EQ(ch, WEAR_EYE) && vict && !PRF_FLAGGED(ch, PRF_NODEC)) {
                     if (IS_ANDROID(vict)) {
                         send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && GET_HIT(vict) >= 150000) {
+                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && vict->getPL() >= 150000) {
                         send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && GET_HIT(vict) >= 5000000) {
+                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && vict->getPL() >= 5000000) {
                         send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && GET_HIT(vict) >= 15000000) {
+                    } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && vict->getPL() >= 15000000) {
                         send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
                     } else {
-                        send_to_char(ch, " @D<@YProcessing@D: @c%s@D>@n\r\n", add_commas(GET_HIT(vict)).c_str());
+                        send_to_char(ch, " @D<@YProcessing@D: @c%s - @r%s%%@D>@n\r\n", add_commas(vict->getPL()).c_str(), std::to_string((int) (vict->health * 100)));
                     }
                 } else {
                     send_to_char(ch, "\r\n");
@@ -4971,14 +4971,14 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                     if (GET_EQ(ch, WEAR_EYE) && vict && !PRF_FLAGGED(ch, PRF_NODEC)) {
                         if (IS_ANDROID(vict)) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && GET_HIT(vict) >= 150000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && vict->getPL() >= 150000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && GET_HIT(vict) >= 5000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && vict->getPL() >= 5000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && GET_HIT(vict) >= 15000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && vict->getPL() >= 15000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
                         } else {
-                            send_to_char(ch, " @D<@YProcessing@D: @c%s@D>@n\r\n", add_commas(GET_HIT(vict)).c_str());
+                            send_to_char(ch, " @D<@YProcessing@D: @c%s - @r%s%%@D>@n\r\n", add_commas(vict->getPL()).c_str(), std::to_string((int) (vict->health * 100)));
                         }
                     } else {
                         send_to_char(ch, "\r\n");
@@ -4997,14 +4997,14 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                     if (GET_EQ(ch, WEAR_EYE) && vict && !PRF_FLAGGED(ch, PRF_NODEC)) {
                         if (IS_ANDROID(vict)) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && GET_HIT(vict) >= 150000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && vict->getPL() >= 150000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && GET_HIT(vict) >= 5000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && vict->getPL() >= 5000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && GET_HIT(vict) >= 15000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && vict->getPL() >= 15000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
                         } else {
-                            send_to_char(ch, " @D<@YProcessing@D: @c%s@D>@n\r\n", add_commas(GET_HIT(vict)).c_str());
+                            send_to_char(ch, " @D<@YProcessing@D: @c%s - @r%s%%@D>@n\r\n", add_commas(vict->getPL()).c_str(), std::to_string((int) (vict->health * 100)));
                         }
                     } else {
                         send_to_char(ch, "\r\n");
@@ -5014,14 +5014,14 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                     if (GET_EQ(ch, WEAR_EYE) && vict) {
                         if (IS_ANDROID(vict) && !PRF_FLAGGED(ch, PRF_NODEC)) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && GET_HIT(vict) >= 150000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_BSCOUTER) && vict->getPL() >= 150000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && GET_HIT(vict) >= 5000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_MSCOUTER) && vict->getPL() >= 5000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
-                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && GET_HIT(vict) >= 15000000) {
+                        } else if (OBJ_FLAGGED(GET_EQ(ch, WEAR_EYE), ITEM_ASCOUTER) && vict->getPL() >= 15000000) {
                             send_to_char(ch, " @D<@YProcessing@D: @c?????????????@D>@n\r\n");
                         } else {
-                            send_to_char(ch, " @D<@YProcessing@D: @c%s@D>@n\r\n", add_commas(GET_HIT(vict)).c_str());
+                            send_to_char(ch, " @D<@YProcessing@D: @c%s - @r%s%%@D>@n\r\n", add_commas(vict->getPL()).c_str(), std::to_string((int) (vict->health * 100)));
                         }
                     } else {
                         send_to_char(ch, "\r\n");

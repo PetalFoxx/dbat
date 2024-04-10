@@ -740,7 +740,7 @@ int do_simple_move(struct char_data *ch, int dir, int need_specials_check) {
     if ((ch->getRoom()->zone != world[was_in].zone) && !IS_NPC(ch) && !IS_ANDROID(ch)) {
         send_to_sense(0, "You sense someone", ch);
         sprintf(buf3, "@D[@GBlip@D]@Y %s\r\n@RSomeone has entered your scouter detection range@n.",
-                add_commas(GET_HIT(ch)).c_str());
+                add_commas(ch->getPL()).c_str());
         send_to_scouter(buf3, ch, 0, 0);
     }
     /* move them first, then move them back if they aren't allowed to go. */
@@ -1982,7 +1982,7 @@ static int do_simple_leave(struct char_data *ch, struct obj_data *obj, int need_
     char buf3[MAX_STRING_LENGTH];
     send_to_sense(0, "You sense someone ", ch);
     sprintf(buf3, "@D[@GBlip@D]@Y %s\r\n@RSomeone has entered your scouter detection range.@n",
-            add_commas(GET_HIT(ch)).c_str());
+            add_commas(ch->getPL()).c_str());
     send_to_scouter(buf3, ch, 0, 0);
 
     if (ch->desc != nullptr) {

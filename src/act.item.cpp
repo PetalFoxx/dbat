@@ -4055,14 +4055,14 @@ void perform_wear(struct char_data *ch, struct obj_data *obj, int where) {
         }
     }
 
-    if (GET_OBJ_TYPE(obj) != ITEM_LIGHT && GET_OBJ_SIZE(obj) > get_size(ch)) {
-        send_to_char(ch, "Seems like it is too big for you.\r\n");
-        return;
-    }
-    if (GET_OBJ_SIZE(obj) < get_size(ch) && GET_OBJ_TYPE(obj) != ITEM_LIGHT) {
-        send_to_char(ch, "Seems like it is too small for you.\r\n");
-        return;
-    }
+    //if (GET_OBJ_TYPE(obj) != ITEM_LIGHT && GET_OBJ_SIZE(obj) > get_size(ch)) {
+    //    send_to_char(ch, "Seems like it is too big for you.\r\n");
+    //    return;
+    //}
+    //if (GET_OBJ_SIZE(obj) < get_size(ch) && GET_OBJ_TYPE(obj) != ITEM_LIGHT) {
+    //    send_to_char(ch, "Seems like it is too small for you.\r\n");
+    //    return;
+    //}
 
     wear_message(ch, obj, where);
     obj_from_char(obj);

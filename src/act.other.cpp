@@ -192,8 +192,8 @@ ACMD(do_rpp) {
                      "  @C7@D)@c Revival             @D[@G  4 RPP @D]  @C8@D)@c Aura Change           @D[@G%3d RPP @D]\n",
                      revcost);
         send_to_char(ch,
-                     "  @C9@D)@c RPP Store           @D[@G%3d RPP @D] @C10@D)@c Extra Feature         @D[@G  2 RPP @D]\n",
-                     "%", tnlcost);
+                     "  @C9@D)@c RPP Store           @D[@G??? RPP @D] @C10@D)@c Extra Feature         @D[@G  2 RPP @D]\n",
+                     "%");
         send_to_char(ch,
                      " @C11@D)@c Restring Equipment  @D[@G  5 RPP @D] @C12@D)@c Extra Skillslot       @D[@G ?? RPP @D]\n");
         send_to_char(ch, "@b  ------------------------------------------------------------------@n\n");
@@ -9046,18 +9046,18 @@ ACMD(do_scouter) {
                     }
 
                     auto blah = sense_location(i->character);
-                    if (OBJ_FLAGGED(obj, ITEM_BSCOUTER) && GET_HIT(i->character) >= 150000) {
+                    if (OBJ_FLAGGED(obj, ITEM_BSCOUTER) && i->character->getPL() >= 150000) {
                         send_to_char(ch, "@D<@GPowerlevel Detected@D:@w ?????????@D> @w---> @C%s@n\r\n",
                                      same == true ? pathway : blah);
-                    } else if (OBJ_FLAGGED(obj, ITEM_MSCOUTER) && GET_HIT(i->character) >= 5000000) {
+                    } else if (OBJ_FLAGGED(obj, ITEM_MSCOUTER) && i->character->getPL() >= 5000000) {
                         send_to_char(ch, "@D<@GPowerlevel Detected@D:@w ?????????@D> @w---> @C%s@n\r\n",
                                      same == true ? pathway : blah);
-                    } else if (OBJ_FLAGGED(obj, ITEM_ASCOUTER) && GET_HIT(i->character) >= 15000000) {
+                    } else if (OBJ_FLAGGED(obj, ITEM_ASCOUTER) && i->character->getPL() >= 15000000) {
                         send_to_char(ch, "@D<@GPowerlevel Detected@D:@w ?????????@D> @w---> @C%s@n\r\n",
                                      same == true ? pathway : blah);
                     } else {
                         send_to_char(ch, "@D<@GPowerlevel Detected@D: [@Y%s@D]@w ---> @C%s@n\r\n",
-                                     add_commas(GET_HIT(i->character)).c_str(), same ==
+                                     add_commas(i->character->getPL()).c_str(), same ==
                                                                         true ? pathway : blah);
                     }
                     ++count;
@@ -9094,29 +9094,29 @@ ACMD(do_scouter) {
             if (OBJ_FLAGGED(obj, ITEM_BSCOUTER) && GET_HIT(vict) >= 150000) {
                 act("$n points $s scouter at you.", false, ch, nullptr, vict, TO_VICT);
                 act("$n points $s scouter at $N.", false, ch, nullptr, vict, TO_NOTVICT);
-                perform_remove(ch, WEAR_EYE);
-                send_to_char(ch, "Your scouter overloads and explodes!\r\n");
-                act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
-                extract_obj(obj);
-                ch->save();
+                //perform_remove(ch, WEAR_EYE);
+                //send_to_char(ch, "Your scouter overloads and explodes!\r\n");
+                //act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
+                //extract_obj(obj);
+                //ch->save();
                 return;
             } else if (OBJ_FLAGGED(obj, ITEM_MSCOUTER) && GET_HIT(vict) >= 5000000) {
                 act("$n points $s scouter at you.", false, ch, nullptr, vict, TO_VICT);
                 act("$n points $s scouter at $N.", false, ch, nullptr, vict, TO_NOTVICT);
-                perform_remove(ch, WEAR_EYE);
-                send_to_char(ch, "Your scouter overloads and explodes!\r\n");
-                act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
-                extract_obj(obj);
-                ch->save();
+                //perform_remove(ch, WEAR_EYE);
+                //send_to_char(ch, "Your scouter overloads and explodes!\r\n");
+                //act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
+                //extract_obj(obj);
+                //ch->save();
                 return;
             } else if (OBJ_FLAGGED(obj, ITEM_ASCOUTER) && GET_HIT(vict) >= 15000000) {
                 act("$n points $s scouter at you.", false, ch, nullptr, vict, TO_VICT);
                 act("$n points $s scouter at $N.", false, ch, nullptr, vict, TO_NOTVICT);
-                perform_remove(ch, WEAR_EYE);
-                send_to_char(ch, "Your scouter overloads and explodes!\r\n");
-                act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
-                extract_obj(obj);
-                ch->save();
+                //perform_remove(ch, WEAR_EYE);
+                //send_to_char(ch, "Your scouter overloads and explodes!\r\n");
+                //act("$n's scouter explodes!", false, ch, nullptr, nullptr, TO_ROOM);
+                //extract_obj(obj);
+                //ch->save();
                 return;
             } else {
                 long double percent = 0.0, cur = 0.0, max = 0.0;
@@ -9137,13 +9137,13 @@ ACMD(do_scouter) {
                 send_to_char(ch, "@D|@1@RReading target...                 @n@D|@n\r\n");
                 send_to_char(ch, "@D|@1                                  @n@D|@n\r\n");
                 send_to_char(ch, "@D|@1@RP@r@1o@Rw@r@1e@1@Rr L@r@1e@Rv@r@1e@1@Rl@1@D: @Y%21s@n@D|@n\r\n",
-                             add_commas(GET_HIT(vict)).c_str());
+                             add_commas(vict->getPL()).c_str());
                 if (!IS_NPC(vict)) {
                     send_to_char(ch, "@D|@1@CC@c@1ha@1@Cr@c@1ge@1@Cd Ki @1@D: @Y%21s@n@D|@n\r\n",
                                  add_commas(GET_CHARGE(vict)).c_str());
                 } else if (IS_NPC(vict)) {
                     send_to_char(ch, "@D|@1@CC@c@1ha@1@Cr@c@1ge@1@Cd Ki @1@D: @Y%21s@n@D|@n\r\n",
-                                 add_commas(vict->mobcharge * rand_number(GET_LEVEL(ch) * 50, GET_LEVEL(ch) * 200)).c_str());
+                                 add_commas(vict->mobcharge * rand_number(GET_INT(ch) * 50, GET_INT(ch) * 200)).c_str());
                 }
                 if (percent < 10)
                     send_to_char(ch, "@D|@1@YS@y@1ta@1@Ym@y@1in@1@Ya    @1@D: @Y%21s@n@D|@n\r\n", "Exhausted");
