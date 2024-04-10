@@ -3822,6 +3822,9 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
 
 void giveRandomVital(char_data* ch, int64_t pl, int64_t ki, int64_t st, int attrChance) {
     //Handling for awarding vitals to the player
+    pl *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+    ki *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+    st *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
     if(pl > (ch->getBasePL() / 10)) pl = ch->getBasePL() / 10;
     if(ki > (ch->getBaseKI() / 10)) ki = ch->getBaseKI() / 10;
     if(st > (ch->getBaseST() / 10)) st = ch->getBaseST() / 10;
@@ -4315,7 +4318,18 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
 
 
         dmg *= (1.0 + ch->getAffectModifier(APPLY_DAMAGE_PERC));
+        if(type == 0) {
+            dmg *= (1.0 + ch->getAffectModifier(APPLY_PHYS_DAM_PERC));
+        } else {
+            dmg *= (1.0 + ch->getAffectModifier(APPLY_KI_DAM_PERC));
+        }
+
         dmg *= (1.0 + vict->getAffectModifier(APPLY_DEFENSE_PERC));
+        if(type == 0) {
+            dmg *= (1.0 + vict->getAffectModifier(APPLY_PHYS_DAM_RES));
+        } else {
+            dmg *= (1.0 + vict->getAffectModifier(APPLY_KI_DAM_RES));
+        }
 
 
         if (type > -1) {

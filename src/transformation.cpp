@@ -1496,7 +1496,7 @@ namespace trans {
             drain *= 0.01;
             if(ch->race == RaceID::Icer) drain = 0.0;
         }
-        return drain * ch->transforms[form].grade;
+        return drain * ch->transforms[form].grade * (1 + ch->getAffectModifier(APPLY_TRANS_ST_UPKEEP));
     }
 
     void gamesys_transform(uint64_t heartPulse, double deltaTime) {

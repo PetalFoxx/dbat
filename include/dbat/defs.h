@@ -1635,7 +1635,7 @@ enum class SkillID : uint16_t {
 #define APPLY_HIT              13    /* Apply to max hit points	*/
 #define APPLY_MOVE             14    /* Apply to max move points	*/
 #define APPLY_GOLD             15    /* Reserved			*/
-#define APPLY_EXP_GAIN_MULT         16    /* Bonus/Penalty to XP gain. +/- % */
+#define APPLY_EXP_GAIN_MULT    16    /* Bonus/Penalty to XP gain. +/- % */
 #define APPLY_AC               17    /* Apply to Armor Class		*/
 #define APPLY_ACCURACY         18    /* Apply to accuracy		*/
 #define APPLY_DAMAGE           19    /* Apply to damage 		*/
@@ -1665,10 +1665,10 @@ enum class SkillID : uint16_t {
 #define APPLY_ALLSAVES         43       /* Apply to all 3 save types 	*/
 #define APPLY_RESISTANCE       44       /* Apply to resistance	 	*/
 #define APPLY_ALL_ATTRS        45       /* Apply to all attributes	*/
-#define APPLY_ALL_VITALS         46       // Apply to all CharStats base.
+#define APPLY_ALL_VITALS       46       // Apply to all CharStats base.
 #define APPLY_SKILL_SLOTS      47     // Add/Remove Skill Slots.
 #define APPLY_ATTR_TRAIN_COST  48     // Add/Reduce cost in train points to increase attribute by percent.
-#define APPLY_PS_GAIN_MULT          49     // Add/Reduce gained PS from things that grant PS.
+#define APPLY_PS_GAIN_MULT     49     // Add/Reduce gained PS from things that grant PS.
 #define APPLY_TRANS_ST_UPKEEP  50    // Add/Reduce perc of stamina by % for transformation upkeep.
 #define APPLY_VITALS_GAIN_MULT 51     // improves gains to PL/KI/ST/LF by percent.
 #define APPLY_PL_GAIN_MULT     52

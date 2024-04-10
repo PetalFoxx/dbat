@@ -388,6 +388,10 @@ static card comprehension = {   "Comprehension",
         int64_t ki = (GET_WIS(ch) / 2) * Random::get<double>(0.8, 1.2) * ch->getPotential();
         int64_t st = (GET_CON(ch) / 2) * Random::get<double>(0.8, 1.2) * ch->getPotential();
 
+        pl *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+        ki *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+        st *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+
         if(pl > (ch->getBasePL() / 10)) pl = ch->getBasePL() / 10;
         if(ki > (ch->getBaseKI() / 10)) ki = ch->getBaseKI() / 10;
         if(st > (ch->getBaseST() / 10)) st = ch->getBaseST() / 10;

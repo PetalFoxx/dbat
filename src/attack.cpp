@@ -179,7 +179,7 @@ namespace atk {
         initStats();
 
         currentHitProbability = roll_accuracy(user, init_skill(user, skillID), kiAttack);
-        currentChanceToHit = chance_to_hit(user);
+        currentChanceToHit = chance_to_hit(user) * (1 + user->getAffectModifier(APPLY_ACCURACY));
 
         if(isPhysical() && !usesWeapon()) {
             if (IS_KABITO(user) && !IS_NPC(user)) {
@@ -569,7 +569,7 @@ namespace atk {
         actUser("@WYou move quickly and yet @C$N@W simply sidesteps you!@n");
         actOthers("@C$n@W moves quickly and yet @c$N@W dodges with ease!@n");
 
-        double incomingDamage = calcDamage * 1 + victim->getAffectModifier(APPLY_PERFECT_DODGE);
+        double incomingDamage = calcDamage * (1 + victim->getAffectModifier(APPLY_PERFECT_DODGE));
 
 
         if(victim->getCurKI() > 0) {
