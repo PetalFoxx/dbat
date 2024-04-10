@@ -968,22 +968,19 @@ double char_data::speednar() {
 }
 
 int64_t char_data::getPL() {
-    int64_t vitalCalc = (getMaxPL() + getMaxKI()) / 2;
+    int64_t vitalCalc = (getMaxPL() + getMaxKI()) / 4;
     int attrCalc = (get(CharAttribute::Agility) + get(CharAttribute::Constitution, false) + get(CharAttribute::Intelligence, false) + get(CharAttribute::Speed, false)
     + get(CharAttribute::Strength, false) + get(CharAttribute::Wisdom, false)) / 50;
-    double skillCalc = 5;
-    for (auto curSkill : skill) {
-        auto data = curSkill.second;
-        if(data.level > 0)
-            skillCalc += data.level / 100;
-    }
-    skillCalc /= 10;
-
 
     double suppressed = suppression > 0 ? ((double) suppression / 100.0) : 1;
     double speed = speednar();
 
-    return vitalCalc * attrCalc * skillCalc * speed * suppressed;
+    double pl = vitalCalc * attrCalc * speed * suppressed;
+
+    if(IS_NPC(this))
+        pl /= 10;
+
+    return pl;
 }
 
 void char_data::apply_kaioken(int times, bool announce) {

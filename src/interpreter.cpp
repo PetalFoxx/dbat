@@ -144,7 +144,7 @@ void command_interpreter(struct char_data *ch, char *argument) {
                 break;
     }
     
-    if(complete_cmd_info[cmd].wait_list == 1) {
+    if(!IS_NPC(ch) && complete_cmd_info[cmd].wait_list == 1) {
         if (ch->task != Task::nothing) {
             send_to_char(ch, "Use '--' if you want to stop your current task.\r\n");
         } else {
