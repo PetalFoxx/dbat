@@ -1114,6 +1114,12 @@ const char *apply_types[NUM_APPLIES + 1] = {
         "ST_GAIN_MULT",
         "KI_GAIN_MULT",
         "LF_GAIN_MULT",
+        "PERFECT_DODGE",
+        "PARRY_PERC",
+        "DODGE_PERC",
+        "BLOCK_PERC",
+        "REGEN_PL_PERC",
+        "REGEN_KI_PERC",
 
         "\n"
 };

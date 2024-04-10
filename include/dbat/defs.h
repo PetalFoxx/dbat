@@ -1936,7 +1936,7 @@ input */
 #define MAX_TONGUE        3
 #define MAX_SKILLS        200
 #define MAX_AFFECT        32
-#define MAX_OBJ_AFFECT        6
+#define MAX_OBJ_AFFECT        20
 #define MAX_NOTE_LENGTH        6000    /* arbitrary */
 #define SKILL_TABLE_SIZE    1000
 #define SPELLBOOK_SIZE        50

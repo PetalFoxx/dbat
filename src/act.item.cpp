@@ -2071,20 +2071,7 @@ ACMD(do_assemble) {
         roll += axion_dice(0);
 
         improve_skill(ch, SKILL_SURVIVAL, 1);
-        if (70 + (GET_SKILL(ch, SKILL_SURVIVAL) / 2) >= roll) {
-            if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
-                send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
-                return;
-            }
 
-            extract_obj(pObject);
-            send_to_char(ch, "You start to %s %s %s, but mess up royally!\r\n", CMD_NAME, AN(argument), argument);
-
-            if (assemblyCheckComponents(lVnum, ch, true)) {
-                roll = 9001; /* Just a place holder */
-            }
-            return;
-        }
     } else {
         if (GET_SKILL(ch, SKILL_SURVIVAL) >= 90) {
             roll += axion_dice(0);
@@ -2092,7 +2079,7 @@ ACMD(do_assemble) {
             roll += axion_dice(-10);
         }
         improve_skill(ch, SKILL_BUILD, 1);
-        if (GET_SKILL(ch, SKILL_SURVIVAL) <= roll) {
+        /*if (GET_SKILL(ch, SKILL_SURVIVAL) <= roll) {
             if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
                 send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
                 return;
@@ -2109,35 +2096,10 @@ ACMD(do_assemble) {
                 }
             }
             if (assemblyCheckComponents(lVnum, ch, true)) {
-                roll = 9001; /* Just a place holder */
+                roll = 9001;
             }
             return;
-        }
-    }
-
-    if (axion_dice(0) - (GET_INT(ch) / 5) > 95) {
-        if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
-            send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
-            return;
-        }
-
-        extract_obj(pObject);
-        send_to_char(ch, "You start to %s %s %s, but forget a couple of steps. You take it apart and give up.\r\n",
-                     CMD_NAME, AN(argument), argument);
-        WAIT_STATE(ch, PULSE_6SEC);
-        return;
-    } else if (rand_number(1, 100) >= 92) {
-        if ((pObject = read_object(lVnum, VIRTUAL)) == nullptr) {
-            send_to_char(ch, "You can't %s %s %s.\r\n", CMD_NAME, AN(argument), argument);
-            return;
-        }
-
-        extract_obj(pObject);
-        send_to_char(ch,
-                     "You start to %s %s %s, but put it together wrong and have to stop. You take it apart and give up.\r\n",
-                     CMD_NAME, AN(argument), argument);
-        WAIT_STATE(ch, PULSE_4SEC);
-        return;
+        }*/
     }
 
     /* Create the assembled object. */
@@ -2146,79 +2108,26 @@ ACMD(do_assemble) {
         return;
     }
 
+    assemblyCheckComponents(lVnum, ch, true);
+
     /* Now give the object to the character. */
     if (GET_OBJ_VNUM(pObject) != 1611) {
-        obj_to_char(pObject, ch);
-        if (IS_TRUFFLE(ch)) {
-            int count = 0, plused = false, hasstat = 0, failsafe = 0;
+        //obj_to_char(pObject, ch);
+        ch->craftingTask.improvementRounds = 0;
+        ch->craftingTask.pObject = pObject;
 
-            while (count < 6) {
-                if (pObject->affected[count].location > 0 && rand_number(1, 6) <= 2 && plused == false) {
-                    pObject->affected[count].modifier += rand_number(1, 3);
-                    plused = true;
-                } else if (pObject->affected[count].location > 0) {
-                    hasstat += 1;
-                }
-                failsafe++;
-                count++;
-                if (plused == true) {
-                    send_to_char(ch, "@YYour intuitive skill with building has made this item even better!@n\r\n");
-                    count = 6;
-                } else if (failsafe >= 12) {
-                    send_to_char(ch, "@yIt seems this item could not be upgraded with your truffle knowledge...@n\r\n");
-                    count = 6;
-                } else if (failsafe == 11 && plused == false) {
-                    send_to_char(ch, "@YYour intuitive skill with building has made this item even better!@n\r\n");
-                    pObject->affected[count].location = rand_number(1, 6);
-                    pObject->affected[count].modifier += rand_number(1, 3);
-                    plused = true;
-                    count = 6;
-                } else if (count == 6 && hasstat > 0) {
-                    count = 0;
-                }
-            }
-        }
+        ch->craftingDeck.initDeck(ch);
+        ch->task=Task::crafting;
+
+        send_to_char(ch, "You start crafting a %s\r\n", pObject->name);
+        act("$n starts to work on creating something.\r\n", true, ch, nullptr, nullptr, TO_ROOM);
+
+        WAIT_STATE(ch, PULSE_5SEC * 4);
+
+
     } else {
         obj_to_room(pObject, IN_ROOM(ch));
         GET_OBJ_TIMER(pObject) = (GET_SKILL(ch, SKILL_SURVIVAL) * 0.12);
-    }
-
-    /*if (wearable_obj(pObject)) {
-   GET_OBJ_SIZE(pObject) = get_size(ch);
-  }*/
-
-    /* Tell the character they made something. */
-    sprintf(buf, "You %s $p.", CMD_NAME);
-    act(buf, false, ch, pObject, nullptr, TO_CHAR);
-
-    /* Tell the room the character made something. */
-    sprintf(buf, "$n %ss $p.", CMD_NAME);
-    act(buf, false, ch, pObject, nullptr, TO_ROOM);
-
-    if (assemblyCheckComponents(lVnum, ch, true)) {
-        roll = 9001; /* Just a place holder */
-    }
-
-    if (!IS_TRUFFLE(ch) && axion_dice(8) > GET_SKILL(ch, SKILL_BUILD)) {
-        send_to_char(ch, "@yYou've made an inferior product. Its value will be somewhat less.@n\r\n");
-        GET_OBJ_COST(pObject) -= GET_OBJ_COST(pObject) * 0.25;
-    } else if (IS_TRUFFLE(ch) && axion_dice(18) > GET_SKILL(ch, SKILL_BUILD)) {
-        send_to_char(ch, "@yYou've made an inferior product. Its value will be somewhat less.@n\r\n");
-        GET_OBJ_COST(pObject) -= GET_OBJ_COST(pObject) * 0.12;
-    } else if (IS_TRUFFLE(ch) < GET_SKILL(ch, SKILL_BUILD)) {
-        send_to_char(ch, "@YYou've made an excellent product. Its value will be somewhat more.@n\r\n");
-        GET_OBJ_COST(pObject) += GET_OBJ_COST(pObject) * 0.12;
-    }
-
-    if (IS_TRUFFLE(ch) && rand_number(1, 5) >= 4 && GET_OBJ_COST(pObject) >= 500) {
-        if (GET_LEVEL(ch) < 100 && level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch) > 0) {
-            int64_t gain = level_exp(ch, GET_LEVEL(ch) + 1) * 0.011;
-            send_to_char(ch, "@RExp Bonus@D: @G%s@n\r\n", add_commas(gain).c_str());
-            ch->modExperience(gain);
-        } else {
-            ch->modExperience(1375000);
-            send_to_char(ch, "@RExp Bonus@D: @G%s@n\r\n", add_commas(1375000).c_str());
-        }
     }
 }
 

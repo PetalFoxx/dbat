@@ -3393,6 +3393,25 @@ bool is_all_alpha(const std::string& str) {
     });
 }
 
+void craftProgress(char_data* ch) {
+    bool continueCraft = true;
+    continueCraft = ch->craftingDeck.playTopCard(ch);
+
+    if(!continueCraft) {
+        send_to_char(ch, "You finish your project!\r\n");
+        act("$n finally finishes their project!", true, ch, nullptr, nullptr, TO_ROOM);
+
+        obj_to_char(ch->craftingTask.pObject, ch);
+        ch->craftingTask.pObject = nullptr;
+        ch->craftingTask.improvementRounds = 0;
+
+        ch->task = Task::nothing;
+    } else {
+        improve_skill(ch, SKILL_BUILD, 1);
+        WAIT_STATE(ch, PULSE_5SEC * 4);
+    }
+}
+
 void doContinuedTask(char_data* ch) {
     auto task = ch->task;
 
@@ -3411,5 +3430,9 @@ void doContinuedTask(char_data* ch) {
     if (task == Task::trainStr || task == Task::trainAgl || task == Task::trainCon || task == Task::trainSpd
         || task == Task::trainInt || task == Task::trainWis) {
         trainProgress(ch);
+    }
+
+    if (task == Task::crafting) {
+        craftProgress(ch);
     }
 }

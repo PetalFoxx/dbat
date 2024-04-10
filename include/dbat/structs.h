@@ -520,6 +520,7 @@ enum Task
     meditate = 1,
     situps = 2,
     pushups = 3,
+    crafting = 4,
 
     trainStr = 10,
     trainAgl = 11,
@@ -534,7 +535,7 @@ const std::string DoingTaskName[] {
     "meditating",
     "situps",
     "pushups",
-    "RES",
+    "crafting",
     "RES",
     "RES",
     "RES",
@@ -546,6 +547,36 @@ const std::string DoingTaskName[] {
     "spd training",
     "int training",
     "wis training",
+};
+
+struct card {
+    std::string name = "Default";
+    std::function<bool(struct char_data *ch)> effect;
+    std::string playerAnnounce = "You focus hard on your work.\r\n";
+    std::string roomAnnounce = "$n focuses hard on $s work.\r\n";
+    bool discard = false;
+
+};
+
+struct deck {
+    std::vector<struct card> deck;
+    std::vector<struct card> discard;
+
+    void shuffleDeck();
+    void discardCard(std::string);
+    void discardCard(card card);
+    bool playTopCard(char_data* ch);
+    card findCard(std::string);
+    void addCardToDeck(std::string, int num = 1);
+    void removeCard(std::string);
+    void addCardToDeck(card, int num = 1);
+    void removeCard(card);
+    void initDeck(char_data* ch);
+};
+
+struct craftTask {
+    struct obj_data *pObject = nullptr;
+    int improvementRounds = 0;
 };
 
 
@@ -602,6 +633,8 @@ struct char_data : public unit_data {
 
     std::list<std::pair<int, std::string>> wait_input_queue;
     Task task = Task::nothing;
+    struct craftTask craftingTask;
+    struct deck craftingDeck;
 
 
     /* PC / NPC's weight                    */

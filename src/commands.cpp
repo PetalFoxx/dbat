@@ -881,7 +881,7 @@ const struct command_info cmd_info[] = {
         {"book",          "boo",          POS_SLEEPING, do_gen_ps,          0,  ADMLVL_IMMORT,  SCMD_INFO,      0},
         {"break",         "break",        POS_STANDING, do_break,           0,  ADMLVL_IMMORT,  0,      1},
         {"brief",         "br",           POS_DEAD,     do_gen_tog,         0,  ADMLVL_NONE,    SCMD_BRIEF,      0},
-        {"build",         "bui",          POS_SITTING,  do_assemble,        0,  ADMLVL_NONE,    SCMD_BREW,      0},
+        {"build",         "bui",          POS_SITTING,  do_assemble,        0,  ADMLVL_NONE,    SCMD_BREW,      1},
         {"buildwalk",     "buildwalk",    POS_STANDING, do_gen_tog,         0,  ADMLVL_IMMORT,  SCMD_BUILDWALK,      0},
         {"buy",           "bu",           POS_STANDING, do_not_here,        0,  ADMLVL_NONE,    0,      0},
         {"bug",           "bug",          POS_DEAD,     do_gen_write,       0,  ADMLVL_NONE,    SCMD_BUG,      0},

@@ -6313,7 +6313,7 @@ ACMD(do_appraise) {
     for (i = 0; i < MAX_OBJ_AFFECT; i++) {
         if (obj->affected[i].location != APPLY_NONE) {
             if (obj->affected[i].location == APPLY_REGEN || obj->affected[i].location == APPLY_TRAIN ||
-                obj->affected[i].location == APPLY_LIFEMAX) {
+                obj->affected[i].location == APPLY_LIFEMAX ) {
                 percent = true;
             }
             sprinttype(obj->affected[i].location, apply_types, buf, sizeof(buf));
