@@ -2247,6 +2247,11 @@ ACMD(do_pgrant) {
     two_arguments(argument, arg1, arg2);
 
     std::string strForm;
+    if(!*arg1) {
+        send_to_char(ch, "Usage: pgrant <char> <target>\r\n");
+        return;
+    }
+
     if(!*arg2) {
         vict = ch;
         strForm = arg1;
@@ -2259,10 +2264,13 @@ ACMD(do_pgrant) {
     }
 
     if(strForm == "growth") {
-        if (vict)
+        if (vict) {
             vict->internalGrowth += 500;
-        else
+            send_to_char(ch, "500 growth has been given to you.\r\n");
+        } else {
             ch->internalGrowth += 500;
+            send_to_char(ch, "Given 500 growth to %s\r\n", vict->name);
+        }
         return;
     }
 
@@ -2273,7 +2281,7 @@ ACMD(do_pgrant) {
         return;
     }
 
-    if(!trans::getFormsFor(vict).contains(*foundForm)) {
+    if(!vict->transforms.contains(*foundForm)) {
         vict->addTransform(*foundForm);
         send_to_char(ch, "Form %s added!\r\n", strForm);
         log_imm_action("Form Added: %s added %s to %s!", ch, strForm, vict);
@@ -2287,8 +2295,6 @@ ACMD(do_pgrant) {
             send_to_char(ch, "Form %s unhidden!\r\n", strForm);
             log_imm_action("Form Unhidden: %s unhidden %s from %s!", ch, strForm, vict);
         }
-
-        
     }
 
 }

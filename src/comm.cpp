@@ -723,7 +723,7 @@ char *make_prompt(struct descriptor_data *d) {
         if (PRF_FLAGGED(d->character, PRF_DISPAUTO) && GET_LEVEL(d->character) >= 500 && len < sizeof(prompt)) {
             struct char_data *ch = d->character;
             if (GET_HIT(ch) << 2 < GET_MAX_HIT(ch)) {
-                count = snprintf(prompt + len, sizeof(prompt) - len, "PL: %" I64T " ", GET_HIT(ch));
+                count = snprintf(prompt + len, sizeof(prompt) - len, "HL: %" I64T " ", GET_HIT(ch));
                 if (count >= 0)
                     len += count;
             }
@@ -838,6 +838,31 @@ char *make_prompt(struct descriptor_data *d) {
             if (PLR_FLAGGED(d->character, PLR_SPAR) && len < sizeof(prompt) && !PRF_FLAGGED(d->character, PRF_NODEC)) {
                 count = snprintf(prompt + len, sizeof(prompt) - len, "SPARRING - ");
                 flagged = true;
+                if (count >= 0)
+                    len += count;
+            }
+            if (PRF_FLAGGED(d->character, PRF_FORM) && len < sizeof(prompt)) {
+                FormID form = d->character->form;
+                
+                if(d->character->transforms[form].grade > 1)
+                    count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mForm@y: @W%s - %s@D]@n",
+                        trans::getAbbr(d->character, form).c_str(), std::to_string(d->character->transforms[form].grade).c_str());
+                else
+                    count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mForm@y: @W%s@D]@n",
+                        trans::getAbbr(d->character, form).c_str());
+                if (count >= 0)
+                    len += count;
+            }
+            if (PRF_FLAGGED(d->character, PRF_TECH) && len < sizeof(prompt)) {
+                FormID form = d->character->technique;
+
+                if(d->character->transforms[form].grade > 1)
+                    count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mTech@y: @W%s - %s@D]@n",
+                        trans::getAbbr(d->character, form).c_str(), std::to_string(d->character->transforms[form].grade).c_str());
+                else
+                    count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mTech@y: @W%s@D]@n",
+                        trans::getAbbr(d->character, form).c_str());
+
                 if (count >= 0)
                     len += count;
             }
@@ -1212,7 +1237,7 @@ char *make_prompt(struct descriptor_data *d) {
                 else
                     col = "r";
 
-                if ((count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@RPL@n@Y: @%s%d%s@D]@n", col, (int) perc,
+                if ((count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@RHL@n@Y: @%s%d%s@D]@n", col, (int) perc,
                                       "@w%")) > 0)
                     len += count;
             }
@@ -1336,22 +1361,6 @@ char *make_prompt(struct descriptor_data *d) {
             if (PRF_FLAGGED(d->character, PRF_DISPRAC) && len < sizeof(prompt)) {
                 count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mPS@y: @W%s@D]@n",
                                  add_commas(GET_PRACTICES(d->character)).c_str());
-                if (count >= 0)
-                    len += count;
-            }
-            if (PRF_FLAGGED(d->character, PRF_FORM) && len < sizeof(prompt)) {
-                FormID form = d->character->form;
-
-                count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mForm@y: @W%s - %s@D]@n",
-                    trans::getAbbr(d->character, form).c_str(), std::to_string(d->character->transforms[form].grade).c_str());
-                if (count >= 0)
-                    len += count;
-            }
-            if (PRF_FLAGGED(d->character, PRF_TECH) && len < sizeof(prompt)) {
-                FormID form = d->character->technique;
-
-                count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mForm@y: @W%s - %s@D]@n",
-                    trans::getAbbr(d->character, form).c_str(), std::to_string(d->character->transforms[form].grade).c_str());
                 if (count >= 0)
                     len += count;
             }

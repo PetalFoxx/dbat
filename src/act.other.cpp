@@ -10232,7 +10232,7 @@ ACMD(do_display) {
     }
 
     auto allPrefs = {PRF_DISPHP, PRF_DISPKI, PRF_DISPMOVE, PRF_DISPTNL, PRF_FURY, PRF_DISTIME, PRF_DISGOLD, PRF_DISPRAC,
-        PRF_DISHUTH, PRF_DISPERC, PRF_FORM};
+        PRF_DISHUTH, PRF_DISPERC, PRF_FORM, PRF_TECH};
 
     if (!strcasecmp(argument, "on") || !strcasecmp(argument, "all")) {
         for(auto f : allPrefs) ch->pref.set(f);
