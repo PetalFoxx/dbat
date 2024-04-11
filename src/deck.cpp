@@ -32,7 +32,7 @@ static card refine = {"Refine",
 
         task->pObject->cost *= 1.2; 
 
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
         
         return false;},
@@ -79,12 +79,12 @@ static card basicAttr = {"Basic Enhancement (Attributes)",
                 break;
         }
 
-        rand = std::rand() % 3 + 1;
+        rand = 1;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += rand;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -112,12 +112,12 @@ static card basicTrain = {"Basic Enhancement (Training)",
             
         }
 
-        double increase = 0.1;
+        double increase = 0.05;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += increase;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -153,12 +153,12 @@ static card improvedAttr = {"Improved Enhancement (Attributes)",
                 break;
         }
 
-        rand = std::rand() % 3 + 2;
+        rand = 2;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += rand;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -186,12 +186,12 @@ static card improvedTrain = {"Improved Enhancement (Training)",
             
         }
 
-        double increase = 0.15;
+        double increase = 0.08;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += increase;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -226,12 +226,12 @@ static card expertAttr = {"Expert Enhancement (Attributes)",
                 break;
         }
 
-        rand = std::rand() % 3 + 3;
+        rand = 3;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += rand;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -258,7 +258,7 @@ static card expertTrain = {"Expert Enhancement (Training)",
             
         }
 
-        double increase = 0.2;
+        double increase = 0.1;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += increase;
@@ -297,12 +297,12 @@ static card tuffleArtisany = {"Tuffle Artisany",
             
         }
 
-        double inc = 0.1;
+        double inc = 0.08;
 
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += inc;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
@@ -345,7 +345,7 @@ static card tuffleIngenuity = {"Tuffle Ingenuity",
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].location = bonus;
         task->pObject->affected[findItemApplySlot(task->pObject, bonus)].modifier += inc;
         
-        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD))
+        if(task->improvementRounds++ * 20 + (axion_dice(0) / 6) <= GET_SKILL(ch, SKILL_BUILD) * (axion_dice(0) / 100))
             return true;
 
         return false;},
