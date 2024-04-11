@@ -4346,7 +4346,7 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                     } else if (COMBHITS(ch) < physical_mastery(ch)) {
                         dmg += combo_damage(ch, dmg, 0);
                         if (COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) {
-                            int64_t gain = GET_INT(ch) * 1000;
+                            int64_t gain = GET_INT(ch) * 10 * ch->getPotential();
                             if (GET_SKILL(ch, SKILL_STYLE) >= 100) {
                                 gain += gain * 2;
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 80) {
@@ -4358,13 +4358,12 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 20) {
                                 gain += gain * 0.1;
                             }
-                            auto gained = ch->modExperience(gain);
-                            send_to_char(ch, "@D[@mExp@W: @G%s@D]@n\r\n", add_commas(gained).c_str());
+                            giveRandomVital(ch, gain, gain, gain, 2);
                         }
                     } else {
                         dmg += combo_damage(ch, dmg, 1);
                         if (COMBHITS(ch) == 10 || COMBHITS(ch) == 20 || COMBHITS(ch) == 30) {
-                            int64_t gain = GET_INT(ch) * 1000;
+                            int64_t gain = GET_INT(ch) * 10 * ch->getPotential();
                             if (GET_SKILL(ch, SKILL_STYLE) >= 100) {
                                 gain += gain * 2;
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 80) {
@@ -4376,8 +4375,7 @@ void hurt(int limb, int chance, struct char_data *ch, struct char_data *vict, st
                             } else if (GET_SKILL(ch, SKILL_STYLE) >= 20) {
                                 gain += gain * 0.1;
                             }
-                            ch->modExperience(gain);
-                            send_to_char(ch, "@D[@mExp@W: @G%s@D]@n\r\n", add_commas(gain).c_str());
+                            giveRandomVital(ch, gain, gain, gain, 5);
                         }
                         COMBO(ch) = -1;
                         COMBHITS(ch) = 0;
