@@ -1263,7 +1263,7 @@ int roll_hitloc(struct char_data *ch, struct char_data *vict, int skill) {
 
 int64_t armor_calc(struct char_data *ch, int64_t dmg, int type) {
     if (IS_NPC(ch))
-        return (0);
+        return (70);
 
     int64_t reduce = 0;
 
@@ -3529,14 +3529,16 @@ int64_t damtype(struct char_data *ch, int type, int skill, double percent) {
                 break;
         }
     } else {
-        dam = (GET_HIT(ch) * 0.05) + (ch->getPL() * 0.025);
-        dam += (dam * 0.005) * GET_STR(ch);
+        dam = 40 + (ch->getPL() * 0.15);
+        dam += (dam * 0.005) * GET_LEVEL(ch);
         if (GET_LEVEL(ch) >= 120) {
             dam *= 0.25;
         } else if (GET_LEVEL(ch) >= 110) {
             dam *= 0.45;
         } else if (GET_LEVEL(ch) >= 100) {
             dam *= 0.75;
+        } else {
+            dam *= 2;
         }
     }
 
@@ -3544,9 +3546,9 @@ int64_t damtype(struct char_data *ch, int type, int skill, double percent) {
 
         if (type == 0 || type == 1 || type == 2 || type == 3 || type == 4 || type == 5 || type == 6 || type == 8 ||
             type == 51 || type == 52 || type == 56) {
-            dam += GET_STR(ch) * (dam * 0.005);
+            dam += GET_LEVEL(ch) * (dam * 0.005);
         } else {
-            dam += GET_INT(ch) * (dam * 0.005);
+            dam += GET_LEVEL(ch) * (dam * 0.005);
         }
 
         auto mob_hit = ch->getPL();
@@ -3916,6 +3918,8 @@ void spar_gain(struct char_data *ch, struct char_data *vict, int type, int64_t d
 }
 
 bool can_grav(struct char_data *ch) {
+    if(IS_NPC(ch))
+        return true;
     auto result = ch->getBurdenRatio() <= 1.0;
     if(!result) {
         send_to_char(ch, "You are too burdened to even think about it!\r\n");

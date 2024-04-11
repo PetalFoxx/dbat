@@ -2280,6 +2280,14 @@ namespace net {
         conn->account->characters.push_back(p.id);
         p.character = ch;
         init_char(ch);
+        if(IS_BARDOCK(ch)) {
+            ch->gravAcclim[0] = 10000;
+            ch->gravAcclim[1] = 10000;
+            ch->gravAcclim[2] = -5000;
+            ch->gravAcclim[3] = -5000;
+            ch->gravAcclim[4] = -5000;
+            ch->gravAcclim[5] = -5000;
+        }
         ch->save();
         // set state to -1 to prevent accidental freeing of ch...
         state = -1;

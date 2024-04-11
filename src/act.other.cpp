@@ -10172,7 +10172,7 @@ ACMD(do_display) {
     skip_spaces(&argument);
 
     if (!*argument) {
-        send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | G | L | O | E | all/on | none/off | transforms}\r\n");
+        send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | M | G | L | O | E | all/on | none/off | transforms}\r\n");
         return;
     }
 

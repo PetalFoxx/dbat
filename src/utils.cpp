@@ -2371,8 +2371,7 @@ int rand_number(int from, int to) {
         to = tmp;
     }
     //To make it inclusive of the last number.
-    to = to + 1;
-    return Random::get<int>(from, to);
+    return rand()%(to-from + 1) + from;
 }
 
 /* Axion engine dice function */

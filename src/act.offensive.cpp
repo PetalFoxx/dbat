@@ -283,7 +283,7 @@ ACMD(do_genki) {
         }
     }
 
-    int dista = 30 - (GET_INT(ch) * 0.1);
+    int dista = 25 - (GET_INT(ch) * 0.1);
 
     if (GET_SKILL(ch, SKILL_GENKIDAMA) >= 100) {
         dista -= 5;

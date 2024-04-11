@@ -977,8 +977,20 @@ int64_t char_data::getPL() {
 
     double pl = vitalCalc * attrCalc * speed * suppressed;
 
-    if(IS_NPC(this))
-        pl /= 10;
+    if(IS_NPC(this)) {
+        if(GET_LEVEL(this) < 10)
+            pl *= 2;
+        else if(GET_LEVEL(this) < 30)
+            pl /= 1;
+        else if(GET_LEVEL(this) < 50)
+            pl /= 4;
+        else if(GET_LEVEL(this) < 70)
+            pl /= 6;
+        else if(GET_LEVEL(this) < 90)
+            pl /= 8;
+        else
+            pl /= 10;
+    }
 
     return pl;
 }

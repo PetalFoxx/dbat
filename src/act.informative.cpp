@@ -4947,9 +4947,9 @@ ACMD(do_score) {
         send_to_char(ch, "  @cO@D-----------------------------@D[ @cStatistics @D]-----------------------------@cO@n\n");
         send_to_char(ch, "            @D<@wGravity Acclim@D: @w" + grav + "@D> <@wRPP@D: @w%-3d@D>@n\n", GET_RP(ch));
         send_to_char(ch, "        @D<@wSpeed Index@D: @w%s@D> <@wArmor Index@D: @w%s@D>@n\n", add_commas(GET_SPEEDI(ch)).c_str(), add_commas(GET_ARMOR(ch)).c_str());
-        send_to_char(ch, "    @D[ @RStrength@D|@G%2d (%3d)@D] [ @YAgility@D|@G%2d (%3d)@D] [ @BSpeed@D|@G%2d (%3d)@D]@n\n",
+        send_to_char(ch, "    @D[@RStrength     @D|@G%2d (%3d)@D] [@YAgility      @D|@G%2d (%3d)@D] [@BSpeed         @D|@G%2d (%3d)@D]@n\n",
                      ch->get(CharAttribute::Strength, true), GET_STR(ch), ch->get(CharAttribute::Agility, true), GET_DEX(ch), ch->get(CharAttribute::Speed, true), GET_CHA(ch));
-        send_to_char(ch, "    @D[@gConstitution@D|@G%2d (%3d)@D] [@CIntelligence@D|@G%2d (%3d)@D] [ @MWisdom@D|@G%2d (%3d)@D]@n\n",
+        send_to_char(ch, "    @D[@gConstitution @D|@G%2d (%3d)@D] [@CIntelligence @D|@G%2d (%3d)@D] [@MWisdom       @D|@G%2d (%3d)@D]@n\n",
                      ch->get(CharAttribute::Constitution, true), GET_CON(ch), ch->get(CharAttribute::Intelligence, true), GET_INT(ch), ch->get(CharAttribute::Wisdom, true),
                      GET_WIS(ch));
     }
@@ -4989,14 +4989,6 @@ ACMD(do_score) {
             send_to_char(ch, "      @D[ @CEvo Level@D| @W%-15d@D] [   @CEvo Exp@D| @W%-15s@D]\n", GET_MOLT_LEVEL(ch),
                          add_commas(GET_MOLT_EXP(ch)).c_str());
             send_to_char(ch, "      @D[ @CThreshold@D| @W%-15s@D]@n\n", add_commas(molt_threshold(ch)).c_str());
-        }
-        if (GET_LEVEL(ch) < 100) {
-            send_to_char(ch, "                             @D<@gAdvancement@D>@n\n");
-        }
-        if (GET_LEVEL(ch) < 100) {
-            send_to_char(ch, "      @D[@CExperience@D| @W%-15s@D] [@CNext Level@D| @W%-15s@D]@n\n",
-                         add_commas(GET_EXP(ch)).c_str(), add_commas(level_exp(ch, GET_LEVEL(ch) + 1) - GET_EXP(ch)).c_str());
-            send_to_char(ch, "      @D[  @CRpp Cost@D| @W%-15d@D]@n\n", rpp_to_level(ch));
         }
 
         send_to_char(ch,
@@ -6585,7 +6577,7 @@ ACMD(do_levels) {
 ACMD(do_consider) {
     char buf[MAX_INPUT_LENGTH];
     struct char_data *victim;
-    int diff;
+    double diff;
 
     one_argument(argument, buf);
 
@@ -6597,29 +6589,29 @@ ACMD(do_consider) {
         send_to_char(ch, "Easy!  Very easy indeed!\r\n");
         return;
     }
-    diff = (GET_LEVEL(victim) - GET_LEVEL(ch));
+    diff = (victim->getPL() / ch->getPL());
 
-    if (diff <= -10)
+    if (diff <= 0.05)
         send_to_char(ch, "Now where did that chicken go?\r\n");
-    else if (diff <= -5)
+    else if (diff <= 0.1)
         send_to_char(ch, "You could do it with a needle!\r\n");
-    else if (diff <= -2)
+    else if (diff <= 0.4)
         send_to_char(ch, "Easy.\r\n");
-    else if (diff <= -1)
+    else if (diff <= 0.8)
         send_to_char(ch, "Fairly easy.\r\n");
-    else if (diff == 0)
+    else if (diff == 1.1)
         send_to_char(ch, "The perfect match!\r\n");
-    else if (diff <= 1)
+    else if (diff <= 1.3)
         send_to_char(ch, "You could probably manage it.\r\n");
-    else if (diff <= 2)
+    else if (diff <= 1.5)
         send_to_char(ch, "You might take a beating.\r\n");
-    else if (diff <= 3)
+    else if (diff <= 1.8)
         send_to_char(ch, "You MIGHT win, maybe.\r\n");
-    else if (diff <= 5)
+    else if (diff <= 2)
         send_to_char(ch, "Do you feel lucky? You better.\r\n");
-    else if (diff <= 10)
+    else if (diff <= 2.5)
         send_to_char(ch, "Better bring some tough backup!\r\n");
-    else if (diff <= 25)
+    else if (diff <= 3)
         send_to_char(ch, "Maybe if they are allergic to you, otherwise your last words will be 'Oh shit.'\r\n");
     else
         send_to_char(ch, "No chance.\r\n");
