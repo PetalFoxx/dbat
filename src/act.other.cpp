@@ -10194,6 +10194,7 @@ ACMD(do_display) {
     if (!strcasecmp(argument, "transforms")) {
         ch->pref.flip(PRF_FORM);
         ch->pref.flip(PRF_TECH);
+        return;
     }
 
     if (!strcasecmp(argument, "on") || !strcasecmp(argument, "all")) {
@@ -10248,7 +10249,7 @@ ACMD(do_display) {
                     ch->pref.flip(PRF_FURY);
                     break;
                 default:
-                    send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | G | L | O | E | all/on | none/off }\r\n");
+                    send_to_char(ch, "Usage: prompt { P | K | T | S | F | H | G | L | O | E | all/on | none/off | transforms}\r\n");
                     return;
             }
         }

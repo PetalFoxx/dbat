@@ -2353,15 +2353,78 @@ ACMD(do_eratime) {
             std::to_string(era_uptime.year), std::to_string(era_uptime.month), std::to_string(era_uptime.day), std::to_string(era_uptime.hours));
     }
 
+    int days = 0;
+    int months = 0;
+    int years = 0;
+
+    if(*arg1 && !is_abbrev(arg1, "add") && !is_abbrev(arg1, "remove")) {
+        send_to_char(ch, "Syntax: eratime <add / remove> <days>\r\n");
+    }
+
     if(is_abbrev(arg1, "add")) {
         if(!*arg2){
             send_to_char(ch, "Please add a number of days to advance time by.");
+            return;
         }
-        int timeToAdd = atoi(arg2) * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
-        era_uptime.remainder += timeToAdd;
+
+        days = atoi(arg2);
+
+        years = days / (int) DAYS_PER_YEAR;
+        days = days % (int) DAYS_PER_YEAR;
+
+        months = days / (int) DAYS_PER_MONTH;
+        days = days % (int) DAYS_PER_MONTH;
+
+        if (days + era_uptime.day >= DAYS_PER_MONTH) {
+            months += 1;
+            days -= DAYS_PER_MONTH;
+        }
+        if (months + era_uptime.month >= MONTHS_PER_YEAR) {
+            years += 1;
+            months -= MONTHS_PER_YEAR;
+        }
+
+        era_uptime.day += days;
+        era_uptime.month += months;
+        era_uptime.year += years;
         send_to_char(ch, "Time advanced by %s days.\r\n", arg2);
     }
- 
+
+    if(is_abbrev(arg1, "remove")) {
+        if(!*arg2){
+            send_to_char(ch, "Please add a number of days to advance time by.");
+            return;
+        }
+
+        days = atoi(arg2);
+
+        years = days / (int) DAYS_PER_YEAR;
+        days = days % (int) DAYS_PER_YEAR;
+
+        months = days / (int) DAYS_PER_MONTH;
+        days = days % (int) DAYS_PER_MONTH;
+
+        if(era_uptime.year - years < 0) {
+            years = era_uptime.year;
+            months = era_uptime.month;
+            days = era_uptime.day;
+        }
+
+        if(era_uptime.month - months < 0) {
+            months = era_uptime.month;
+            days = era_uptime.day;
+        }
+
+        if(era_uptime.day - days < 0) {
+            days = era_uptime.day;
+        }
+
+        era_uptime.day -= days;
+        era_uptime.month -= months;
+        era_uptime.year -= years;
+
+        send_to_char(ch, "Time reduced by %s days.\r\n", arg2);
+    }
 }
 
 /* clean a room of all mobiles and objects */

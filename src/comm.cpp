@@ -850,6 +850,8 @@ char *make_prompt(struct descriptor_data *d) {
                 else
                     count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mForm@y: @W%s@D]@n",
                         trans::getAbbr(d->character, form).c_str());
+                flagged = true;
+
                 if (count >= 0)
                     len += count;
             }
@@ -862,6 +864,7 @@ char *make_prompt(struct descriptor_data *d) {
                 else
                     count = snprintf(prompt + len, sizeof(prompt) - len, "@D[@mTech@y: @W%s@D]@n",
                         trans::getAbbr(d->character, form).c_str());
+                flagged = true;
 
                 if (count >= 0)
                     len += count;
