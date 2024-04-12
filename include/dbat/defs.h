@@ -590,7 +590,7 @@ enum class SkillID : uint16_t {
 #define AREA_ETHER             1 /* FOR CelestialBody: Planet has Ether Stream for Hoshijin. */
 #define AREA_EARTH_DBALL       2 /* (Not Inherited): Earth DragonBalls may spawn here. */
 #define AREA_NAMEK_DBALL       3 /* (Not Inherited): Namek DragonBalls may spawn here. */
-#define AREA_SHADOW_DRAGON     4 */ (Not Inherited): The Shadow Dragons of Black Smoke Shenron may spawn here. */
+#define AREA_SHADOW_DRAGON     4 /* (Not Inherited): The Shadow Dragons of Black Smoke Shenron may spawn here. */
 
 #define NUM_AREA_FLAGS        5
 

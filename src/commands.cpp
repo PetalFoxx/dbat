@@ -1172,7 +1172,7 @@ const struct command_info cmd_info[] = {
         {"refuel",        "refue",        POS_SITTING,  do_refuel,          0,  ADMLVL_NONE,    0,      0},
         {"resize",        "resiz",        POS_STANDING, do_resize,          0,  ADMLVL_NONE,    0,      0},
         {"rescue",        "rescu",        POS_STANDING, do_rescue,          0,  ADMLVL_NONE,    0,      0},
-        {"rest",          "re",           POS_RESTING,  do_rest,            0,  ADMLVL_NONE,    0,      0},
+        {"rest",          "re",           POS_RESTING,  do_rest,            0,  ADMLVL_NONE,    0,      1},
         {"restring",      "restring",     POS_STANDING, do_restring,        0,  ADMLVL_NONE,    0,      0},
         {"rclone",        "rclon",        POS_DEAD,     do_rcopy,           0,  ADMLVL_BUILDER, 0,      0},
         {"rcopy",         "rcopy",        POS_DEAD,     do_rcopy,           0,  ADMLVL_BUILDER, 0,      0},

@@ -1253,19 +1253,14 @@ int char_data::getSize() {
     return size != SIZE_UNDEFINED ? size : race::getSize(race);
 }
 
-double char_data::getTimeModifier() {
-    return 1 + (time_info.month / 3) + (time_info.year * 4);
-}
-
-double getServerDaysPassed() {
-    double ingameDays = time_info.day + (time_info.month * 30) + (time_info.year * 365);
-    return (ingameDays / 12);
+double getDaysPassed() {
+    double ingameDays = era_uptime.day + (era_uptime.month * 30) + (era_uptime.year * 365);
+    return ingameDays;
 }
 
 double char_data::getPotential() {
     //Gain one potential per RL week, reaches 100 in two years
-    double timePotential = 1 + getServerDaysPassed();
-    timePotential /= 7;
+    double timePotential = 1 + (getDaysPassed() / 7);
 
     int physiquePotential = 1;
     if(hasGravAcclim(0)) physiquePotential += 1;
@@ -1290,10 +1285,10 @@ void char_data::gainGrowth() {
 
 void char_data::gainGrowth(double gain) {
     // You cannot exceed the amount of days the server has been online for
-    double days = getServerDaysPassed();
+    double days = getDaysPassed();
 
     // Roughly increase by a multiplier of 1 every 60 days past the first 60
-    double timeMod = std::max((getServerDaysPassed() / 60.0) , 1.0);
+    double timeMod = std::max((getDaysPassed() / 60.0) , 1.0);
 
     gain *= timeMod;
     
@@ -1523,6 +1518,10 @@ int char_data::getArmor() {
         if(auto obj = GET_EQ(this, i); obj)
             out += obj->getAffectModifier(APPLY_AC, -1);
     }
+
+    out += race::getModifier(this, APPLY_AC, -1);
+    out += trans::getModifier(this, APPLY_AC, -1);
+
     return out;
 }
 

@@ -1267,11 +1267,7 @@ int64_t armor_calc(struct char_data *ch, int64_t dmg, int type) {
 
     int64_t reduce = 0;
 
-    if (GET_ARMOR(ch) < 1000) {
-        reduce = GET_ARMOR(ch) * 0.5;
-    } else if (GET_ARMOR(ch) < 2000) {
-        reduce = GET_ARMOR(ch) * .75;
-    } else if (GET_ARMOR(ch) < 5000) {
+    if (GET_ARMOR(ch) < 5000) {
         reduce = GET_ARMOR(ch);
     } else if (GET_ARMOR(ch) < 10000) {
         reduce = GET_ARMOR(ch) * 2;
@@ -3614,7 +3610,7 @@ int64_t damtype(struct char_data *ch, int type, int skill, double percent) {
 }
 
 void saiyan_gain(struct char_data *ch, struct char_data *vict) {
-    int gain = rand_number(GET_LEVEL(ch) * 6, GET_LEVEL(ch) * 8);
+    int gain = rand_number(GET_WIS(ch) * 1, GET_WIS(ch) * 2);
     int weak = false;
 
     if (!vict)
@@ -3627,9 +3623,9 @@ void saiyan_gain(struct char_data *ch, struct char_data *vict) {
         weak = true;
     }
 
-    gain += rand_number(GET_CON(ch) / 2, GET_CON(ch) * 2);
+    gain += rand_number(GET_CON(ch) / 2, GET_CON(ch));
+    gain *= ch->getPotential();
     
-
     if (IS_BIO(ch) && (GET_GENOME(ch, 0) == 2 || GET_GENOME(ch, 1) == 2)) {
         gain /= 2;
     }
@@ -3656,16 +3652,19 @@ void saiyan_gain(struct char_data *ch, struct char_data *vict) {
 
     switch (*itr) {
         case 0:
+            gain *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
             ch->gainBasePL(gain);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel slightly stronger. @D[@G+%s@D]@n\r\n",
                          add_commas(gain).c_str());
             break;
         case 1:
+            gain *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
             ch->gainBaseKI(gain);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel your spirit grow. @D[@G+%s@D]@n\r\n",
                          add_commas(gain).c_str());
             break;
         case 2:
+            gain *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
             ch->gainBaseST(gain);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel slightly more vigorous. @D[@G+%s@D]@n\r\n",
                          add_commas(gain).c_str());

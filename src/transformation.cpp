@@ -234,7 +234,7 @@ namespace trans {
             case FormID::SuperSaiyan3:
                 return "@w...$e has a @Ybright @Yg@yo@Yl@yd@Ye@yn@w aura around $s body!";
             case FormID::SuperSaiyan4:
-                return "@w...$e has a covering of dark red fur around $s body!";
+                return "@w...$e has a covering of @rdark red fur@n around $s body!";
 
             case FormID::Kaioken:
                 return "@w...@r$e has a red aura around $s body!";
@@ -293,6 +293,9 @@ namespace trans {
                 return std::max(GET_SKILL(ch, (int)SkillID::EagleStance) / 20, 1);
             case FormID::OxStance:
                 return std::max(GET_SKILL(ch, (int)SkillID::OxStance) / 20, 1);
+
+            case FormID::SpiritAbsorption:
+                return 3;
 
             default:
                 return 1;
@@ -1418,10 +1421,12 @@ namespace trans {
         },
         {
             FormID::SpiritAbsorption, {
-                {APPLY_PHYS_DAM_PERC, 1.0},
+                {APPLY_AC, 0.0, -1, [](struct char_data *ch) {
+                    return sqrt(ch->transforms[FormID::SpiritAbsorption].vars[0]) * 10;}},
+                {APPLY_ALL_VITALS, 0.0, -1, [](struct char_data *ch) {
+                    return (ch->transforms[FormID::SpiritAbsorption].vars[0] / 5) * 1 + (0.1 * ch->transforms[FormID::SpiritAbsorption].grade);}},
             }
         },
-
     };
 
     static double getModifierHelper(char_data* ch, FormID form, int location, int specific) {
@@ -1524,7 +1529,7 @@ namespace trans {
         {FormID::EagleStance, .02},
         {FormID::OxStance, .02},
 
-        {FormID::SpiritAbsorption, .02},
+        {FormID::SpiritAbsorption, .15},
     };
 
     double getStaminaDrain(char_data* ch, FormID form, bool upkeep) {
@@ -2210,8 +2215,10 @@ namespace trans {
                 name = "@BMASTERED@n " + name;
             if(!permActive) {
                 if (unlocked) {
-                    if (!bannerDisplayed)
+                    if (!bannerDisplayed) {
                         send_to_char(ch, "@b-------------------Unlocked--------------------@n\r\n");
+                        bannerDisplayed = true;
+                    }
                     send_to_char(ch, "@W%s@n\r\n", name);
                 } else {
                     //send_to_char(ch, "@W%s@n @R-@G %s Growth Req\r\n", name,
@@ -2365,7 +2372,6 @@ namespace trans {
 
         // Unbound Alternate Forms
         {FormID::PotentialUnleashed, {120, 0}},
-        {FormID::EvilAura, {90, 0}},
         {FormID::UltraInstinct, {200, 0}},
 
         // Unbound Perm Forms
@@ -2382,6 +2388,7 @@ namespace trans {
         {FormID::EagleStance, {0, 2}},
         {FormID::OxStance, {0, 2}},
 
+        {FormID::EvilAura, {90, 2}},
         {FormID::SpiritAbsorption, {0, 2}},
 
     };
@@ -2440,9 +2447,9 @@ namespace trans {
                 act("@W$n jumps directly into the @cS@Cp@wi@cr@Ci@wt @cB@Co@wm@cb@W as it descends! It completely obscures $n from view before starting to be absorbed by them!@n",
                     true, ch, nullptr, nullptr, TO_ROOM);
                 hurt(0, 0, loc->user, ch, nullptr, loc->kicharge * 1.25, 1);
-                ch->transforms[FormID::SpiritAbsorption].vars[0] = loc->kicharge;
-                ch->transforms[FormID::SpiritAbsorption].vars[1] = loc->kicharge;
-                send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas(loc->kicharge).c_str());
+                ch->transforms[FormID::SpiritAbsorption].vars[0] = loc->kicharge * 0.9 + (0.1 * getMasteryTier(ch, FormID::SpiritAbsorption));
+                ch->transforms[FormID::SpiritAbsorption].vars[1] = loc->kicharge * 0.9 + (0.1 * getMasteryTier(ch, FormID::SpiritAbsorption));
+                send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas((int64_t)ch->transforms[FormID::SpiritAbsorption].vars[0]).c_str());
                 extract_obj(loc);
                 act("@WThe @cS@Cp@wi@cr@Ci@wt @cB@Co@wm@cb@W completely vanishes as it's absorbed, imploding inwards!@n",
                     true, nullptr, nullptr, nullptr, TO_ROOM);
@@ -2454,33 +2461,41 @@ namespace trans {
 
     static std::unordered_map<FormID, std::function<void(struct char_data *ch, atk::Attack& outgoing)>> trans_on_attack = {
         {FormID::SpiritAbsorption, [](struct char_data *ch, atk::Attack& outgoing) {
-            send_to_char(ch, "Spirit Force infuses your %s, cloaking it in an @Bincandescent@n hue.\r\n", outgoing.getName());
-            act("@W$n's @Cincandescent@n aura infuses the attack with cataclysmic energy.@n",
+            send_to_char(ch, "Spirit Force infuses your %s, cloaking it in an @Ci@cn@Cc@ca@Cn@cd@Ce@cs@Cc@ce@Cn@ct@n hue.\r\n", outgoing.getName());
+            act("@W$n's @Ci@cn@Cc@ca@Cn@cd@Ce@cs@Cc@ce@Cn@ct@n aura infuses the attack with cataclysmic energy.@n",
                     true, ch, nullptr, nullptr, TO_ROOM);
             
             double empower = ch->transforms[FormID::SpiritAbsorption].vars[1] / 50;
+            empower *= ch->transforms[FormID::SpiritAbsorption].grade;
+            if(outgoing.isKiAttack())
+                empower *= 4;
+            if(empower > ch->transforms[FormID::SpiritAbsorption].vars[0])
+                empower = ch->transforms[FormID::SpiritAbsorption].vars[0];
             ch->transforms[FormID::SpiritAbsorption].vars[0] -= empower;
-            outgoing.calcDamage += empower;
+            outgoing.calcDamage += empower * 2;
 
             if(ch->transforms[FormID::SpiritAbsorption].vars[0] <= 0)
                 revert(ch);
-            send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas(ch->transforms[FormID::SpiritAbsorption].vars[0]).c_str());
+            send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas((int64_t)ch->transforms[FormID::SpiritAbsorption].vars[0]).c_str());
             }},
     };
 
     static std::unordered_map<FormID, std::function<void(struct char_data *ch, atk::Attack& incoming)>> trans_on_attacked = {
         {FormID::SpiritAbsorption, [](struct char_data *ch, atk::Attack& incoming) {
-            send_to_char(ch, "Your @Cincandescent@n aura burns away at your opponent's %s.\r\n", incoming.getName());
-            act("@W$n's @Bincandescent@n aura burns away some of the incoming attack.@n",
+            send_to_char(ch, "Your @Ci@cn@Cc@ca@Cn@cd@Ce@cs@Cc@ce@Cn@ct@n aura burns away at your opponent's %s.\r\n", incoming.getName());
+            act("@W$n's @Ci@cn@Cc@ca@Cn@cd@Ce@cs@Cc@ce@Cn@ct@n aura burns away some of the incoming attack.@n",
                     true, ch, nullptr, nullptr, TO_ROOM);
             
             double disempower = ch->transforms[FormID::SpiritAbsorption].vars[1] / 50;
+            disempower *= ch->transforms[FormID::SpiritAbsorption].grade;
+            if(disempower > ch->transforms[FormID::SpiritAbsorption].vars[0])
+                disempower = ch->transforms[FormID::SpiritAbsorption].vars[0];
             ch->transforms[FormID::SpiritAbsorption].vars[0] -= disempower;
-            incoming.calcDamage -= disempower;
+            incoming.calcDamage -= disempower * 2;
 
             if(ch->transforms[FormID::SpiritAbsorption].vars[0] <= 0)
                 revert(ch);
-            send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas(ch->transforms[FormID::SpiritAbsorption].vars[0]).c_str());
+            send_to_char(ch, "@W[@cSpirit Force: @C%s@W]@n\r\n", add_commas((int64_t)ch->transforms[FormID::SpiritAbsorption].vars[0]).c_str());
             }},
     };
 

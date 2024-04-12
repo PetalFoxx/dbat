@@ -7506,6 +7506,7 @@ ACMD(do_transform) {
     }
 
     trans::transform(ch, trans, grade);
+    WAIT_STATE(ch, PULSE_5SEC);
 
 }
 
@@ -7707,8 +7708,12 @@ void situpProgress(char_data* ch) {
         bonus += bonus * 0.1;
     }
     if(bonus <= 0) bonus = 1;
+    // Bonus due to prolonging exercise
+    bonus *= 2;
+    if(bonus > (ch->getBaseST() / 40)) bonus = ch->getBaseST() / 40;
+
     send_to_char(ch, "You feel slightly more vigorous @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBaseST(bonus * 2, true);
+    ch->gainBaseST(bonus, true);
     WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurST(cost);
 }
@@ -7971,9 +7976,12 @@ void meditateProgress(char_data* ch) {
         bonus += bonus * 0.1;
     }
     if(bonus <= 0) bonus = 0;
-    /* Rillao: transloc, add new transes here */
+    // Bonus due to prolonging exercise
+    bonus *= 2;
+    if(bonus > (ch->getBaseKI() / 40)) bonus = ch->getBaseKI() / 40;
+
     send_to_char(ch, "You feel your spirit grow stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBaseKI(bonus * 2, true);
+    ch->gainBaseKI(bonus, true);
     WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurKI(cost);
 
@@ -8174,9 +8182,13 @@ void pushupProgress(char_data* ch) {
         bonus = bonus * 0.8;
     }
     if(bonus <= 0) bonus = 1;
+    
+    // Bonus for longer task
+    bonus *= 2;
+
     if(bonus > (ch->getBasePL() / 40)) bonus = ch->getBasePL() / 40;
     send_to_char(ch, "You feel slightly stronger @D[@G+%s@D]@n.\r\n", add_commas(bonus).c_str());
-    ch->gainBasePL(bonus * 2, true);
+    ch->gainBasePL(bonus, true);
     WAIT_STATE(ch, PULSE_5SEC * 6);
     ch->decCurST(cost);
 }

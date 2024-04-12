@@ -123,6 +123,7 @@ int top_of_socialt = -1;                        /* number of socials */
 
 struct time_info_data old_time_info;/* the infomation about the time    */
 struct time_info_data time_info;/* the infomation about the time    */
+struct time_info_data era_uptime;/* the infomation about how long the server has been up    */
 struct weather_data weather_info;    /* the infomation about the weather */
 std::set<zone_vnum> zone_reset_queue;
 
@@ -379,6 +380,8 @@ static void db_load_globaldata(const std::filesystem::path& loc) {
     if(j.contains("time")) {
         time_info.deserialize(j["time"]);
     }
+    if(j.contains("era_uptime"))
+        era_uptime.deserialize(j["era_uptime"]);
     if(j.contains("weather")) {
         weather_info.deserialize(j["weather"]);
     }

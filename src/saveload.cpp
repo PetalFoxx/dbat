@@ -97,6 +97,7 @@ void dump_state_globalData(const std::filesystem::path &loc) {
     nlohmann::json j;
 
     j["time"] = time_info.serialize();
+    j["era_uptime"] = era_uptime.serialize();
     j["weather"] = weather_info.serialize();
     if(auto gRoom = world.find(0); gRoom != world.end()) {
         if(gRoom->second.script && gRoom->second.script->global_vars) {

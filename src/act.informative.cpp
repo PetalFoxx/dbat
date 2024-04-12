@@ -4910,7 +4910,7 @@ ACMD(do_score) {
     if (view == full || view == health) {
         send_to_char(ch,
                      "  @cO@D-----------------------------@D[   @cHealth   @D]-----------------------------@cO@n\n");
-        send_to_char(ch, "                      @D<@rPowerlevel@D>     [@B%s@D]             @n\n\n", add_commas(ch->getPL()).c_str());
+        send_to_char(ch, "                          @D<@rPowerlevel@D>     [@B%s@D]             @n\n\n", add_commas(ch->getPL()).c_str());
         send_to_char(ch, "                 @D<@rHealth@D>              <@BKi@D>             <@GStamina@D>@n\n");
         send_to_char(ch, "    @wCurrent   @D-[@R%-16s@D]-[@R%-16s@D]-[@R%-16s@D]@n\n", add_commas(ch->getCurPL()).c_str(),
                      add_commas(
@@ -4945,18 +4945,18 @@ ACMD(do_score) {
 
     if (view == full || view == stats) {
         send_to_char(ch, "  @cO@D-----------------------------@D[ @cStatistics @D]-----------------------------@cO@n\n");
-        send_to_char(ch, "            @D<@wGravity Acclim@D: @w" + grav + "@D> <@wRPP@D: @w%-3d@D>@n\n", GET_RP(ch));
-        send_to_char(ch, "        @D<@wSpeed Index@D: @w%s@D> <@wArmor Index@D: @w%s@D>@n\n", add_commas(GET_SPEEDI(ch)).c_str(), add_commas(GET_ARMOR(ch)).c_str());
-        send_to_char(ch, "    @D[@RStrength     @D|@G%2d (%3d)@D] [@YAgility      @D|@G%2d (%3d)@D] [@BSpeed         @D|@G%2d (%3d)@D]@n\n",
+        send_to_char(ch, "                   @D<@wGravity Acclim@D: @w" + grav + "@D> <@wRPP@D: @w%-3d@D>@n\n", GET_RP(ch));
+        send_to_char(ch, "               @D<@wSpeed Index@D: @w%s@D> <@wArmor Index@D: @w%s@D>@n\n", add_commas(GET_SPEEDI(ch)).c_str(), add_commas(GET_ARMOR(ch)).c_str());
+        send_to_char(ch, "  @D[@RStrength     @D|@G%2d (%3d)@D] [@YAgility      @D|@G%2d (%3d)@D] [@BSpeed        @D|@G%2d (%3d)@D]@n\n",
                      ch->get(CharAttribute::Strength, true), GET_STR(ch), ch->get(CharAttribute::Agility, true), GET_DEX(ch), ch->get(CharAttribute::Speed, true), GET_CHA(ch));
-        send_to_char(ch, "    @D[@gConstitution @D|@G%2d (%3d)@D] [@CIntelligence @D|@G%2d (%3d)@D] [@MWisdom       @D|@G%2d (%3d)@D]@n\n",
+        send_to_char(ch, "  @D[@gConstitution @D|@G%2d (%3d)@D] [@CIntelligence @D|@G%2d (%3d)@D] [@MWisdom       @D|@G%2d (%3d)@D]@n\n",
                      ch->get(CharAttribute::Constitution, true), GET_CON(ch), ch->get(CharAttribute::Intelligence, true), GET_INT(ch), ch->get(CharAttribute::Wisdom, true),
                      GET_WIS(ch));
     }
     if (view == full || view == other) {
         send_to_char(ch,
                      "  @cO@D-----------------------------@D[   @cOther    @D]-----------------------------@cO@n\n");
-        send_to_char(ch, "                @D<@YZenni@D>                 <@rInventory Weight@D>@n\n");
+        send_to_char(ch, "                @D<@YZenni@D>                    <@rInventory Weight@D>@n\n");
         send_to_char(ch, "      @D[   @CCarried@D| @W%-15s@D] [   @CCarried@D| @W%-15s@D]@n\n",
                      add_commas(GET_GOLD(ch)).c_str(), add_commas(
                         (ch->getCarriedWeight())).c_str());

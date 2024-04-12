@@ -475,6 +475,9 @@ void advanceClock(uint64_t heartPulse, double deltaTime) {
     const auto addedTime = deltaTime * MUD_TIME_ACCELERATION;
     time_info.remainder += addedTime;
 
+    const auto addedActualTime = deltaTime;
+    era_uptime.remainder += addedActualTime;
+
     while(time_info.remainder >= 1.0) {
         bool secondChangedCheck = false;
         bool minuteChangedCheck = false;
@@ -517,6 +520,9 @@ void advanceClock(uint64_t heartPulse, double deltaTime) {
             }
         }
 
+
+        
+
         if(secondChangedCheck) secondChanged();
         if(minuteChangedCheck) minuteChanged();
         if(hourChangedCheck) hourChanged();
@@ -524,6 +530,49 @@ void advanceClock(uint64_t heartPulse, double deltaTime) {
         if(monthChangedCheck) monthChanged();
         if(yearChangedCheck) yearChanged();
 
+    }
+
+    while(era_uptime.remainder >= 1.0) {
+        bool eraSecondChangedCheck = false;
+        bool eraMinuteChangedCheck = false;
+        bool eraHourChangedCheck = false;
+        bool eraDayChangedCheck = false;
+        bool eraMonthChangedCheck = false;
+        bool eraYearChangedCheck = false;
+
+        era_uptime.remainder -= 1.0;
+        era_uptime.seconds++;
+        eraSecondChangedCheck = true;
+
+        if(era_uptime.seconds >= SECONDS_PER_MINUTE) {
+            era_uptime.seconds -= SECONDS_PER_MINUTE;
+            era_uptime.minutes++;
+            eraMinuteChangedCheck = true;
+
+            if (era_uptime.minutes >= MINUTES_PER_HOUR) {
+                era_uptime.minutes -= MINUTES_PER_HOUR;
+                era_uptime.hours++;
+                eraHourChangedCheck = true;
+
+                if (era_uptime.hours >= HOURS_PER_DAY) {
+                    era_uptime.hours -= HOURS_PER_DAY;
+                    era_uptime.day++;
+                    eraDayChangedCheck = true;
+
+                    if (era_uptime.day >= DAYS_PER_MONTH) {
+                        era_uptime.day -= DAYS_PER_MONTH;
+                        era_uptime.month++;
+                        eraMonthChangedCheck = true;
+
+                        if (era_uptime.month >= MONTHS_PER_YEAR) {
+                            era_uptime.month -= MONTHS_PER_YEAR;
+                            era_uptime.year++;
+                            eraYearChangedCheck = true;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     ageAllCharacters(addedTime);
