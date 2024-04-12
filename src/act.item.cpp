@@ -3677,6 +3677,17 @@ static void majin_gain(struct char_data *ch, struct obj_data *food, int foob) {
         return;
     }
 
+    double max = 0;
+    double start_bonus = Random::get<double>(0.8, 1.2) * (1 + (GET_CON(ch) / 20)) * ch->getPotential();
+    double diminishing_returns = (soft_cap - current) / soft_cap;
+    if (diminishing_returns > 0.0)
+        diminishing_returns = std::max<double>(diminishing_returns, 0.05);
+    else
+        diminishing_returns = 0;
+    max = start_bonus * diminishing_returns * 8;
+
+
+
     int64_t st = food->value[VAL_FOOD_CANDY_ST], ki = food->value[VAL_FOOD_CANDY_KI], pl = food->value[VAL_FOOD_CANDY_PL];
 
     st *= 0.05;
@@ -3696,16 +3707,19 @@ static void majin_gain(struct char_data *ch, struct obj_data *food, int foob) {
         switch(t) {
             case 0:
                 addPL = std::min(pl, available);
+                addPL = std::min(addPL, (int64_t) max);
                 available -= addPL;
                 if(addPL <= 0) addPL = 1;
                 break;
             case 1:
                 addKI = std::min(ki, available);
+                addKI = std::min(addKI, (int64_t) max);
                 available -= addKI;
                 if(addKI <= 0) addKI = 1;
                 break;
             case 2:
                 addST = std::min(st, available);
+                addST = std::min(addST, (int64_t) max);
                 available -= addST;
                 if(addST <= 0) addST = 1;
                 break;

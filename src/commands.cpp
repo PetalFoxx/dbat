@@ -548,6 +548,8 @@ ACMD(do_practice);
 
 ACMD(do_pgrant);
 
+ACMD(do_eratime);
+
 ACMD(do_rpreward);
 
 ACMD(do_purge);
@@ -1161,7 +1163,8 @@ const struct command_info cmd_info[] = {
         {"pushup",        "pushu",        POS_STANDING, do_pushup,          0,  ADMLVL_NONE,    0,      1},
         {"put",           "put",          POS_RESTING,  do_put,             0,  ADMLVL_NONE,    0,      0},
         {"pgrant",        "pgrant",       POS_DEAD,     do_pgrant,          0,  ADMLVL_IMMORT,  0,      0},
-        {"rpreward",      "rpreward",       POS_DEAD,   do_rpreward,        0,  ADMLVL_IMMORT,  0,      0},
+        {"rpreward",      "rpreward",     POS_DEAD,     do_rpreward,        0,  ADMLVL_IMMORT,  0,      0},
+        {"eratime",       "eratime",      POS_DEAD,     do_eratime,         0,  ADMLVL_IMMORT,  0,      0},
         {"purge",         "purge",        POS_DEAD,     do_purge,           0,  ADMLVL_BUILDER, 0,      0},
 
         {"qui",           "qui",          POS_DEAD,     do_quit,            0,  ADMLVL_NONE,    0,      0},

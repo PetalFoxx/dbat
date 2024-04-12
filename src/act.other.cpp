@@ -7667,7 +7667,7 @@ void situpProgress(char_data* ch) {
     //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBaseST();
-    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_CON(ch) / 20) * ch->getPotential();
+    double start_bonus = Random::get<double>(0.8, 1.2) * (1 + (GET_CON(ch) / 20)) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -7922,7 +7922,7 @@ void meditateProgress(char_data* ch) {
     //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBaseKI();
-    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_WIS(ch) / 20) * ch->getPotential();
+    double start_bonus = Random::get<double>(0.8, 1.2) * (1 + (GET_WIS(ch) / 20)) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;
@@ -8137,7 +8137,7 @@ void pushupProgress(char_data* ch) {
     //double level_impact = (1.0 - (2 * std::max<double>(0, (double) GET_LEVEL(ch) - 51.0) / 100.0));
 
     double base = (double)ch->getBasePL();
-    double start_bonus = Random::get<double>(0.8, 1.2) * (GET_CON(ch) / 20) * ch->getPotential();
+    double start_bonus = Random::get<double>(0.8, 1.2) * (1 + (GET_CON(ch) / 20)) * ch->getPotential();
     double ratio_bonus = 1.0 + (3.0 * ratio);
     double soft_cap = (double)ch->calc_soft_cap();
     double diminishing_returns = (soft_cap - base) / soft_cap;

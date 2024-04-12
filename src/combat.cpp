@@ -3610,9 +3610,7 @@ int64_t damtype(struct char_data *ch, int type, int skill, double percent) {
 }
 
 void saiyan_gain(struct char_data *ch, struct char_data *vict) {
-    int gain = rand_number(GET_WIS(ch) * 1, GET_WIS(ch) * 2);
     int weak = false;
-
     if (!vict)
         return;
 
@@ -3620,54 +3618,81 @@ void saiyan_gain(struct char_data *ch, struct char_data *vict) {
         return;
 
     if (vict->getPL() < vict->getPL() / 10) {
-        weak = true;
-    }
-
-    gain += rand_number(GET_CON(ch) / 2, GET_CON(ch));
-    gain *= ch->getPotential();
-    
-    if (IS_BIO(ch) && (GET_GENOME(ch, 0) == 2 || GET_GENOME(ch, 1) == 2)) {
-        gain /= 2;
-    }
-    if (rand_number(1, 22) >= 18) {
-        return;
-    }
-    if (weak) {
         send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WThey are too weak to inspire your saiyan soul!@n\r\n");
         return;
     }
 
-    std::vector<int64_t> stats;
-    for (const auto stat: {0, 1, 2}) {
-        if (!ch->is_soft_cap(stat, 1.5))
-            stats.push_back(stat);
+    if (rand_number(1, 22) >= 8) {
+        return;
     }
+
+    std::vector<int64_t> stats;
+    for (const auto stat: {CharStat::PowerLevel, CharStat::Ki, CharStat::Stamina}) {
+        if (!ch->is_soft_cap((int) stat, 1.0))
+            stats.push_back((int) stat);
+    }
+
+    if(ch->technique == FormID::TigerStance) stats.push_back((int) CharStat::PowerLevel);
+    if(ch->technique == FormID::EagleStance) stats.push_back((int) CharStat::Ki);
+    if(ch->technique == FormID::OxStance) stats.push_back((int) CharStat::Stamina);
+
+    auto itr = Random::get(stats);
 
     if (stats.empty()) {
         send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel you have reached your current limits.@n\r\n");
         return;
     }
 
-    auto itr = Random::get(stats);
+    double attrBonus = 0;
+    double base = 0;
+    switch (*itr) {
+        case 0:
+            base = ch->getBasePL();
+            attrBonus = (1 + (GET_CON(ch) / 20));
+            break;
+        case 1:
+            base = ch->getBaseKI();
+            attrBonus = (1 + (GET_WIS(ch) / 20));
+            break;
+        case 2:
+            base = ch->getBaseST();
+            attrBonus = (1 + (GET_CON(ch) / 20));
+            break;
+    }
+
+    int64_t bonus = 0;
+    double start_bonus = Random::get<double>(0.8, 1.2) * attrBonus * ch->getPotential();
+    double soft_cap = (double)ch->calc_soft_cap();
+    double diminishing_returns = (soft_cap - base) / soft_cap;
+    if (diminishing_returns > 0.0)
+        diminishing_returns = std::max<double>(diminishing_returns, 0.05);
+    else
+        diminishing_returns = 0;
+    bonus = (start_bonus) * diminishing_returns;
+    
+    if (IS_BIO(ch) && (GET_GENOME(ch, 0) == 2 || GET_GENOME(ch, 1) == 2)) {
+        bonus /= 2;
+    }
+    
 
     switch (*itr) {
         case 0:
-            gain *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
-            ch->gainBasePL(gain);
+            bonus *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            ch->gainBasePL(bonus);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel slightly stronger. @D[@G+%s@D]@n\r\n",
-                         add_commas(gain).c_str());
+                         add_commas(bonus).c_str());
             break;
         case 1:
-            gain *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
-            ch->gainBaseKI(gain);
+            bonus *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            ch->gainBaseKI(bonus);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel your spirit grow. @D[@G+%s@D]@n\r\n",
-                         add_commas(gain).c_str());
+                         add_commas(bonus).c_str());
             break;
         case 2:
-            gain *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
-            ch->gainBaseST(gain);
+            bonus *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            ch->gainBaseST(bonus);
             send_to_char(ch, "@D[@YSaiyan @RBlood@D] @WYou feel slightly more vigorous. @D[@G+%s@D]@n\r\n",
-                         add_commas(gain).c_str());
+                         add_commas(bonus).c_str());
             break;
     }
 

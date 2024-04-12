@@ -2343,6 +2343,27 @@ ACMD(do_rpreward) {
     log_imm_action("RP Reward: %s granted %s an RP reward!", ch, vict);
 }
 
+ACMD(do_eratime) {
+    char arg1[MAX_INPUT_LENGTH], arg2[MAX_INPUT_LENGTH];
+
+    two_arguments(argument, arg1, arg2);
+
+    if(!*arg1) {
+        send_to_char(ch, "The server has been up for: %s Years, %s Months, %s Days and %s Hours.\r\n", 
+            std::to_string(era_uptime.year), std::to_string(era_uptime.month), std::to_string(era_uptime.day), std::to_string(era_uptime.hours));
+    }
+
+    if(is_abbrev(arg1, "add")) {
+        if(!*arg2){
+            send_to_char(ch, "Please add a number of days to advance time by.");
+        }
+        int timeToAdd = atoi(arg2) * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
+        era_uptime.remainder += timeToAdd;
+        send_to_char(ch, "Time advanced by %s days.\r\n", arg2);
+    }
+ 
+}
+
 /* clean a room of all mobiles and objects */
 ACMD(do_purge) {
     char buf[MAX_INPUT_LENGTH];
