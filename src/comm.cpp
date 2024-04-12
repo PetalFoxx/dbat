@@ -595,7 +595,7 @@ namespace game {
             co_await run_loop_once(deltaTimeInSeconds);
             auto end = std::chrono::high_resolution_clock::now();
 
-            saveTimer -deltaTimeInSeconds;
+            saveTimer -= deltaTimeInSeconds;
             if(saveTimer <= 0.0) {
                 saveTimer = 60.0 * 5.0;
                 // save the game state...

@@ -2620,7 +2620,7 @@ trans_data::~trans_data() {
 
 void trans_data::deserialize(const nlohmann::json &j) {
     if(j.contains("timeSpentInForm")) timeSpentInForm = j["timeSpentInForm"];
-    if(j.contains("visible")) timeSpentInForm = j["visible"];
+    if(j.contains("visible")) visible = j["visible"];
     if(j.contains("limitBroken")) limitBroken = j["limitBroken"];
     if(j.contains("unlocked")) unlocked = j["unlocked"];
     if(j.contains("grade")) grade = j["grade"];
