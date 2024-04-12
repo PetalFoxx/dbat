@@ -1714,9 +1714,12 @@ static void make_corpse(struct char_data *ch, struct char_data *tch) {
                     repeats += 1;
                 }
 
+                if (repeats > 0) {
+                    send_to_char(tch, "The choice edible meat is preserved because of your skill.\r\n");
+                }
+
                 for (int ind = 0; ind < repeats; ind++) {
                     struct obj_data *meat;
-                    send_to_char(tch, "The choice edible meat is preserved because of your skill.\r\n");
                     meat = read_object(1612, VIRTUAL);
                     obj_to_char(meat, ch);
                     char nick[MAX_INPUT_LENGTH], nick2[MAX_INPUT_LENGTH], nick3[MAX_INPUT_LENGTH];
