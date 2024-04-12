@@ -609,8 +609,7 @@ namespace game {
             }
             deltaTimeInSeconds = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start).count();
         }
-
-
+        runSave();
     }
 
     void run_game() {
