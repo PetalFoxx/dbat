@@ -345,6 +345,17 @@ ACMD(do_land) {
     };
     std::size_t count = 0;
 
+    if(above_planet == false && !*argument) {
+        if(ch->affected_by.test(AFF_FLYING)) {
+            act("@WYou land.@n", true, ch, nullptr, nullptr, TO_CHAR);
+            act("@W$n@W lands nearby.@n", true, ch, nullptr, nullptr, TO_ROOM);
+            ch->affected_by.reset(AFF_FLYING);
+            return;
+        }
+        send_to_char(ch, "You are not even in the lower atmosphere of a planet!\r\n");
+        return;
+    }
+
     if(onPlanet) {
         auto &a = areas[onPlanet.value()];
         count = recurseScanRooms(a, rooms, scan);

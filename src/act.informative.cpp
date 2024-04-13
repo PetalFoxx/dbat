@@ -108,7 +108,7 @@ ACMD(do_evolve) {
 
     int64_t plcost = GET_LEVEL(ch), stcost = GET_LEVEL(ch), kicost = GET_LEVEL(ch);
 
-    plcost += molt_threshold(ch) * 0.65 + (ch->getBasePL() * 0.15);
+    plcost += (molt_threshold(ch) * 0.65) + (ch->getBasePL() * 0.15);
     kicost += (molt_threshold(ch) * 0.50) + (ch->getBaseKI() * 0.22);
     stcost += (molt_threshold(ch) * 0.50) + (ch->getBaseST() * 0.15);
 
@@ -128,18 +128,28 @@ ACMD(do_evolve) {
             send_to_char(ch, "You do not have enough evolution experience.\r\n");
             return;
         } else {
-            int64_t plgain = (ch->getBasePL()) * 0.01;
+            double baseHl = ch->getBasePL();
+            double attrBonus = (1 + (GET_CON(ch) / 20));
 
-            if (plgain <= 0) {
-                plgain = rand_number(1, 5);
-            } else {
-                plgain = rand_number(plgain, plgain * .5);
-            }
-            ch->gainBasePL(plgain);
+            int64_t bonusHl = 0;
+            double start_bonusHl = Random::get<double>(0.8, 1.2) * attrBonus * ch->getPotential();
+            double soft_cap = (double)ch->calc_soft_cap();
+            double diminishing_returnsHl = (soft_cap - baseHl) / soft_cap;
+            if (diminishing_returnsHl > 0.0)
+                diminishing_returnsHl = std::max<double>(diminishing_returnsHl, 0.05);
+            else
+                diminishing_returnsHl = 0;
+
+            bonusHl = start_bonusHl * diminishing_returnsHl * 20;
+
+            if(bonusHl > (ch->getBaseST() / 10)) bonusHl = ch->getBaseST() / 10;
+
+            bonusHl *= (1 + ch->getAffectModifier(APPLY_PL_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            ch->gainBasePL(bonusHl);
             GET_MOLT_EXP(ch) -= plcost;
             send_to_char(ch,
                          "Your body evolves to make better use of the way it is now, and you feel that your body has strengthened. @D[@RPL@D: @Y+%s@D]@n\r\n",
-                         add_commas(plgain).c_str());
+                         add_commas(bonusHl).c_str());
         }
     } else if (!strcasecmp(arg, "ki")) {
         if (kicost > molt_threshold(ch)) {
@@ -149,18 +159,26 @@ ACMD(do_evolve) {
             send_to_char(ch, "You do not have enough evolution experience.\r\n");
             return;
         } else {
-            int64_t kigain = (ch->getBaseKI()) * 0.01;
+            double baseKi = ch->getBaseKI();
+            double attrBonus = (1 + (GET_WIS(ch) / 20));
 
-            if (kigain <= 0) {
-                kigain = rand_number(1, 5);
-            } else {
-                kigain = rand_number(kigain, kigain * .5);
-            }
-            ch->gainBaseKI(kigain);
+            int64_t bonusKi = 0;
+            double start_bonusKi = Random::get<double>(0.8, 1.2) * attrBonus * ch->getPotential();
+            double soft_cap = (double)ch->calc_soft_cap();
+            double diminishing_returnsKi = (soft_cap - baseKi) / soft_cap;
+            if (diminishing_returnsKi > 0.0)
+                diminishing_returnsKi = std::max<double>(diminishing_returnsKi, 0.05);
+            else
+                diminishing_returnsKi = 0;
+
+            bonusKi = start_bonusKi * diminishing_returnsKi * 20;
+            bonusKi *= (1 + ch->getAffectModifier(APPLY_KI_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            if(bonusKi > (ch->getBaseST() / 10)) bonusKi = ch->getBaseST() / 10;
+            ch->gainBaseKI(bonusKi);
             GET_MOLT_EXP(ch) -= kicost;
             send_to_char(ch,
                          "Your body evolves to make better use of the way it is now, and you feel that your spirit has strengthened. @D[@CKi@D: @Y+%s@D]@n\r\n",
-                         add_commas(kigain).c_str());
+                         add_commas(bonusKi).c_str());
         }
     } else if (!strcasecmp(arg, "stamina") || !strcasecmp(arg, "st")) {
         if (stcost > molt_threshold(ch)) {
@@ -170,18 +188,26 @@ ACMD(do_evolve) {
             send_to_char(ch, "You do not have enough evolution experience.\r\n");
             return;
         } else {
-            int64_t stgain = (ch->getBaseST()) * 0.01;
+            double baseSt = ch->getBaseST();
+            double attrBonus = (1 + (GET_CON(ch) / 20));
 
-            if (stgain <= 0) {
-                stgain = rand_number(1, 5);
-            } else {
-                stgain = rand_number(stgain, stgain * .5);
-            }
-            ch->gainBaseST(stgain);
+            int64_t bonusSt = 0;
+            double start_bonusSt = Random::get<double>(0.8, 1.2) * attrBonus * ch->getPotential();
+            double soft_cap = (double)ch->calc_soft_cap();
+            double diminishing_returnsSt = (soft_cap - baseSt) / soft_cap;
+            if (diminishing_returnsSt > 0.0)
+                diminishing_returnsSt = std::max<double>(diminishing_returnsSt, 0.05);
+            else
+                diminishing_returnsSt = 0;
+
+            bonusSt = start_bonusSt * diminishing_returnsSt * 20;
+            bonusSt *= (1 + ch->getAffectModifier(APPLY_ST_GAIN_MULT)) * (1 + ch->getAffectModifier(APPLY_VITALS_GAIN_MULT));
+            if(bonusSt > (ch->getBaseST() / 10)) bonusSt = ch->getBaseST() / 10;
+            ch->gainBaseST(bonusSt);
             GET_MOLT_EXP(ch) -= stcost;
             send_to_char(ch,
                          "Your body evolves to make better use of the way it is now, and you feel that your body has more stamina. @D[@GST@D: @Y+%s@D]@n\r\n",
-                         add_commas(stgain).c_str());
+                         add_commas(bonusSt).c_str());
         }
     }
 }
