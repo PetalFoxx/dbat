@@ -1115,8 +1115,7 @@ void char_data::login() {
     }
 
     /*~~~ End PCOUNT and HIGHPCOUNT ~~~*/
-    if (GET_LEVEL(this) == 0) {
-        do_start(this);
+    if (GET_LEVEL(this) == 0) {      
         send_to_char(this, "%s", CONFIG_START_MESSG);
     }
     if (GET_ROOM_VNUM(IN_ROOM(this)) <= 1 && GET_LOADROOM(this) != NOWHERE) {
