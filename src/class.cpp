@@ -629,11 +629,7 @@ void do_start(struct char_data *ch) {
 
     if (CONFIG_SITEOK_ALL)
         ch->playerFlags.set(PLR_SITEOK);
-
-    if (GET_RACE(ch) == RACE_SAIYAN && rand_number(1, 100) >= 95) {
-        ch->playerFlags.set(PLR_LSSJ);
-        write_to_output(ch->desc, "@GYou were one of the few born a Legendary Super Saiyan!@n\r\n");
-    }
+        
     ch->restoreVitals();
 
     GET_OLC_ZONE(ch) = NOWHERE;

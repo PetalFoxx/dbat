@@ -5410,7 +5410,7 @@ ACMD(do_status) {
                         race = "Icer";
                         break;
                     case 5:
-                        race = "Truffle";
+                        race = "Tuffle";
                         break;
                     case 6:
                         race = "Arlian";

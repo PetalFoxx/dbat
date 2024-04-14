@@ -12854,6 +12854,8 @@ void genFinish(char_data* ch) {
         ch->gravAcclim[5] = -5000;
     }
 
+    do_start(ch);
+
     ch->teleport_to(sensei::getStartRoom(ch->chclass));
 
 }
