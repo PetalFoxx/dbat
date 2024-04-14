@@ -3731,7 +3731,7 @@ static void spar_helper(struct char_data *ch, struct char_data *vict, int type, 
     if (auto obj = GET_EQ(ch, WEAR_SH); obj) {
 		//If you are using a spar booster
         if (GET_OBJ_VNUM(obj) == 1127) {
-            gmult *= 4;
+            gmult *= 1.5;
         }
     }
 
