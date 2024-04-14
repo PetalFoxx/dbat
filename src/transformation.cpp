@@ -2457,6 +2457,14 @@ namespace trans {
 
             return loc == nullptr ? false : true;
             }},
+        {FormID::Lycanthrope, [](struct char_data *ch) {
+            if(!ch->transforms.contains(FormID::LesserLycanthrope)) 
+                ch->addTransform(FormID::LesserLycanthrope);
+            
+            if(!ch->transforms[FormID::LesserLycanthrope].unlocked)
+                ch->transforms[FormID::LesserLycanthrope].unlocked = true;
+
+            }},
     };
 
     static std::unordered_map<FormID, std::function<void(struct char_data *ch, atk::Attack& outgoing)>> trans_on_attack = {
