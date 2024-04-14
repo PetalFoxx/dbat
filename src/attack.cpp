@@ -1531,10 +1531,28 @@ namespace atk {
         actUser("@WYou move quickly and yet @C$N@W simply sidesteps you!@n");
         actOthers("@C$n@W moves quickly and yet @c$N@W dodges with ease!@n");
 
+        double incomingDamage = calcDamage * (1 + victim->getAffectModifier(APPLY_PERFECT_DODGE));
+
+
         if(victim->getCurKI() > 0) {
-            victim->decCurKI(calcDamage * 1 + victim->getAffectModifier(APPLY_PERFECT_DODGE));
+            if (currentDodgeCheck > axion_dice(10))
+                incomingDamage /= 10;
+            if(incomingDamage > victim->getMaxKI() / 5 && !incomingDamage > victim->getMaxKI() * 5)
+                incomingDamage = victim->getMaxKI() / 5;
+
+            
+            victim->decCurKI(incomingDamage);
+
+            int instinct = GET_SKILL(user, (int16_t) SkillID::InstinctualCombat);
+            if(instinct >= axion_dice(20)) {
+                actVictim("@C$n@W, without even thinking about it you lash out towards $N, using their own momentum against them.@n");
+                actUser("@C$n@W, without breaking for a moment, lashes out, catching you offguard.@n");
+                actOthers("@C$n@W, without breaking for a moment, lashes out, using their momentum against them, and catches $N offguard.@n");
+
+                hurt(targetLimb, limbhurtChance(), victim, user, obj, (calcDamage / 2) * (instinct / 100), isKiAttack());
+            }
         } else {
-            victim->decCurST(2 * calcDamage * 1 + victim->getAffectModifier(APPLY_PERFECT_DODGE));
+            victim->decCurST(1.5 * incomingDamage);
             actVictim("@WContinuing to dodge without Ki takes a heavy toll.@n");
         }
 
@@ -3495,7 +3513,7 @@ namespace atk {
     // SeishouEnko
     void SeishouEnko::attackPreprocess() {
         if (GET_MOLT_LEVEL(user) >= 150) {
-            calcDamage *= 2;
+            calcDamage *= 1.5;
         }
     }
 
