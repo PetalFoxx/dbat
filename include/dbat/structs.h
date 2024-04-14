@@ -788,6 +788,7 @@ struct char_data : public unit_data {
     // Data stored about different forms.
     std::unordered_map<FormID, trans_data> transforms;
 
+    int genBonus = 0;
     int16_t spellfail{};        /* Total spell failure %                 */
     int16_t armorcheck{};        /* Total armorcheck penalty with proficiency forgiveness */
     int16_t armorcheckall{};    /* Total armorcheck penalty regardless of proficiency */

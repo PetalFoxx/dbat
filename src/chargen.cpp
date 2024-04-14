@@ -610,9 +610,8 @@ namespace net {
             case CON_NAME_CNFRM:
                 if(boost::iequals(arg, "Y")) {
                     ch->name = strdup(maybeName.c_str());
-                    state = CON_QRACE;
-                    display_races();
-                    break;
+                    finish();
+                    return;
                 } else if(boost::iequals(arg, "N")) {
                     maybeName.clear();
                     state = CON_GET_NAME;
@@ -2279,15 +2278,17 @@ namespace net {
         p.account = conn->account;
         conn->account->characters.push_back(p.id);
         p.character = ch;
+
+        ch->set(CharAppearance::HairColor, 100);
+        ch->set(CharAppearance::HairStyle, 100);
+        ch->set(CharAppearance::HairLength, 100);
+        ch->set(CharAppearance::EyeColor, 100);
+        ch->set(CharAppearance::SkinColor, 100);
+        ch->set(CharAppearance::Aura, 100);
+        ch->set(CharAppearance::Sex, 100);
+        ch->chclass == SenseiID::Commoner;
+
         init_char(ch);
-        if(IS_BARDOCK(ch)) {
-            ch->gravAcclim[0] = 10000;
-            ch->gravAcclim[1] = 10000;
-            ch->gravAcclim[2] = -5000;
-            ch->gravAcclim[3] = -5000;
-            ch->gravAcclim[4] = -5000;
-            ch->gravAcclim[5] = -5000;
-        }
         ch->save();
         // set state to -1 to prevent accidental freeing of ch...
         state = -1;

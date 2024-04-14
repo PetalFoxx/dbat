@@ -1514,6 +1514,7 @@ obj_data* char_data::getEquipSlot(int slot) {
 
 int char_data::getArmor() {
     int out = get(CharNum::ArmorWishes) * 5000;
+    out += armor;
     for(auto i = 0; i < NUM_WEARS; i++) {
         if(auto obj = GET_EQ(this, i); obj)
             out += obj->getAffectModifier(APPLY_AC, -1);

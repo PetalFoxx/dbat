@@ -646,6 +646,8 @@ ACMD(do_spec_comm);
 
 ACMD(do_spells);
 
+ACMD(do_gen);
+
 ACMD(do_split);
 
 ACMD(do_stand);
@@ -1258,6 +1260,7 @@ const struct command_info cmd_info[] = {
         {"split",         "split",        POS_SITTING,  do_split,           1,  ADMLVL_IMMORT,  0,      1},
         {"speak",         "spe",          POS_RESTING,  do_languages,       0,  ADMLVL_NONE,    0,      0},
         {"spells",        "spel",         POS_RESTING,  do_spells,          0,  ADMLVL_IMMORT,  0,      0},
+        {"chargen",       "chargen",      POS_RESTING,  do_gen,             0,  ADMLVL_NONE,    0,      0},
         {"stand",         "st",           POS_RESTING,  do_stand,           0,  ADMLVL_NONE,    0,      1},
         {"starbreaker",   "starbr",       POS_FIGHTING, do_breaker,         0,  ADMLVL_NONE,    0,      1},
         {"stake",         "stak",         POS_SLEEPING, do_beacon,          0, 0,               0,      1},
