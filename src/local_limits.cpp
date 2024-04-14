@@ -1339,11 +1339,6 @@ void point_update(uint64_t heartPulse, double deltaTime) {
                     send_to_char(i, "The poison claims your life!\r\n");
                     act("$n pukes up blood and falls down dead!", true, i, nullptr, nullptr, TO_ROOM);
                     if (i->poisonby) {
-                        if (AFF_FLAGGED(i->poisonby, AFF_GROUP)) {
-                            group_gain(i->poisonby, i);
-                        } else {
-                            solo_gain(i->poisonby, i);
-                        }
                         die(i, i->poisonby);
                     } else {
                         die(i, nullptr);
