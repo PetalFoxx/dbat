@@ -111,18 +111,10 @@ void resurrect(char_data *ch, int mode) {
         case 1:
             return;
         case 0:
-            if (ch->dcount >= 8 && ch->dcount < 10) {
-                dur = 90;
-            } else if (ch->dcount >= 5 && ch->dcount < 8) {
-                dur = 75;
-            } else if (ch->dcount >= 3 && ch->dcount < 5) {
-                dur = 60;
-            } else if (ch->dcount >= 1 && ch->dcount < 3) {
-                dur = 40;
-            }
+            dur = 40;
             break;
         case 2:
-            dur = 100;
+            dur = 50;
             break;
     }
 
@@ -130,21 +122,12 @@ void resurrect(char_data *ch, int mode) {
         int losschance = axion_dice(0);
         send_to_char(ch, "@RThe the strain of this type of revival has caused you to be in a weakened state for 100 hours (Game time)! Strength, constitution, wisdom, intelligence, speed, and agility have been reduced by 8 points for the duration.@n\r\n");
         int str = -8, intel = -8, wis = -8, spd = -8, con = -8, agl = -8;
-        if (ch->real_abils.intel <= 16) {
-            intel = -4;
-        }
-        if (ch->real_abils.cha <= 16) {
-            spd = -4;
-        }
-        if (ch->real_abils.dex <= 16) {
-            agl = -4;
-        }
-        if (ch->real_abils.wis <= 16) {
-            wis = -4;
-        }
-        if (ch->real_abils.con <= 16) {
-            con = -4;
-        }
+        str = -1 * (ch->real_abils.str / 5);
+        intel = -1 * (ch->real_abils.intel / 5);
+        wis = -1 * (ch->real_abils.wis / 5);
+        spd = -1 * (ch->real_abils.cha / 5);
+        con = -1 * (ch->real_abils.con / 5);
+        agl = -1 * (ch->real_abils.dex / 5);
         assign_affect(ch, AFF_WEAKENED_STATE, SKILL_WARP, dur, str, con, intel, agl, wis, spd);
         if (losschance >= 100) {
             int psloss = rand_number(100, 300);

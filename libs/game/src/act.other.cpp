@@ -208,7 +208,7 @@ ACMD(do_rpp)
   send_to_char(ch, "  @C1@D)@R Disabled            @D[@G -- RPP @D]  @C2@D)@R Disabled              @D[@G -- RPP @D]@n\n");
   send_to_char(ch, "  @C3@D)@c Custom Equipment    @D[@G 20 RPP @D]  @C4@D)@c Alignment Change      @D[@G 20 RPP @D]\n");
   send_to_char(ch, "  @C5@D)@c 7,500 zenni         @D[@G  1 RPP @D]  @C6@D)@c +2 To A Stat          @D[@G  2 RPP @D]\n");
-  send_to_char(ch, "  @C7@D)@c +750 PS             @D[@G  4 RPP @D]  @C8@D)@c Revival               @D[@G%3d RPP @D]\n", revcost);
+  send_to_char(ch, "  @C7@D)@c +750 PS             @D[@G  4 RPP @D]  @C8@D)@R Disabled               @D[@G -- RPP @D]\n");
   send_to_char(ch, "  @C9@D)@c 50%s TNL Exp         @D[@G%3d RPP @D] @C10@D)@c Aura Change           @D[@G  2 RPP @D]\n", "%", tnlcost);
   send_to_char(ch, " @C11@D)@c Reach Softcap       @D[@G  5 RPP @D] @C12@D)@c RPP Store             @D[@G ?? RPP @D]\n");
   send_to_char(ch, " @C13@D)@c Extra Feature       @D[@G  1 RPP @D] @C14@D)@c Restring Equipment    @D[@G  1 RPP @D]\n");
@@ -382,19 +382,19 @@ ACMD(do_rpp)
     } /* Can pay for it */
    } /* End Simple Zenni Reward */
 
-   if (selection == 8) { /* Simple Revival Reward */
-    pay = revcost;
-    if (GET_RP(ch) < pay) {
-	 send_to_char(ch, "You do not have enough RPP for that selection.\r\n");
-	 return;
-    } else if (!AFF_FLAGGED(ch, AFF_SPIRIT)) {
-     send_to_char(ch, "You aren't even dead!");
-     return;
-	} else {
-        resurrect(ch, 2);
-     send_to_char(ch, "You have been revived.\r\n");
-    } /* Can pay for it */
-   } /* End Simple Revival Reward */
+  //  if (selection == 8) { /* Simple Revival Reward */
+  //   pay = revcost;
+  //   if (GET_RP(ch) < pay) {
+	//  send_to_char(ch, "You do not have enough RPP for that selection.\r\n");
+	//  return;
+  //   } else if (!AFF_FLAGGED(ch, AFF_SPIRIT)) {
+  //    send_to_char(ch, "You aren't even dead!");
+  //    return;
+	// } else {
+  //       resurrect(ch, 2);
+  //    send_to_char(ch, "You have been revived.\r\n");
+  //   } /* Can pay for it */
+  //  } /* End Simple Revival Reward */
 
    if (selection == 9) { /*Simple Exp Reward*/
     pay = tnlcost;

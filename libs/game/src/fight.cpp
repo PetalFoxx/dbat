@@ -2305,37 +2305,18 @@ void die(struct char_data *ch, struct char_data *killer)
     {
       if (killer != NULL && IS_NPC(killer))
       {
-        GET_DTIME(ch) = time(0) + 28800;
+        GET_DTIME(ch) = time(0) + 7200;
         GET_DCOUNT(ch) += 1;
       }
       else if (killer != NULL && !IS_NPC(killer))
       {
-        GET_DTIME(ch) = time(0) + 1123200;
+        GET_DTIME(ch) = time(0) + 345600;
         SET_BIT_AR(PLR_FLAGS(ch), PLR_PDEATH);
         GET_DCOUNT(ch) += 1;
       }
       else
       {
-        if (GET_DCOUNT(ch) <= 0)
-        {
-          GET_DTIME(ch) = time(0) + 28800;
-        }
-        else if (GET_DCOUNT(ch) <= 1)
-        {
-          GET_DTIME(ch) = time(0) + 43200;
-        }
-        else if (GET_DCOUNT(ch) <= 3)
-        {
-          GET_DTIME(ch) = time(0) + 86400;
-        }
-        else if (GET_DCOUNT(ch) <= 5)
-        {
-          GET_DTIME(ch) = time(0) + 172800;
-        }
-        else if (GET_DCOUNT(ch) > 5)
-        {
-          GET_DTIME(ch) = time(0) + 604800;
-        }
+        GET_DTIME(ch) = time(0) + 7200;
         GET_DCOUNT(ch) += 1;
       }
     }
