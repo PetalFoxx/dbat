@@ -1299,28 +1299,8 @@ ACMD(do_fish)
    return;
   } else {
    reveal_hiding(ch, 0);
-   act("@CYou pull hard on your line and feel that you have managed to hook the fish! Better @Greel@C it in!@n", TRUE, ch, 0, 0, TO_CHAR);
+   act("@CYou pull hard on your line and feel that you have managed to hook the fish and start reeling it in!@n", TRUE, ch, 0, 0, TO_CHAR);
    act("@c$n@C pulls hard on $s fishing line and starts to struggle with the fish on the other end!@n", TRUE, ch, 0, 0, TO_ROOM);
-   GET_FISHSTATE(ch) = FISH_HOOKED;
-   return;
-  }
- } else if (!strcasecmp(arg, "reel")) {
-  if (!PLR_FLAGGED(ch, PLR_FISHING)) {
-   send_to_char(ch, "You are not even fishing!\r\n");
-   return;
-  } else if (GET_FISHSTATE(ch) == FISH_NOFISH) {
-   send_to_char(ch, "You do not have a fish biting on your line.\r\n");
-   return;
-  } else if (GET_FISHSTATE(ch) == FISH_REELING) {
-   send_to_char(ch, "You are already trying to reel the fish in!\r\n");
-   return;
-  } else if (GET_FISHSTATE(ch) != FISH_HOOKED) {
-   send_to_char(ch, "You don't have a fish hooked!\r\n");
-   return;
-  } else {
-   reveal_hiding(ch, 0);
-   act("@CYou begin reeling the fish in slowly.@n", TRUE, ch, 0, 0, TO_CHAR);
-   act("@c$n@C begins to reel the line on $s pole in.@n", TRUE, ch, 0, 0, TO_ROOM);
    GET_FISHSTATE(ch) = FISH_REELING;
    return;
   }
