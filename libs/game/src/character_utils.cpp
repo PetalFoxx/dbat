@@ -120,7 +120,7 @@ void resurrect(char_data *ch, int mode) {
 
     if (GET_LEVEL(ch) > 9) {
         int losschance = axion_dice(0);
-        send_to_char(ch, "@RThe the strain of this type of revival has caused you to be in a weakened state for 100 hours (Game time)! Strength, constitution, wisdom, intelligence, speed, and agility have been reduced by 8 points for the duration.@n\r\n");
+        send_to_char(ch, "@RThe the strain of this type of revival has caused you to be in a weakened state for a few hours (Game time)! Strength, constitution, wisdom, intelligence, speed, and agility have been reduced by a fifth for the duration.@n\r\n");
         int str = -8, intel = -8, wis = -8, spd = -8, con = -8, agl = -8;
         str = -1 * (ch->real_abils.str / 5);
         intel = -1 * (ch->real_abils.intel / 5);
